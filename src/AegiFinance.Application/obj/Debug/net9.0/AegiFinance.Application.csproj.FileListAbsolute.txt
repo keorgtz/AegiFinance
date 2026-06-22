@@ -13,3 +13,4 @@ C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Application\
 C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Application\obj\Debug\net9.0\refint\AegiFinance.Application.dll
 C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Application\obj\Debug\net9.0\AegiFinance.Application.pdb
 C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Application\obj\Debug\net9.0\ref\AegiFinance.Application.dll
+C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Application\obj\Debug\net9.0\AegiFinance.Application.sourcelink.json

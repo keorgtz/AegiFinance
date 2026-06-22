@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AegiFinance — Guía de Deploy en Endevour Server</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#F2F3F7;--card:#fff;--text:#1C1E26;--muted:#6B7280;--line:#E5E7EB;--in:#6366F1;--in-bg:#EEF2FF;--em:#10B981;--em-bg:#ECFDF5;--am:#F59E0B;--am-bg:#FFFBEB;--vi:#8B5CF6;--vi-bg:#F5F3FF;--r:14px;--shadow:0 1px 4px rgba(0,0,0,.08),0 0 0 .5px rgba(0,0,0,.06)}
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.65}
+    header{background:linear-gradient(135deg,#6366F1,#8B5CF6);color:#fff;padding:56px 24px 40px;text-align:center}
+    header h1{margin:0 0 8px;font-size:2.2rem} header p{margin:0 auto;max-width:760px;opacity:.92}
+    .wrap{max-width:1080px;margin:0 auto;padding:28px 20px 60px}.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:26px;margin-bottom:20px}
+    h2{margin:0 0 14px;font-size:1.35rem} h3{margin:20px 0 10px;font-size:1.05rem} p,li{color:#374151} ul{margin:10px 0 10px 22px} code{background:#F9FAFB;border:1px solid var(--line);padding:2px 6px;border-radius:6px;color:#7C3AED} pre{background:#1e1e2e;color:#cdd6f4;padding:16px 18px;border-radius:12px;overflow:auto}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}.pill{display:inline-block;padding:4px 10px;border-radius:999px;font-size:.75rem;font-weight:700}.ok{background:var(--em-bg);color:#065F46}.warn{background:var(--am-bg);color:#92400E}.info{background:var(--in-bg);color:var(--in)}
+    .step{border-left:4px solid var(--in);padding-left:14px;margin:16px 0}.note{background:var(--vi-bg);padding:14px 16px;border-radius:12px}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>AegiFinance</h1>
+    <p>Guía de deploy para <strong>aegifinance.endevour.mx</strong> adaptada al servidor Endevour/SHEServer con Docker, Cloudflare Tunnel y Nginx Proxy Manager.</p>
+  </header>
+  <div class="wrap">
+    <div class="card">
+      <h2>1. Estado real de la app</h2>
+      <div class="grid">
+        <div><span class="pill ok">Backend listo</span><p>Las fases 1-8 del MVP backend ya compilan y exponen API.</p></div>
+        <div><span class="pill warn">UI no lista</span><p>No existe todavía la interfaz real de negocio en Blazor/MeridianUI.</p></div>
+        <div><span class="pill info">Deploy técnico sí</span><p>Ya puedes desplegar API + Web host + Worker + SQL Server para pruebas o uso API-first.</p></div>
+      </div>
+      <div class="note">
+        <strong>Conclusión:</strong> sí puedes desplegarlo en Ubuntu con Docker y levantar la app, API y base de datos. <strong>No</strong> está lista todavía como producto final para usuarios operativos porque faltan pantallas reales de uso.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>2. Arquitectura objetivo en Endevour Server</h2>
+      <pre><code>Internet
+  ↓
+Cloudflare DNS (aegifinance.endevour.mx)
+  ↓
+Cloudflare Tunnel
+  ↓
+Nginx Proxy Manager (red proxy)
+  ↓
+Container aegifinance-web :8080
+  ↓
+SQL Server + Worker en red interna docker</code></pre>
+      <p>Ruta recomendada en tu servidor:</p>
+      <pre><code>/root/docker/apps/aegifinance/
+├── docker-compose.yml
+├── .env
+├── .dockerignore
+├── AegiFinance.sln
+└── src/
+    ├── AegiFinance.Web/
+    ├── AegiFinance.Worker/
+    ├── AegiFinance.Infrastructure/
+    ├── AegiFinance.Application/
+    └── AegiFinance.Domain/</code></pre>
+    </div>
+
+    <div class="card">
+      <h2>3. Archivos de deploy listos</h2>
+      <ul>
+        <li><code>docker-compose.yml</code> actualizado con <strong>sqlserver + web + worker</strong>.</li>
+        <li><code>src/AegiFinance.Web/Dockerfile</code></li>
+        <li><code>src/AegiFinance.Worker/Dockerfile</code></li>
+        <li><code>.dockerignore</code></li>
+        <li><code>.env.example</code></li>
+      </ul>
+      <p>El compose ya está preparado para:</p>
+      <ul>
+        <li>build sin cache</li>
+        <li>pull de imágenes base</li>
+        <li>worker separado</li>
+        <li>conexión a red externa <code>proxy</code></li>
+        <li>puerto local de prueba <code>127.0.0.1:8088</code></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>4. Preparación del servidor Ubuntu</h2>
+      <div class="step">
+        <h3>4.1 Instalar Docker y Compose</h3>
+        <pre><code>apt update && apt upgrade -y
+curl -fsSL https://get.docker.com | sh
+apt install docker-compose-plugin -y
+systemctl enable docker
+systemctl start docker</code></pre>
+      </div>
+      <div class="step">
+        <h3>4.2 Crear red proxy global</h3>
+        <pre><code>docker network create proxy</code></pre>
+      </div>
+      <div class="step">
+        <h3>4.3 Crear carpeta de la app</h3>
+        <pre><code>mkdir -p /root/docker/apps/aegifinance
+cd /root/docker/apps/aegifinance</code></pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>5. Subir proyecto al servidor</h2>
+      <p>Sube todo el contenido del proyecto <code>AegiFinance</code> a:</p>
+      <pre><code>/root/docker/apps/aegifinance</code></pre>
+      <p>Incluye especialmente:</p>
+      <ul>
+        <li><code>AegiFinance.sln</code></li>
+        <li><code>src/</code></li>
+        <li><code>docker-compose.yml</code></li>
+        <li><code>.dockerignore</code></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>6. Crear archivo .env</h2>
+      <p>En el servidor, copia <code>.env.example</code> a <code>.env</code> y cambia valores:</p>
+      <pre><code>cp .env.example .env
+nano .env</code></pre>
+      <pre><code>MSSQL_SA_PASSWORD=PonAquiUnaPasswordMuyFuerte_2026!
+JWT_SECRET=PonAquiUnJwtSecretMuyLargo_Y_Seguro_2026
+EXCHANGE_RATE_BASE_URL=https://api.exchangerate-api.com/v4/latest/
+EXCHANGE_RATE_API_KEY=
+EXCHANGE_RATE_ENABLED=false
+BILLING_DAILY_RUN_TIME=02:00</code></pre>
+    </div>
+
+    <div class="card">
+      <h2>7. Deploy inmediato sin problemas de cache</h2>
+      <p>Para evitar problemas al actualizar, usa siempre esta secuencia:</p>
+      <pre><code>cd /root/docker/apps/aegifinance
+
+docker compose down --remove-orphans
+docker compose build --no-cache --pull
+docker compose up -d --force-recreate
+docker image prune -f</code></pre>
+      <p>Eso garantiza:</p>
+      <ul>
+        <li>sin cache de build</li>
+        <li>imágenes base actualizadas</li>
+        <li>contenedores recreados</li>
+        <li>sin residuos de versiones anteriores</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>8. Verificación local en el servidor</h2>
+      <pre><code>docker compose ps
+docker compose logs -f web
+curl http://127.0.0.1:8088/health</code></pre>
+      <p>Si todo está bien, deberías recibir algo similar a:</p>
+      <pre><code>{"status":"ok","service":"AegiFinance.Web","utc":"..."}</code></pre>
+    </div>
+
+    <div class="card">
+      <h2>9. Configuración en Nginx Proxy Manager</h2>
+      <p>Crea un Proxy Host:</p>
+      <ul>
+        <li><strong>Domain Names:</strong> <code>aegifinance.endevour.mx</code></li>
+        <li><strong>Scheme:</strong> <code>http</code></li>
+        <li><strong>Forward Hostname / IP:</strong> <code>aegifinance-web</code></li>
+        <li><strong>Forward Port:</strong> <code>8080</code></li>
+        <li><strong>Network:</strong> usar red docker externa <code>proxy</code></li>
+      </ul>
+      <p>Activa SSL y Force SSL desde NPM.</p>
+    </div>
+
+    <div class="card">
+      <h2>10. Configuración en Cloudflare Tunnel</h2>
+      <p>Agrega una entrada al <code>config.yml</code> de cloudflared:</p>
+      <pre><code>ingress:
+  - hostname: aegifinance.endevour.mx
+    service: http://npm:80
+
+  - service: http_status:404</code></pre>
+      <p>Luego reinicia cloudflared:</p>
+      <pre><code>docker compose restart cloudflared</code></pre>
+    </div>
+
+    <div class="card">
+      <h2>11. Actualizar la app más adelante</h2>
+      <pre><code>cd /root/docker/apps/aegifinance
+
+# subir archivos nuevos
+
+docker compose down --remove-orphans
+docker compose build --no-cache --pull
+docker compose up -d --force-recreate
+docker image prune -f</code></pre>
+    </div>
+
+    <div class="card">
+      <h2>12. Estado de producción real</h2>
+      <ul>
+        <li><strong>Listo para deploy técnico:</strong> sí.</li>
+        <li><strong>Listo para pruebas API:</strong> sí.</li>
+        <li><strong>Listo para uso humano completo desde navegador:</strong> todavía no, porque falta UI funcional de negocio.</li>
+      </ul>
+      <p>Si deseas ponerlo “usable” para usuarios finales, el siguiente trabajo es construir la UI real con MeridianUI sobre las fases backend ya implementadas.</p>
+    </div>
+  </div>
+</body>
+</html>

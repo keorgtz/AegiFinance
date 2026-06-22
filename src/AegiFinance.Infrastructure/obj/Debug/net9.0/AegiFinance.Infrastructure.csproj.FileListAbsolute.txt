@@ -17,3 +17,4 @@ C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Infrastructu
 C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Infrastructure\obj\Debug\net9.0\ref\AegiFinance.Infrastructure.dll
 C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Infrastructure\bin\Debug\net9.0\AegiFinance.Infrastructure.runtimeconfig.json
 C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Infrastructure\obj\Debug\net9.0\AegiFinance.Infrastructure.genruntimeconfig.cache
+C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Infrastructure\obj\Debug\net9.0\AegiFinance.Infrastructure.sourcelink.json

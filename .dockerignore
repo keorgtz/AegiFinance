@@ -1,0 +1,13 @@
+**/bin/
+**/obj/
+**/.vs/
+**/.idea/
+**/.git/
+**/.refi/
+**/node_modules/
+*.user
+*.suo
+*.cache
+*.pdb
+*.log
+README.md

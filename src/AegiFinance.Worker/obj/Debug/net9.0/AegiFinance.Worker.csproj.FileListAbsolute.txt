@@ -98,3 +98,4 @@ C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Worker\bin\D
 C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Worker\bin\Debug\net9.0\runtimes\win\lib\net6.0\System.Runtime.Caching.dll
 C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Worker\bin\Debug\net9.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Worker\bin\Debug\net9.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
+C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Worker\obj\Debug\net9.0\AegiFinance.Worker.sourcelink.json

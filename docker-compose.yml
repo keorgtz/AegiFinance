@@ -1,17 +1,85 @@
-version: '3.8'
-
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: aegifinance-sqlserver
-    ports:
-      - "1433:1433"
+    restart: unless-stopped
     environment:
       ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "YourStrong@Passw0rd"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-ChangeThis_SA_Password_2026!}
+      MSSQL_PID: "Developer"
     volumes:
       - aegifinance-sql-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "(/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P $$MSSQL_SA_PASSWORD -Q 'SELECT 1') || (/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $$MSSQL_SA_PASSWORD -Q 'SELECT 1')"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 40s
+    networks:
+      - aegifinance
+
+  web:
+    image: aegifinance-web:latest
+    container_name: aegifinance-web
     restart: unless-stopped
+    build:
+      context: .
+      dockerfile: src/AegiFinance.Web/Dockerfile
+      pull: true
+      no_cache: true
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Server=sqlserver,1433;Database=AegiFinanceDb;User Id=sa;Password=${MSSQL_SA_PASSWORD:-ChangeThis_SA_Password_2026!};TrustServerCertificate=True;Encrypt=False;
+      JwtSettings__Secret: ${JWT_SECRET:-ChangeThis_JWT_Secret_With_At_Least_32_Chars_2026}
+      JwtSettings__Issuer: AegiFinance
+      JwtSettings__Audience: AegiFinance
+      JwtSettings__ExpiryMinutes: 15
+      ExchangeRateApi__BaseUrl: ${EXCHANGE_RATE_BASE_URL:-https://api.exchangerate-api.com/v4/latest/}
+      ExchangeRateApi__ApiKey: ${EXCHANGE_RATE_API_KEY:-}
+      ExchangeRateApi__Enabled: ${EXCHANGE_RATE_ENABLED:-false}
+    expose:
+      - "8080"
+    ports:
+      - "127.0.0.1:8088:8080"
+    networks:
+      - aegifinance
+      - proxy
+
+  worker:
+    image: aegifinance-worker:latest
+    container_name: aegifinance-worker
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: src/AegiFinance.Worker/Dockerfile
+      pull: true
+      no_cache: true
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: Server=sqlserver,1433;Database=AegiFinanceDb;User Id=sa;Password=${MSSQL_SA_PASSWORD:-ChangeThis_SA_Password_2026!};TrustServerCertificate=True;Encrypt=False;
+      JwtSettings__Secret: ${JWT_SECRET:-ChangeThis_JWT_Secret_With_At_Least_32_Chars_2026}
+      JwtSettings__Issuer: AegiFinance
+      JwtSettings__Audience: AegiFinance
+      JwtSettings__ExpiryMinutes: 15
+      ExchangeRateApi__BaseUrl: ${EXCHANGE_RATE_BASE_URL:-https://api.exchangerate-api.com/v4/latest/}
+      ExchangeRateApi__ApiKey: ${EXCHANGE_RATE_API_KEY:-}
+      ExchangeRateApi__Enabled: ${EXCHANGE_RATE_ENABLED:-false}
+      Billing__DailyRunTime: ${BILLING_DAILY_RUN_TIME:-02:00}
+    networks:
+      - aegifinance
 
 volumes:
   aegifinance-sql-data:
+
+networks:
+  aegifinance:
+    driver: bridge
+  proxy:
+    external: true
