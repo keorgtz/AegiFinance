@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AegiFinance — Resumen de Planificación</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --accent: #38bdf8;
+            --success: #34d399;
+            --warning: #fbbf24;
+            --danger: #f87171;
+            --border: #334155;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.25rem;
+            color: var(--accent);
+        }
+        header p {
+            color: var(--muted);
+            margin-top: 0.5rem;
+        }
+        .grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            margin-bottom: 2rem;
+        }
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+        }
+        .card h3 {
+            margin: 0 0 0.5rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+        }
+        .card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        .card .status {
+            font-size: 0.875rem;
+            color: var(--success);
+            margin-top: 0.5rem;
+        }
+        section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        section h2 {
+            margin-top: 0;
+            font-size: 1.25rem;
+            color: var(--accent);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.75rem;
+        }
+        ul {
+            padding-left: 1.25rem;
+        }
+        li {
+            margin-bottom: 0.5rem;
+        }
+        .phase-list {
+            columns: 2;
+            column-gap: 2rem;
+        }
+        .phase-list li {
+            break-inside: avoid;
+        }
+        .mvp {
+            color: var(--success);
+            font-weight: 600;
+        }
+        .pending {
+            color: var(--warning);
+            font-weight: 600;
+        }
+        .next {
+            background: rgba(56, 189, 248, 0.1);
+            border-left: 4px solid var(--accent);
+        }
+        .note {
+            font-size: 0.875rem;
+            color: var(--muted);
+        }
+        .confirmed {
+            color: var(--success);
+        }
+        footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.875rem;
+            margin-top: 2rem;
+        }
+        @media (max-width: 640px) {
+            .phase-list { columns: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AegiFinance</h1>
+            <p>Resumen de planificación e implementación actual</p>
+        </header>
+
+        <div class="grid">
+            <div class="card">
+                <h3>Fases planificadas</h3>
+                <div class="value">15</div>
+                <div class="status">Todas documentadas</div>
+            </div>
+            <div class="card">
+                <h3>MVP Real</h3>
+                <div class="value">8</div>
+                <div class="status">Fases 1-8</div>
+            </div>
+            <div class="card">
+                <h3>Domain Shards</h3>
+                <div class="value">15</div>
+                <div class="status">Uno por fase</div>
+            </div>
+            <div class="card">
+                <h3>Implementación</h3>
+                <div class="value">53%</div>
+                <div class="status">Fases 1-8 completadas</div>
+            </div>
+        </div>
+
+        <section>
+            <h2>Decisiones confirmadas</h2>
+            <ul>
+                <li><span class="confirmed">✓</span> <strong>Nombre oficial:</strong> <code>AegiFinance</code> (proyectos <code>AegiFinance.*</code>).</li>
+                <li><span class="confirmed">✓</span> <strong>Moneda de almacenamiento:</strong> Peso Mexicano (<code>MXN</code>) obligatorio.</li>
+                <li><span class="confirmed">✓</span> <strong>Visualización multi-moneda:</strong> sí, con conversión visual desde MXN.</li>
+                <li><span class="confirmed">✓</span> <strong>Fuentes de tipo de cambio:</strong>
+                    <ul>
+                        <li>Automática: servicio externo configurable (ej. ExchangeRate-API).</li>
+                        <li>Manual: tipo de cambio configurable por el usuario.</li>
+                    </ul>
+                </li>
+                <li><span class="confirmed">✓</span> <strong>Formato de fechas:</strong> <code>22/Jun/2026</code>.</li>
+                <li><span class="confirmed">✓</span> <strong>Zona horaria:</strong> América/Ciudad de México (Jalisco).</li>
+                <li><span class="confirmed">✓</span> <strong>Motor de reportes:</strong> QuestPDF (PDF), ClosedXML (Excel), HTML (vista previa).</li>
+                <li><span class="confirmed">✓</span> <strong>Reportes:</strong> estáticos con estilo MeridianUI; AegiReports en el futuro.</li>
+                <li><span class="confirmed">✓</span> <strong>UX/UI:</strong> MeridianUI.</li>
+                <li><span class="confirmed">✓</span> <strong>Portal cliente:</strong> integrado dentro de AegiFinance, sin app separada, con SVA.</li>
+                <li><span class="confirmed">✓</span> <strong>Canales de notificación:</strong> postergados para después.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Lo generado</h2>
+            <p><strong>Documentación:</strong> REFI packet completo en <code>.refi/modules/aegifinance/</code> con request, master blueprint, 15 domain shards, orchestration map, progress y verification.</p>
+            <p><strong>Código implementado (Fase 1):</strong></p>
+            <ul>
+                <li>Solución .NET 9 con 5 proyectos Clean Architecture bajo <code>src/AegiFinance.*</code>.</li>
+                <li>Docker Compose con SQL Server 2022.</li>
+                <li>Entidades de dominio: User, Role, Permission, UserType, ClientUser, ClientPinCredential, SubscriptionPermission, CurrencyConfig, ExchangeRate, AuditLog.</li>
+                <li>EF Core DbContext con relaciones, índices, soft delete global y auditoría automática.</li>
+                <li>Servicios: AuthService, PermissionService, CurrentUserService, CurrencyConverter, ExchangeRateApiProvider, TokenService, PasswordHasher, PinHasher.</li>
+                <li>Application layer con MediatR, FluentValidation, DTOs y handlers.</li>
+                <li>Controllers: Auth, Users, Currencies, ExchangeRates.</li>
+                <li>JWT authentication configurado.</li>
+                <li>Seed de datos: MXN, permisos, rol Admin, usuario admin.</li>
+                <li>Migración inicial <code>InitialCreate</code> generada.</li>
+                <li>Fase 2: entidades Client, ClientTag, ClientCategory, ClientNote, ClientContact; generador de códigos CLI-XXXXX; controllers para clientes, tags y categorías.</li>
+                <li>Migración <code>AddClientManagement</code> generada.</li>
+                <li>Fase 3: entidades Service, ServiceCategory, ServicePriceHistory, enum BillingType; generador de códigos SRV-XXXXX; controllers de servicios y categorías; historial de precios con fecha efectiva.</li>
+                <li>Migración <code>AddServiceCatalog</code> generada.</li>
+                <li>Fase 4: entidades Subscription, SubscriptionPriceHistory, SubscriptionChangeLog; enums SubscriptionStatus y SubscriptionChangeType; calculadora de NextBillingDate; controller de suscripciones.</li>
+                <li>Migración <code>AddSubscriptions</code> generada.</li>
+                <li>Fase 5: entidades BillingCycle, BillingItem, BillingGenerationLog; enums BillingCycleStatus y BillingItemStatus; motor de generación de cargos; worker diario; controller de facturación.</li>
+                <li>Migración <code>AddBillingEngine</code> generada.</li>
+                <li>Fase 6: entidades BankAccount, LedgerEntry, LedgerAllocation y TransferGroup; enum LedgerEntryType; servicios de ledger y cálculo de saldos; controllers de cuentas bancarias y ledger.</li>
+                <li>Migración <code>AddFinancialLedger</code> generada.</li>
+                <li>Fase 7: entidad SubscriptionAllocation; servicio de auto-asignación FIFO y asignación manual; endpoints para asignar y desasignar pagos.</li>
+                <li>Migración <code>AddSubscriptionAllocations</code> generada.</li>
+                <li>Fase 8: DTOs y queries de estado de cuenta, movimientos y resumen financiero por cliente; endpoints de consulta con filtro por fecha y moneda.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Arquitectura clave</h2>
+            <ul>
+                <li><strong>Single View Architecture (SVA):</strong> una sola vista por módulo; el contenido se adapta por permisos.</li>
+                <li><strong>UserType:</strong> <code>Administrator</code> (ClientId NULL) y <code>Client</code> (ClientId obligatorio).</li>
+                <li><strong>ClientUser + ClientPinCredential:</strong> subusuarios de clientes con PIN simple.</li>
+                <li><strong>SubscriptionPermission:</strong> restringe qué suscripciones ve cada subusuario.</li>
+                <li><strong>Permission Engine:</strong> autorización centralizada; menú dinámico por permisos.</li>
+                <li><strong>Filtrado por ClientId:</strong> en todas las queries de clientes para evitar fugas de datos.</li>
+                <li><strong>Moneda MXN:</strong> todo monto se almacena en MXN; visualización multi-moneda mediante <code>ICurrencyConverter</code>.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Fases del proyecto</h2>
+            <ul class="phase-list">
+                <li><span class="mvp">01</span> Foundation</li>
+                <li><span class="mvp">02</span> Client Management</li>
+                <li><span class="mvp">03</span> Service Catalog</li>
+                <li><span class="mvp">04</span> Subscriptions</li>
+                <li><span class="mvp">05</span> Billing Engine</li>
+                <li><span class="mvp">06</span> Financial Ledger</li>
+                <li><span class="mvp">07</span> Subscription Allocations</li>
+                <li><span class="mvp">08</span> Customer Account Statements</li>
+                <li><span class="pending">09</span> Bank Reconciliation</li>
+                <li><span class="pending">10</span> Dashboard</li>
+                <li><span class="pending">11</span> Reporting</li>
+                <li><span class="pending">12</span> Support Tickets</li>
+                <li><span class="pending">13</span> License Management</li>
+                <li><span class="pending">14</span> Customer Portal</li>
+                <li><span class="pending">15</span> Automations</li>
+            </ul>
+            <p class="note">Las fases 1-8 conforman el <strong>MVP Real</strong> operativo interno. Las fases 9-15 son crecimiento empresarial.</p>
+        </section>
+
+        <section>
+            <h2>Lo que falta por hacer</h2>
+            <ul>
+                <li>Validar runtime levantando SQL Server y probando endpoints.</li>
+                <li>Implementar Fases 9-15.</li>
+                <li>Seleccionar servicio externo de tipo de cambio (ExchangeRate-API, Open Exchange Rates, etc.).</li>
+                <li>Definir estrategia de cache de tasas de cambio.</li>
+                <li>Configurar repositorio, CI/CD y entornos (Docker, SQL Server, Cloudflare Tunnel).</li>
+                <li>Ejecutar y aprobar los quality gates definidos en <code>verification.md</code>.</li>
+                <li>Implementar UI Blazor con MeridianUI.</li>
+            </ul>
+        </section>
+
+        <section class="next">
+            <h2>Próximo paso recomendado</h2>
+            <p><strong>Ryou Orchestrator</strong> debe continuar con la <strong>Fase 9 — Bank Reconciliation</strong>:</p>
+            <ol>
+                <li>Implementar carga de estados de cuenta bancarios y sus líneas.</li>
+                <li>Crear conciliación automática por monto, referencia y fecha.</li>
+                <li>Crear conciliación manual y deshacer conciliación.</li>
+                <li>Crear reporte de diferencias entre ledger y banco.</li>
+                <li>Generar migración y validar endpoints.</li>
+            </ol>
+        </section>
+
+        <footer>
+            Generado el 22 de junio de 2026 · AegiFinance Planning Packet
+        </footer>
+    </div>
+</body>
+</html>
