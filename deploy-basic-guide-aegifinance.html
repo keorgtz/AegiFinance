@@ -178,7 +178,9 @@ SQL Server + Worker (red interna docker)</code></pre>
       <h2>6. Preparar carpeta de deploy en Ubuntu</h2>
       <pre><code>mkdir -p /root/docker/apps/aegifinance
 cd /root/docker/apps/aegifinance</code></pre>
-      <p>Sube a esa carpeta:</p>
+      <p>Clona o sube el proyecto asegurándote de usar la rama <strong>Master</strong> (es la única rama soportada):</p>
+      <pre><code>git clone -b Master https://github.com/keorgtz/AegiFinance.git .</code></pre>
+      <p>Asegúrate de tener en la carpeta:</p>
       <ul>
         <li><code>AegiFinance.sln</code></li>
         <li><code>src/</code></li>
@@ -240,7 +242,7 @@ docker image prune -f</code></pre>
         <div class="mini ok"><strong>Deploy backend:</strong><br>Sí, listo</div>
         <div class="mini ok"><strong>API funcional:</strong><br>Sí</div>
         <div class="mini ok"><strong>Base de datos:</strong><br>Sí</div>
-        <div class="mini warn"><strong>UI final:</strong><br>Aún no lista</div>
+        <div class="mini ok"><strong>UI final (MVP):</strong><br>Completada en Master</div>
       </div>
     </div>
   </div>

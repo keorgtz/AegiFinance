@@ -26,11 +26,11 @@
       <h2>1. Estado real de la app</h2>
       <div class="grid">
         <div><span class="pill ok">Backend listo</span><p>Las fases 1-8 del MVP backend ya compilan y exponen API.</p></div>
-        <div><span class="pill warn">UI no lista</span><p>No existe todavía la interfaz real de negocio en Blazor/MeridianUI.</p></div>
-        <div><span class="pill info">Deploy técnico sí</span><p>Ya puedes desplegar API + Web host + Worker + SQL Server para pruebas o uso API-first.</p></div>
+        <div><span class="pill ok">UI lista</span><p>La interfaz real de negocio en Blazor/MeridianUI ya está integrada en Master.</p></div>
+        <div><span class="pill info">Deploy técnico sí</span><p>Ya puedes desplegar la aplicación completa (API + UI + Worker + BD) para uso real.</p></div>
       </div>
       <div class="note">
-        <strong>Conclusión:</strong> sí puedes desplegarlo en Ubuntu con Docker y levantar la app, API y base de datos. <strong>No</strong> está lista todavía como producto final para usuarios operativos porque faltan pantallas reales de uso.
+        <strong>Conclusión:</strong> El MVP Fases 1-8 está completamente integrado y operando exclusivamente sobre la rama <code>Master</code>. Puedes hacer deploy y presentar a usuarios operativos de forma funcional.
       </div>
     </div>
 
@@ -103,9 +103,9 @@ cd /root/docker/apps/aegifinance</code></pre>
 
     <div class="card">
       <h2>5. Subir proyecto al servidor</h2>
-      <p>Sube todo el contenido del proyecto <code>AegiFinance</code> a:</p>
-      <pre><code>/root/docker/apps/aegifinance</code></pre>
-      <p>Incluye especialmente:</p>
+      <p>Clona el repositorio usando la rama <strong>Master</strong> (es la única rama que se maneja) en el servidor:</p>
+      <pre><code>git clone -b Master https://github.com/keorgtz/AegiFinance.git /root/docker/apps/aegifinance</code></pre>
+      <p>Asegúrate de que estén presentes los archivos principales:</p>
       <ul>
         <li><code>AegiFinance.sln</code></li>
         <li><code>src/</code></li>
@@ -194,11 +194,11 @@ docker image prune -f</code></pre>
     <div class="card">
       <h2>12. Estado de producción real</h2>
       <ul>
-        <li><strong>Listo para deploy técnico:</strong> sí.</li>
-        <li><strong>Listo para pruebas API:</strong> sí.</li>
-        <li><strong>Listo para uso humano completo desde navegador:</strong> todavía no, porque falta UI funcional de negocio.</li>
+        <li><strong>Listo para deploy técnico:</strong> Sí.</li>
+        <li><strong>Listo para pruebas API:</strong> Sí.</li>
+        <li><strong>Listo para uso humano completo desde navegador:</strong> Sí, las Fases 1-8 con MeridianUI y SVA están publicadas en la rama <code>Master</code>.</li>
       </ul>
-      <p>Si deseas ponerlo “usable” para usuarios finales, el siguiente trabajo es construir la UI real con MeridianUI sobre las fases backend ya implementadas.</p>
+      <p>Para futuras actualizaciones, simplemente haz <code>git pull origin Master</code> asegurándote de estar siempre en la rama <strong>Master</strong>, ya que es la única rama permitida de trabajo continuo.</p>
     </div>
   </div>
 </body>
