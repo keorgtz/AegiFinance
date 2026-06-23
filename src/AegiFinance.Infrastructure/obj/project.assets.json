@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "targets": {
     "net9.0": {
       "Azure.Core/1.38.0": {
@@ -4625,36 +4625,48 @@
     ]
   },
   "packageFolders": {
-    "/home/jules/.nuget/packages/": {}
+    "C:\\Users\\kevin\\.nuget\\packages\\": {},
+    "C:\\Program Files\\DevExpress 24.2\\Components\\Offline Packages": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/app/src/AegiFinance.Infrastructure/AegiFinance.Infrastructure.csproj",
+      "projectUniqueName": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Infrastructure\\AegiFinance.Infrastructure.csproj",
       "projectName": "AegiFinance.Infrastructure",
-      "projectPath": "/app/src/AegiFinance.Infrastructure/AegiFinance.Infrastructure.csproj",
-      "packagesPath": "/home/jules/.nuget/packages/",
-      "outputPath": "/app/src/AegiFinance.Infrastructure/obj/",
+      "projectPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Infrastructure\\AegiFinance.Infrastructure.csproj",
+      "packagesPath": "C:\\Users\\kevin\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Infrastructure\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files\\DevExpress 24.2\\Components\\Offline Packages",
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "/home/jules/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\kevin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress 24.2.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
       ],
       "sources": {
-        "/usr/lib/dotnet/library-packs": {},
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\DevExpress 24.2\\Components\\System\\Components\\Packages": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net9.0": {
+          "framework": "net9.0",
           "targetAlias": "net9.0",
           "projectReferences": {
-            "/app/src/AegiFinance.Application/AegiFinance.Application.csproj": {
-              "projectPath": "/app/src/AegiFinance.Application/AegiFinance.Application.csproj"
+            "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Application\\AegiFinance.Application.csproj": {
+              "projectPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Application\\AegiFinance.Application.csproj"
             },
-            "/app/src/AegiFinance.Domain/AegiFinance.Domain.csproj": {
-              "projectPath": "/app/src/AegiFinance.Domain/AegiFinance.Domain.csproj"
+            "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj": {
+              "projectPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj"
             }
           }
         }
@@ -4669,10 +4681,11 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "10.0.100"
+      "SdkAnalysisLevel": "10.0.300"
     },
     "frameworks": {
       "net9.0": {
+        "framework": "net9.0",
         "targetAlias": "net9.0",
         "dependencies": {
           "BCrypt.Net-Next": {
@@ -4713,22 +4726,12 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
-        "downloadDependencies": [
-          {
-            "name": "Microsoft.AspNetCore.App.Ref",
-            "version": "[9.0.13, 9.0.13]"
-          },
-          {
-            "name": "Microsoft.NETCore.App.Ref",
-            "version": "[9.0.13, 9.0.13]"
-          }
-        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/10.0.103/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

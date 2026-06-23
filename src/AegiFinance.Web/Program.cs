@@ -2,6 +2,7 @@ using AegiFinance.Application;
 using AegiFinance.Infrastructure;
 using AegiFinance.Web.Components;
 using AegiFinance.Web.Seed;
+using AegiFinance.Web.Services;
 using Microsoft.AspNetCore.HttpOverrides;
 using Serilog;
 
@@ -31,6 +32,8 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IPermissionService, MockPermissionService>();
 
 // Configure Blazor Web App (mantener existente)
 builder.Services.AddRazorComponents()

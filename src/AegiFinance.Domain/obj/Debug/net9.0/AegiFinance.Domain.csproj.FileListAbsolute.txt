@@ -22,3 +22,15 @@ C:/Users/kevin/KeorSoft/Development/Web/AegiFinance/src/AegiFinance.Domain/obj/D
 /app/src/AegiFinance.Domain/obj/Debug/net9.0/refint/AegiFinance.Domain.dll
 /app/src/AegiFinance.Domain/obj/Debug/net9.0/AegiFinance.Domain.pdb
 /app/src/AegiFinance.Domain/obj/Debug/net9.0/ref/AegiFinance.Domain.dll
+C:\Users\kevin\.gemini\antigravity\worktrees\AegiFinance\mvp-clean-meridian-ui\src\AegiFinance.Domain\bin\Debug\net9.0\AegiFinance.Domain.deps.json
+C:\Users\kevin\.gemini\antigravity\worktrees\AegiFinance\mvp-clean-meridian-ui\src\AegiFinance.Domain\bin\Debug\net9.0\AegiFinance.Domain.dll
+C:\Users\kevin\.gemini\antigravity\worktrees\AegiFinance\mvp-clean-meridian-ui\src\AegiFinance.Domain\bin\Debug\net9.0\AegiFinance.Domain.pdb
+C:\Users\kevin\.gemini\antigravity\worktrees\AegiFinance\mvp-clean-meridian-ui\src\AegiFinance.Domain\obj\Debug\net9.0\AegiFinance.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\kevin\.gemini\antigravity\worktrees\AegiFinance\mvp-clean-meridian-ui\src\AegiFinance.Domain\obj\Debug\net9.0\AegiFinance.Domain.AssemblyInfoInputs.cache
+C:\Users\kevin\.gemini\antigravity\worktrees\AegiFinance\mvp-clean-meridian-ui\src\AegiFinance.Domain\obj\Debug\net9.0\AegiFinance.Domain.AssemblyInfo.cs
+C:\Users\kevin\.gemini\antigravity\worktrees\AegiFinance\mvp-clean-meridian-ui\src\AegiFinance.Domain\obj\Debug\net9.0\AegiFinance.Domain.csproj.CoreCompileInputs.cache
+C:\Users\kevin\.gemini\antigravity\worktrees\AegiFinance\mvp-clean-meridian-ui\src\AegiFinance.Domain\obj\Debug\net9.0\AegiFinance.Domain.sourcelink.json
+C:\Users\kevin\.gemini\antigravity\worktrees\AegiFinance\mvp-clean-meridian-ui\src\AegiFinance.Domain\obj\Debug\net9.0\AegiFinance.Domain.dll
+C:\Users\kevin\.gemini\antigravity\worktrees\AegiFinance\mvp-clean-meridian-ui\src\AegiFinance.Domain\obj\Debug\net9.0\refint\AegiFinance.Domain.dll
+C:\Users\kevin\.gemini\antigravity\worktrees\AegiFinance\mvp-clean-meridian-ui\src\AegiFinance.Domain\obj\Debug\net9.0\AegiFinance.Domain.pdb
+C:\Users\kevin\.gemini\antigravity\worktrees\AegiFinance\mvp-clean-meridian-ui\src\AegiFinance.Domain\obj\Debug\net9.0\ref\AegiFinance.Domain.dll

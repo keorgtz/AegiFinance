@@ -1,0 +1,99 @@
+@page "/services"
+@using AegiFinance.Application.Features.Services.Queries.GetServices
+@using AegiFinance.Application.Dtos
+@using MediatR
+@inject ISender Sender
+
+<style>
+  .card { background: #fff; border-radius: var(--r-lg); box-shadow: var(--shadow); width: 100%; margin-bottom: 24px; display: flex; flex-direction: column; }
+  .h { padding: 16px 20px; background: var(--in-bg); display: flex; align-items: center; justify-content: space-between; border-radius: var(--r-lg) var(--r-lg) 0 0; }
+  .h-left { display: flex; flex-direction: column; gap: 4px; }
+  .h-title { font-size: 11px; font-weight: 600; color: var(--gray-muted); text-transform: uppercase; letter-spacing: .06em; }
+  .h-sub { font-size: 13px; color: var(--in); font-weight: 500; }
+  .table-container { width: 100%; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 600px; }
+  thead th { background: #fff; padding: 10px 16px; text-align: left; font-size: 11px; font-weight: 600; color: var(--gray-muted); border-bottom: 1px solid var(--gray-line); text-transform: uppercase; letter-spacing: .05em; position: sticky; top: 0; }
+  tbody td { padding: 10px 16px; border-bottom: 1px solid var(--gray-line); color: var(--gray-700); }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #FAFAFA; cursor: pointer; }
+  .status-badge { background: var(--in-pl); color: var(--in); padding: 4px 8px; border-radius: var(--r-sm); font-size: 11px; font-weight: 600; }
+  .status-active { background: var(--em-pl); color: var(--em); }
+  .btn-primary { background: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: var(--r-md); font-size: 13px; font-weight: 500; cursor: pointer; box-shadow: var(--shadow); display: flex; align-items: center; gap: 6px; }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .price { font-weight: 600; font-variant-numeric: tabular-nums; }
+</style>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+    <div class="h-page-title">Catálogo de Servicios</div>
+    @if (canCreateService)
+    {
+        <button class="btn-primary">
+            <span class="material-symbols-rounded" style="font-size: 18px;">add</span> Nuevo Servicio
+        </button>
+    }
+</div>
+
+@if (ServicesList == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <div class="card">
+        <div class="h">
+            <div class="h-left">
+                <span class="h-title">SERVICIOS</span>
+                <span class="h-sub">Servicios y planes disponibles</span>
+            </div>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th>Facturación</th>
+                        <th>Precio Base</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var srv in ServicesList)
+                    {
+                        <tr>
+                            <td>@srv.Code</td>
+                            <td style="font-weight: 500; color: var(--gray-dark);">@srv.Name</td>
+                            <td>@(string.IsNullOrEmpty(srv.CategoryName) ? "Sin categoría" : srv.CategoryName)</td>
+                            <td>@srv.BillingType</td>
+                            <td class="price" style="color: var(--em);">@srv.DefaultPrice.ToString("C") @srv.Currency</td>
+                            <td>
+                                <span class="status-badge @(srv.IsActive ? "status-active" : "")">
+                                    @(srv.IsActive ? "Activo" : "Inactivo")
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                    @if (ServicesList.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 32px; color: var(--gray-muted);">No hay servicios registrados.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@code {
+    private List<ServiceListDto>? ServicesList;
+    private bool canCreateService;
+
+    protected override async Task OnInitializedAsync()
+    {
+        canCreateService = await PermissionService.HasPermissionAsync("CreateService");
+        var result = await Sender.Send(new GetServicesQuery { PageSize = 100 });
+        ServicesList = result.Items.ToList();
+    }
+}

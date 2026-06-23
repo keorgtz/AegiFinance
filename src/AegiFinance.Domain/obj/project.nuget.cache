@@ -1,11 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "yfDO0zumS5E=",
+  "dgSpecHash": "s0apaJPQtIw=",
   "success": true,
-  "projectFilePath": "/app/src/AegiFinance.Domain/AegiFinance.Domain.csproj",
-  "expectedPackageFiles": [
-    "/home/jules/.nuget/packages/microsoft.netcore.app.ref/9.0.13/microsoft.netcore.app.ref.9.0.13.nupkg.sha512",
-    "/home/jules/.nuget/packages/microsoft.aspnetcore.app.ref/9.0.13/microsoft.aspnetcore.app.ref.9.0.13.nupkg.sha512"
-  ],
+  "projectFilePath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj",
+  "expectedPackageFiles": [],
   "logs": []
 }

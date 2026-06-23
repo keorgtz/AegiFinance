@@ -5,21 +5,32 @@
 @inject ISender Sender
 
 <style>
-  .card { background: #fff; border-radius: 14px; box-shadow: var(--shadow); overflow: hidden; width: 100%; margin-bottom: 20px; }
-  .h { padding: 12px 16px; background: #EEF2FF; display: flex; align-items: center; justify-content: space-between; }
-  .h-left { display: flex; flex-direction: column; gap: 2px; }
-  .h-title { font-size: 10.5px; font-weight: 600; color: var(--gray-muted); text-transform: uppercase; letter-spacing: .06em; }
-  .h-sub { font-size: 12px; color: #6366F1; font-weight: 500; }
-  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-  thead th { background: #fff; padding: 7px 12px; text-align: left; font-size: 10.5px; font-weight: 600; color: var(--gray-muted); border-bottom: 1px solid var(--gray-line); text-transform: uppercase; letter-spacing: .05em; }
-  tbody td { padding: 6px 12px; border-bottom: .5px solid var(--gray-line); color: #374151; }
+  .card { background: #fff; border-radius: var(--r-lg); box-shadow: var(--shadow); width: 100%; margin-bottom: 24px; display: flex; flex-direction: column; }
+  .h { padding: 16px 20px; background: var(--in-bg); display: flex; align-items: center; justify-content: space-between; border-radius: var(--r-lg) var(--r-lg) 0 0; }
+  .h-left { display: flex; flex-direction: column; gap: 4px; }
+  .h-title { font-size: 11px; font-weight: 600; color: var(--gray-muted); text-transform: uppercase; letter-spacing: .06em; }
+  .h-sub { font-size: 13px; color: var(--in); font-weight: 500; }
+  .table-container { width: 100%; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 600px; }
+  thead th { background: #fff; padding: 10px 16px; text-align: left; font-size: 11px; font-weight: 600; color: var(--gray-muted); border-bottom: 1px solid var(--gray-line); text-transform: uppercase; letter-spacing: .05em; position: sticky; top: 0; }
+  tbody td { padding: 10px 16px; border-bottom: 1px solid var(--gray-line); color: var(--gray-700); }
   tbody tr:last-child td { border-bottom: none; }
   tbody tr:hover { background: #FAFAFA; cursor: pointer; }
-  .status-badge { background: #EEF2FF; color: #6366F1; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; }
-  .status-active { background: #ECFDF5; color: #059669; }
+  .status-badge { background: var(--in-pl); color: var(--in); padding: 4px 8px; border-radius: var(--r-sm); font-size: 11px; font-weight: 600; }
+  .status-active { background: var(--em-pl); color: var(--em); }
+  .btn-primary { background: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: var(--r-md); font-size: 13px; font-weight: 500; cursor: pointer; box-shadow: var(--shadow); display: flex; align-items: center; gap: 6px; }
+  .btn-primary:hover { background: var(--primary-dark); }
 </style>
 
-<div class="h-page-title" style="margin-bottom: 24px;">Clientes</div>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+    <div class="h-page-title">Clientes</div>
+    @if (canCreateClient)
+    {
+        <button class="btn-primary">
+            <span class="material-symbols-rounded" style="font-size: 18px;">add</span> Nuevo Cliente
+        </button>
+    }
+</div>
 
 @if (ClientsList == null)
 {
@@ -34,49 +45,53 @@ else
                 <span class="h-sub">Clientes registrados</span>
             </div>
         </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Código</th>
-                    <th>Nombre</th>
-                    <th>Nombre Comercial</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var client in ClientsList)
-                {
+        <div class="table-container">
+            <table>
+                <thead>
                     <tr>
-                        <td>@client.Code</td>
-                        <td style="font-weight: 500;">@client.Name</td>
-                        <td>@client.TradeName</td>
-                        <td>
-                            <span class="status-badge @(client.Status == "Active" ? "status-active" : "")">
-                                @client.Status
-                            </span>
-                        </td>
-                        <td>
-                            <a href="/clients/@client.Id/statement" style="color: var(--primary); text-decoration: none; font-size: 12px; font-weight: 500;">Ver Edo. Cuenta</a>
-                        </td>
+                        <th>Código</th>
+                        <th>Nombre</th>
+                        <th>Nombre Comercial</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
                     </tr>
-                }
-                @if (ClientsList.Count == 0)
-                {
-                    <tr>
-                        <td colspan="5" style="text-align: center; padding: 20px; color: var(--gray-muted);">No hay clientes registrados.</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var client in ClientsList)
+                    {
+                        <tr>
+                            <td>@client.Code</td>
+                            <td style="font-weight: 500; color: var(--gray-dark);">@client.Name</td>
+                            <td>@client.TradeName</td>
+                            <td>
+                                <span class="status-badge @(client.Status == "Active" ? "status-active" : "")">
+                                    @client.Status
+                                </span>
+                            </td>
+                            <td>
+                                <a href="/clients/@client.Id/statement" style="color: var(--primary); text-decoration: none; font-size: 13px; font-weight: 500;">Ver Edo. Cuenta</a>
+                            </td>
+                        </tr>
+                    }
+                    @if (ClientsList.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 32px; color: var(--gray-muted);">No hay clientes registrados.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 }
 
 @code {
     private List<ClientListDto>? ClientsList;
+    private bool canCreateClient;
 
     protected override async Task OnInitializedAsync()
     {
+        canCreateClient = await PermissionService.HasPermissionAsync("CreateClient");
         var result = await Sender.Send(new GetClientsQuery { PageSize = 100 });
         ClientsList = result.Items.ToList();
     }

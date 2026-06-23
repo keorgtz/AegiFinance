@@ -1,3 +1,6 @@
+@using AegiFinance.Web.Services
+@inject IPermissionService PermissionService
+
 <style>
   .nav-group { font-size: 9px; font-weight: 700; letter-spacing: .12em; color: var(--gray-muted); text-transform: uppercase; padding: 12px 16px 4px; }
   .sep { height: 1px; background: var(--gray-line); margin: 4px 0; }
@@ -18,16 +21,83 @@
     </NavLink>
     
     <div class="sep"></div>
-    <div class="nav-group">Administración</div>
+    <div class="nav-group">Directorio</div>
     
-    <NavLink class="item" href="clients">
-        <span class="mi">group</span><span class="name">Clientes</span>
-    </NavLink>
+    @if (canViewClients)
+    {
+        <NavLink class="item" href="clients">
+            <span class="mi">group</span><span class="name">Clientes</span>
+        </NavLink>
+    }
+    
+    @if (canViewServices)
+    {
+        <NavLink class="item" href="services">
+            <span class="mi">category</span><span class="name">Servicios</span>
+        </NavLink>
+    }
+    
+    <div class="sep"></div>
+    <div class="nav-group">Operación</div>
+    
+    @if (canViewSubscriptions)
+    {
+        <NavLink class="item" href="subscriptions">
+            <span class="mi">assignment</span><span class="name">Suscripciones</span>
+        </NavLink>
+    }
+    
+    @if (canViewBilling)
+    {
+        <NavLink class="item" href="billing">
+            <span class="mi">receipt</span><span class="name">Cargos Mensuales</span>
+        </NavLink>
+    }
     
     <div class="sep"></div>
     <div class="nav-group">Finanzas</div>
     
-    <NavLink class="item" href="account-statement">
-        <span class="mi">receipt_long</span><span class="name">Estado de Cuenta</span>
-    </NavLink>
+    @if (canViewLedger)
+    {
+        <NavLink class="item" href="ledger">
+            <span class="mi">account_balance_wallet</span><span class="name">Libro Mayor</span>
+        </NavLink>
+    }
+    
+    @if (canViewAllocations)
+    {
+        <NavLink class="item" href="allocations">
+            <span class="mi">fact_check</span><span class="name">Conciliación</span>
+        </NavLink>
+    }
+    
+    @if (canViewAccountStatements)
+    {
+        <NavLink class="item" href="statements">
+            <span class="mi">receipt_long</span><span class="name">Estados de Cuenta</span>
+        </NavLink>
+    }
 </div>
+
+@code {
+    private bool canViewClients;
+    private bool canViewServices;
+    private bool canViewSubscriptions;
+    private bool canViewBilling;
+    private bool canViewLedger;
+    private bool canViewAllocations;
+    private bool canViewAccountStatements;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Implementación SVA (Single View Architecture)
+        // Consultamos al PermissionService para decidir si el usuario puede ver la ruta.
+        canViewClients = await PermissionService.HasPermissionAsync("ViewClients");
+        canViewServices = await PermissionService.HasPermissionAsync("ViewServices");
+        canViewSubscriptions = await PermissionService.HasPermissionAsync("ViewSubscriptions");
+        canViewBilling = await PermissionService.HasPermissionAsync("ViewBilling");
+        canViewLedger = await PermissionService.HasPermissionAsync("ViewLedger");
+        canViewAllocations = await PermissionService.HasPermissionAsync("ViewAllocations");
+        canViewAccountStatements = await PermissionService.HasPermissionAsync("ViewAccountStatements");
+    }
+}

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Worker\\AegiFinance.Worker.csproj": {}
+    "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Worker\\AegiFinance.Worker.csproj": {}
   },
   "projects": {
-    "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Application\\AegiFinance.Application.csproj": {
+    "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Application\\AegiFinance.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Application\\AegiFinance.Application.csproj",
+        "projectUniqueName": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Application\\AegiFinance.Application.csproj",
         "projectName": "AegiFinance.Application",
-        "projectPath": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Application\\AegiFinance.Application.csproj",
+        "projectPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Application\\AegiFinance.Application.csproj",
         "packagesPath": "C:\\Users\\kevin\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Application\\obj\\",
+        "outputPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\DevExpress 24.2\\Components\\Offline Packages",
@@ -37,8 +37,8 @@
             "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {
-              "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj": {
-                "projectPath": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj"
+              "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj": {
+                "projectPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj"
               }
             }
           }
@@ -101,14 +101,14 @@
         }
       }
     },
-    "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj": {
+    "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj",
+        "projectUniqueName": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj",
         "projectName": "AegiFinance.Domain",
-        "projectPath": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj",
+        "projectPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj",
         "packagesPath": "C:\\Users\\kevin\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Domain\\obj\\",
+        "outputPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\DevExpress 24.2\\Components\\Offline Packages",
@@ -172,14 +172,14 @@
         }
       }
     },
-    "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Infrastructure\\AegiFinance.Infrastructure.csproj": {
+    "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Infrastructure\\AegiFinance.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Infrastructure\\AegiFinance.Infrastructure.csproj",
+        "projectUniqueName": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Infrastructure\\AegiFinance.Infrastructure.csproj",
         "projectName": "AegiFinance.Infrastructure",
-        "projectPath": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Infrastructure\\AegiFinance.Infrastructure.csproj",
+        "projectPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Infrastructure\\AegiFinance.Infrastructure.csproj",
         "packagesPath": "C:\\Users\\kevin\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Infrastructure\\obj\\",
+        "outputPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\DevExpress 24.2\\Components\\Offline Packages",
@@ -205,11 +205,11 @@
             "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {
-              "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Application\\AegiFinance.Application.csproj": {
-                "projectPath": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Application\\AegiFinance.Application.csproj"
+              "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Application\\AegiFinance.Application.csproj": {
+                "projectPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Application\\AegiFinance.Application.csproj"
               },
-              "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj": {
-                "projectPath": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj"
+              "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj": {
+                "projectPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj"
               }
             }
           }
@@ -278,14 +278,14 @@
         }
       }
     },
-    "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Worker\\AegiFinance.Worker.csproj": {
+    "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Worker\\AegiFinance.Worker.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Worker\\AegiFinance.Worker.csproj",
+        "projectUniqueName": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Worker\\AegiFinance.Worker.csproj",
         "projectName": "AegiFinance.Worker",
-        "projectPath": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Worker\\AegiFinance.Worker.csproj",
+        "projectPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Worker\\AegiFinance.Worker.csproj",
         "packagesPath": "C:\\Users\\kevin\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Worker\\obj\\",
+        "outputPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Worker\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\DevExpress 24.2\\Components\\Offline Packages",
@@ -311,11 +311,11 @@
             "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {
-              "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Application\\AegiFinance.Application.csproj": {
-                "projectPath": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Application\\AegiFinance.Application.csproj"
+              "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Application\\AegiFinance.Application.csproj": {
+                "projectPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Application\\AegiFinance.Application.csproj"
               },
-              "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Infrastructure\\AegiFinance.Infrastructure.csproj": {
-                "projectPath": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Infrastructure\\AegiFinance.Infrastructure.csproj"
+              "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Infrastructure\\AegiFinance.Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Infrastructure\\AegiFinance.Infrastructure.csproj"
               }
             }
           }

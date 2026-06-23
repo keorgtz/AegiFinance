@@ -45,11 +45,22 @@
     right: 0.75rem;
     top: 0.5rem;
   }
+  
+  .menu-toggle { display: none; background: transparent; border: none; font-family: 'Material Symbols Rounded'; font-size: 24px; color: var(--gray-muted); cursor: pointer; padding: 4px; }
+  
+  @@media (max-width: 768px) {
+    .tb-logo { width: auto; border: none; }
+    .crumb { display: none; }
+    .menu-toggle { display: block; }
+    .shell-sidebar { position: fixed; top: 102px; bottom: 28px; left: -240px; z-index: 100; transition: left 0.3s ease; box-shadow: var(--shadow-3); }
+    .shell-sidebar.open { left: 0; }
+  }
 </style>
 
 <div class="shell-container">
     <div class="titlebar">
         <div class="tb-left">
+            <button class="menu-toggle" @onclick="ToggleSidebar">menu</button>
             <div class="tb-logo"><div class="tb-logo-name">Aegi<span>Finance</span></div></div>
             <div class="crumb"><span>AegiFinance</span><span style="opacity:.5">›</span><span class="current">App</span></div>
         </div>
@@ -65,7 +76,7 @@
     </div>
 
     <div class="shell-body">
-        <div class="shell-sidebar">
+        <div class="shell-sidebar @(isSidebarOpen ? "open" : "")">
             <NavMenu />
         </div>
         <article class="shell-content">
@@ -84,3 +95,12 @@
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code {
+    private bool isSidebarOpen = false;
+
+    private void ToggleSidebar()
+    {
+        isSidebarOpen = !isSidebarOpen;
+    }
+}

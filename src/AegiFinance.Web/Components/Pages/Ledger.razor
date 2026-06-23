@@ -1,0 +1,116 @@
+@page "/ledger"
+@using AegiFinance.Application.Features.Ledger.Queries.GetLedgerEntries
+@using AegiFinance.Application.Dtos
+@using MediatR
+@inject ISender Sender
+
+<style>
+  .card { background: #fff; border-radius: var(--r-lg); box-shadow: var(--shadow); width: 100%; margin-bottom: 24px; display: flex; flex-direction: column; }
+  .h { padding: 16px 20px; background: var(--in-bg); display: flex; align-items: center; justify-content: space-between; border-radius: var(--r-lg) var(--r-lg) 0 0; }
+  .h-left { display: flex; flex-direction: column; gap: 4px; }
+  .h-title { font-size: 11px; font-weight: 600; color: var(--gray-muted); text-transform: uppercase; letter-spacing: .06em; }
+  .h-sub { font-size: 13px; color: var(--in); font-weight: 500; }
+  .table-container { width: 100%; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 800px; }
+  thead th { background: #fff; padding: 10px 16px; text-align: left; font-size: 11px; font-weight: 600; color: var(--gray-muted); border-bottom: 1px solid var(--gray-line); text-transform: uppercase; letter-spacing: .05em; position: sticky; top: 0; }
+  tbody td { padding: 10px 16px; border-bottom: 1px solid var(--gray-line); color: var(--gray-700); }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #FAFAFA; cursor: pointer; }
+  .type-badge { padding: 4px 8px; border-radius: var(--r-sm); font-size: 11px; font-weight: 600; text-transform: uppercase; }
+  .type-Income { background: var(--em-pl); color: var(--em); }
+  .type-Expense { background: var(--or-pl); color: var(--or); }
+  .type-Transfer { background: var(--in-pl); color: var(--in); }
+  .type-Adjustment { background: #F3F4F6; color: #6B7280; }
+  .price { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .date { font-variant-numeric: tabular-nums; }
+  .btn-primary { background: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: var(--r-md); font-size: 13px; font-weight: 500; cursor: pointer; box-shadow: var(--shadow); display: flex; align-items: center; gap: 6px; }
+  .btn-primary:hover { background: var(--primary-dark); }
+</style>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+    <div class="h-page-title">Libro Mayor Financiero</div>
+    @if (canCreateEntry)
+    {
+        <button class="btn-primary">
+            <span class="material-symbols-rounded" style="font-size: 18px;">add</span> Registrar Movimiento
+        </button>
+    }
+</div>
+
+@if (LedgerEntriesList == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <div class="card">
+        <div class="h">
+            <div class="h-left">
+                <span class="h-title">LEDGER</span>
+                <span class="h-sub">Histórico de movimientos en cuentas bancarias</span>
+            </div>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Cuenta Bancaria</th>
+                        <th>Tipo</th>
+                        <th>Descripción</th>
+                        <th>Cliente Referencia</th>
+                        <th>Monto</th>
+                        <th>Conciliado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var entry in LedgerEntriesList)
+                    {
+                        <tr>
+                            <td class="date">@entry.Date.ToString("dd/MMM/yyyy")</td>
+                            <td style="font-weight: 500; color: var(--gray-dark);">@entry.BankAccountName</td>
+                            <td>
+                                <span class="type-badge type-@entry.EntryType">
+                                    @entry.EntryType
+                                </span>
+                            </td>
+                            <td>@entry.Description</td>
+                            <td style="color: var(--gray-muted);">@(string.IsNullOrEmpty(entry.ClientName) ? "-" : entry.ClientName)</td>
+                            <td class="price" style="color: @(entry.EntryType == "Expense" ? "var(--or)" : "var(--em)");">
+                                @(entry.EntryType == "Expense" ? "-" : "")@entry.Amount.ToString("C") @entry.Currency
+                            </td>
+                            <td>
+                                @if (entry.IsReconciled)
+                                {
+                                    <span class="material-symbols-rounded" style="color: var(--em); font-size: 18px;">check_circle</span>
+                                }
+                                else
+                                {
+                                    <span class="material-symbols-rounded" style="color: var(--gray-line); font-size: 18px;">radio_button_unchecked</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                    @if (LedgerEntriesList.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 32px; color: var(--gray-muted);">No hay movimientos registrados.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@code {
+    private List<LedgerEntryListDto>? LedgerEntriesList;
+    private bool canCreateEntry;
+
+    protected override async Task OnInitializedAsync()
+    {
+        canCreateEntry = await PermissionService.HasPermissionAsync("CreateLedgerEntry");
+        var result = await Sender.Send(new GetLedgerEntriesQuery { PageSize = 100 });
+        LedgerEntriesList = result.Items.ToList();
+    }
+}

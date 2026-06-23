@@ -1,0 +1,118 @@
+@page "/allocations"
+@using AegiFinance.Application.Features.Allocations.Queries.GetClientAllocations
+@using AegiFinance.Application.Features.Clients.Queries.GetClients
+@using AegiFinance.Application.Dtos
+@using MediatR
+@inject ISender Sender
+
+<style>
+  .card { background: #fff; border-radius: var(--r-lg); box-shadow: var(--shadow); width: 100%; margin-bottom: 24px; display: flex; flex-direction: column; }
+  .h { padding: 16px 20px; background: var(--in-bg); display: flex; align-items: center; justify-content: space-between; border-radius: var(--r-lg) var(--r-lg) 0 0; }
+  .h-left { display: flex; flex-direction: column; gap: 4px; }
+  .h-title { font-size: 11px; font-weight: 600; color: var(--gray-muted); text-transform: uppercase; letter-spacing: .06em; }
+  .h-sub { font-size: 13px; color: var(--in); font-weight: 500; }
+  .table-container { width: 100%; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 800px; }
+  thead th { background: #fff; padding: 10px 16px; text-align: left; font-size: 11px; font-weight: 600; color: var(--gray-muted); border-bottom: 1px solid var(--gray-line); text-transform: uppercase; letter-spacing: .05em; position: sticky; top: 0; }
+  tbody td { padding: 10px 16px; border-bottom: 1px solid var(--gray-line); color: var(--gray-700); }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #FAFAFA; }
+  .price { font-weight: 600; font-variant-numeric: tabular-nums; color: var(--em); }
+  .date { font-variant-numeric: tabular-nums; }
+  .client-select { padding: 8px 12px; border-radius: var(--r-md); border: 1.5px solid var(--gray-line); font-size: 13px; outline: none; min-width: 250px; }
+  .client-select:focus { border-color: var(--primary); }
+  .badge-auto { background: var(--in-pl); color: var(--in); padding: 4px 8px; border-radius: var(--r-sm); font-size: 11px; font-weight: 600; }
+  .badge-manual { background: var(--or-pl); color: var(--or); padding: 4px 8px; border-radius: var(--r-sm); font-size: 11px; font-weight: 600; }
+</style>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+    <div class="h-page-title">Conciliaciones</div>
+</div>
+
+@if (ClientsList == null)
+{
+    <p><em>Cargando clientes...</em></p>
+}
+else
+{
+    <div style="margin-bottom: 24px;">
+        <label style="font-size: 11px; font-weight: 600; color: var(--gray-muted); text-transform: uppercase; letter-spacing: .06em; display: block; margin-bottom: 8px;">Seleccionar Cliente</label>
+        <select class="client-select" @onchange="OnClientSelected">
+            <option value="">-- Seleccione un cliente --</option>
+            @foreach (var c in ClientsList)
+            {
+                <option value="@c.Id">@c.Name (@c.Code)</option>
+            }
+        </select>
+    </div>
+
+    @if (AllocationsList != null)
+    {
+        <div class="card">
+            <div class="h">
+                <div class="h-left">
+                    <span class="h-title">ASIGNACIONES</span>
+                    <span class="h-sub">Pagos aplicados a cargos</span>
+                </div>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Cargo Vinculado</th>
+                            <th>Pago/Movimiento</th>
+                            <th>Monto Aplicado</th>
+                            <th>Tipo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var alloc in AllocationsList)
+                        {
+                            <tr>
+                                <td class="date">@alloc.AllocatedAt.ToString("dd/MMM/yyyy")</td>
+                                <td style="font-weight: 500; color: var(--gray-dark);">@alloc.BillingItemDescription</td>
+                                <td style="color: var(--gray-muted);">@alloc.LedgerEntryDescription</td>
+                                <td class="price">@alloc.Amount.ToString("C")</td>
+                                <td>
+                                    <span class="badge-@(alloc.IsAutomatic ? "auto" : "manual")">
+                                        @(alloc.IsAutomatic ? "Automático" : "Manual")
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                        @if (AllocationsList.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 32px; color: var(--gray-muted);">No hay asignaciones para este cliente.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+}
+
+@code {
+    private List<ClientListDto>? ClientsList;
+    private List<SubscriptionAllocationDto>? AllocationsList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var clientsResult = await Sender.Send(new GetClientsQuery { PageSize = 100 });
+        ClientsList = clientsResult.Items.ToList();
+    }
+
+    private async Task OnClientSelected(ChangeEventArgs e)
+    {
+        if (Guid.TryParse(e.Value?.ToString(), out Guid clientId))
+        {
+            AllocationsList = await Sender.Send(new GetClientAllocationsQuery(clientId));
+        }
+        else
+        {
+            AllocationsList = null;
+        }
+    }
+}
