@@ -510,17 +510,20 @@ public class AegiFinanceDbContext : DbContext
             entity.HasOne(bi => bi.BillingCycle)
                 .WithMany()
                 .HasForeignKey(bi => bi.BillingCycleId)
-                .IsRequired();
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(bi => bi.Subscription)
                 .WithMany()
                 .HasForeignKey(bi => bi.SubscriptionId)
-                .IsRequired();
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(bi => bi.Client)
                 .WithMany()
                 .HasForeignKey(bi => bi.ClientId)
-                .IsRequired();
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 
