@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AegiFinance — Guía de Variables de Entorno (Docker)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #F2F3F7;
+      --card: #FFFFFF;
+      --text: #1C1E26;
+      --muted: #6B7280;
+      --line: #E5E7EB;
+      --in: #6366F1;
+      --in-bg: #EEF2FF;
+      --em: #10B981;
+      --em-bg: #ECFDF5;
+      --am: #F59E0B;
+      --am-bg: #FFFBEB;
+      --vi: #8B5CF6;
+      --vi-bg: #F5F3FF;
+      --r-lg: 14px;
+      --shadow: 0 1px 4px rgba(0,0,0,.08), 0 0 0 .5px rgba(0,0,0,.06);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Inter, system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; }
+    header { background: linear-gradient(135deg, #6366F1, #8B5CF6); color: white; padding: 56px 24px 40px; text-align: center; }
+    header h1 { margin: 0 0 8px; font-size: 2.1rem; }
+    header p { margin: 0 auto; max-width: 760px; opacity: .92; }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 28px 20px 60px; }
+    .card { background: var(--card); border-radius: var(--r-lg); box-shadow: var(--shadow); padding: 24px; margin-bottom: 18px; }
+    h2 { margin: 0 0 14px; font-size: 1.35rem; }
+    h3 { margin: 18px 0 10px; font-size: 1.05rem; }
+    p, li { color: #374151; }
+    ul, ol { margin: 10px 0 10px 22px; }
+    pre { background: #1e1e2e; color: #cdd6f4; padding: 16px 18px; border-radius: 12px; overflow: auto; font-size: 0.95rem; }
+    code { background: #F9FAFB; border: 1px solid var(--line); padding: 2px 6px; border-radius: 6px; color: #7C3AED; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; font-size: .95rem; }
+    th { background: #F9FAFB; color: var(--text); }
+    .note { background: var(--vi-bg); padding: 14px 16px; border-radius: 12px; border-left: 4px solid var(--vi); }
+    .warning { background: var(--am-bg); padding: 14px 16px; border-radius: 12px; border-left: 4px solid var(--am); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>AegiFinance</h1>
+    <p>Guía de inyección y manejo de Variables de Entorno usando Docker Compose.</p>
+  </header>
+
+  <div class="wrap">
+    <div class="card">
+      <h2>1. El archivo <code>.env</code></h2>
+      <p>Docker Compose busca automáticamente un archivo llamado <code>.env</code> en el mismo directorio donde se ejecuta el comando <code>docker compose up</code>. En lugar de escribir tus contraseñas directamente en el <code>docker-compose.yml</code>, las definimos en este archivo secreto.</p>
+      
+      <div class="warning">
+        <p><strong>IMPORTANTE:</strong> El archivo <code>.env</code> <strong>nunca</strong> debe subirse a Git. Para esto existe el archivo <code>.env.example</code> (el cual sirve como plantilla pública) y el <code>.dockerignore</code> / <code>.gitignore</code> ignoran el archivo real <code>.env</code>.</p>
+      </div>
+
+      <h3>Cómo configurarlo en tu servidor:</h3>
+      <pre><code># 1. Copia la plantilla pública para crear tu archivo real
+cp .env.example .env
+
+# 2. Edita el archivo real
+nano .env</code></pre>
+    </div>
+
+    <div class="card">
+      <h2>2. Variables soportadas por AegiFinance</h2>
+      <p>Este es el listado de las variables que debes configurar dentro de tu archivo <code>.env</code>:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Variable en <code>.env</code></th>
+            <th>Descripción / Ejemplo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>MSSQL_SA_PASSWORD</code></td>
+            <td>Contraseña maestra de la base de datos SQL Server. Debe tener al menos 8 caracteres, mayúsculas, minúsculas, números y símbolos.<br><em>Ej: MiP4ssw0rd!SuperSegura</em></td>
+          </tr>
+          <tr>
+            <td><code>JWT_SECRET</code></td>
+            <td>Llave criptográfica para firmar los tokens de sesión. Usa una cadena larga y aleatoria (mínimo 32 caracteres).<br><em>Ej: M1Sup3rS3cr3t0L4rg0P4r4AegiFinanc3</em></td>
+          </tr>
+          <tr>
+            <td><code>EXCHANGE_RATE_ENABLED</code></td>
+            <td><code>true</code> o <code>false</code> para habilitar/deshabilitar la obtención automática de tipos de cambio de moneda (API externa).</td>
+          </tr>
+          <tr>
+            <td><code>BILLING_DAILY_RUN_TIME</code></td>
+            <td>Hora en la que el <strong>Worker</strong> ejecutará el motor de facturación diaria (formato HH:mm).<br><em>Ej: 02:00</em></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>3. ¿Cómo lee esto el <code>docker-compose.yml</code>?</h2>
+      <p>Dentro de tu <code>docker-compose.yml</code>, Docker inyecta automáticamente los valores de <code>.env</code> utilizando la sintaxis de Bash <code>${VARIABLE}</code>.</p>
+      <p>Para asegurar que la app funcione incluso si olvidas declarar una variable, utilizamos la sintaxis con valores por defecto <code>${VARIABLE:-valor_por_defecto}</code>:</p>
+      <pre><code>environment:
+  ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=AegiFinanceDb;User Id=sa;Password=${MSSQL_SA_PASSWORD:-ChangeThis_Password!};TrustServerCertificate=True;"
+  JwtSettings__Secret: ${JWT_SECRET:-ChangeThis_Secret_With_32_Chars}
+  Billing__DailyRunTime: ${BILLING_DAILY_RUN_TIME:-02:00}</code></pre>
+      
+      <div class="note">
+        <p><strong>Nota técnica:</strong> En .NET, los dos guiones bajos (<code>__</code>) en nombres como <code>JwtSettings__Secret</code> le indican a la aplicación que esto sobrescribe el valor anidado en el <code>appsettings.json</code> bajo la sección <code>"JwtSettings": { "Secret": "..." }</code>.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>4. Aplicar los cambios</h2>
+      <p>Si alguna vez necesitas modificar una variable (por ejemplo, cambiar la hora de ejecución del Worker o habilitar el tipo de cambio):</p>
+      <ol>
+        <li>Edita tu archivo: <code>nano .env</code></li>
+        <li>Baja los contenedores actuales: <code>docker compose down</code></li>
+        <li>Vuelve a levantarlos para que Docker inyecte el nuevo archivo: <code>docker compose up -d</code></li>
+      </ol>
+      <p>Tus contenedores de <code>AegiFinance.Web</code> y <code>AegiFinance.Worker</code> arrancarán utilizando la nueva configuración inmediatamente.</p>
+    </div>
+  </div>
+</body>
+</html>
