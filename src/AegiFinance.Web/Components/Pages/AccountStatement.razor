@@ -1,0 +1,148 @@
+@page "/clients/{ClientId:guid}/statement"
+@using AegiFinance.Application.Features.AccountStatements.Queries.GetClientStatement
+@using AegiFinance.Application.Features.AccountStatements.Queries.GetClientFinancialSummary
+@using AegiFinance.Application.Dtos
+@using MediatR
+@inject ISender Sender
+
+<style>
+  .card { background: #fff; border-radius: 14px; box-shadow: var(--shadow); overflow: hidden; width: 100%; margin-bottom: 24px; }
+  .h { padding: 12px 16px; background: #EEF2FF; display: flex; align-items: center; justify-content: space-between; }
+  .h-left { display: flex; flex-direction: column; gap: 2px; }
+  .h-title { font-size: 10.5px; font-weight: 600; color: var(--gray-muted); text-transform: uppercase; letter-spacing: .06em; }
+  .h-sub { font-size: 12px; color: #6366F1; font-weight: 500; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  thead th { background: #fff; padding: 7px 12px; text-align: left; font-size: 10.5px; font-weight: 600; color: var(--gray-muted); border-bottom: 1px solid var(--gray-line); text-transform: uppercase; letter-spacing: .05em; }
+  thead th.right { text-align: right; }
+  tbody td { padding: 6px 12px; border-bottom: .5px solid var(--gray-line); color: #374151; }
+  tbody td.right { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #FAFAFA; }
+  .foot { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--gray-foot); border-top: 1px solid var(--gray-line); }
+  .foot-l { font-size: 11px; color: var(--gray-muted); text-transform: uppercase; font-weight: 600; letter-spacing: .05em; }
+  .foot-r { font-size: 14px; font-weight: 700; color: #6366F1; font-variant-numeric: tabular-nums; }
+  
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .kpi-card { background: #fff; border-radius: 14px; padding: 16px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 8px; }
+  .kpi-label { font-size: 11px; font-weight: 600; color: var(--gray-muted); text-transform: uppercase; letter-spacing: .06em; }
+  .kpi-val { font-size: 24px; font-weight: 700; font-family: var(--font-display); line-height: 1; font-variant-numeric: tabular-nums; }
+  .val-cargo { color: var(--or); }
+  .val-abono { color: var(--em); }
+  .val-total { color: var(--in); }
+  
+  .type-badge { padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; text-transform: uppercase; }
+  .type-Charge { background: #FFF7ED; color: #F97316; } /* Orange */
+  .type-Payment { background: #F0FDF4; color: #10B981; } /* Emerald */
+  .type-Adjustment { background: #F3F4F6; color: #6B7280; } /* Gray */
+</style>
+
+@if (Statement == null || Summary == null)
+{
+    <p><em>Cargando estado de cuenta...</em></p>
+}
+else
+{
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+        <div>
+            <div class="h-page-title">Estado de Cuenta</div>
+            <div style="font-size: 14px; color: var(--gray-muted); margin-top: 4px;">@Statement.ClientName</div>
+        </div>
+        <div>
+            <a href="/clients" style="color: var(--gray-muted); text-decoration: none; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                <span class="material-symbols-rounded" style="font-size: 16px;">arrow_back</span> Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <span class="kpi-label">Cargos Totales</span>
+            <span class="kpi-val val-cargo">@Summary.TotalCharges.ToString("C")</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-label">Pagos Recibidos</span>
+            <span class="kpi-val val-abono">@Summary.TotalPayments.ToString("C")</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-label">Ajustes</span>
+            <span class="kpi-val" style="color: var(--gray-muted);">@Summary.TotalAdjustments.ToString("C")</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-label">Saldo Pendiente</span>
+            <span class="kpi-val val-total">@Summary.CurrentBalance.ToString("C")</span>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="h">
+            <div class="h-left">
+                <span class="h-title">MOVIMIENTOS</span>
+                <span class="h-sub">Historial financiero</span>
+            </div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Tipo</th>
+                    <th>Descripción</th>
+                    <th class="right">Cargo</th>
+                    <th class="right">Abono</th>
+                    <th class="right">Saldo</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Statement.InitialBalance > 0 || Statement.Items.Count > 0)
+                {
+                    <tr style="background: #F9FAFB;">
+                        <td></td>
+                        <td></td>
+                        <td style="font-weight: 600; color: var(--gray-muted);">Saldo Inicial</td>
+                        <td class="right"></td>
+                        <td class="right"></td>
+                        <td class="right" style="color: var(--gray-muted);">@Statement.InitialBalance.ToString("C")</td>
+                    </tr>
+                }
+                
+                @foreach (var item in Statement.Items)
+                {
+                    <tr>
+                        <td>@item.Date.ToString("dd/MMM/yyyy")</td>
+                        <td>
+                            <span class="type-badge type-@item.Type">@item.Type</span>
+                        </td>
+                        <td>@item.Description</td>
+                        <td class="right" style="color: var(--or);">@(item.Debit > 0 ? item.Debit.ToString("C") : "")</td>
+                        <td class="right" style="color: var(--em);">@(item.Credit > 0 ? item.Credit.ToString("C") : "")</td>
+                        <td class="right">@item.Balance.ToString("C")</td>
+                    </tr>
+                }
+                
+                @if (Statement.Items.Count == 0 && Statement.InitialBalance == 0)
+                {
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 20px; color: var(--gray-muted);">No hay movimientos registrados.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="foot">
+            <span class="foot-l">Saldo Final (@Statement.DisplayCurrency)</span>
+            <span class="foot-r">@Statement.FinalBalance.ToString("C")</span>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public Guid ClientId { get; set; }
+
+    private AccountStatementDto? Statement;
+    private FinancialSummaryDto? Summary;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Statement = await Sender.Send(new GetClientStatementQuery { ClientId = ClientId });
+        Summary = await Sender.Send(new GetClientFinancialSummaryQuery { ClientId = ClientId });
+    }
+}
