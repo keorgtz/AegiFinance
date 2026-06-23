@@ -1,0 +1,67 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Components · Data viz" subtitle="Donut, barras por hora, sparkline de tendencia" viewport="700x360" -->
+<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;background:var(--page-bg);font-family:var(--font);color:var(--gray-dark);padding:18px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .ms{font-family:'Material Symbols Rounded';font-feature-settings:'liga';line-height:1}
+  .card{background:#fff;border-radius:14px;box-shadow:var(--shadow);padding:16px}
+  .card.span{grid-column:span 2}
+  .ttl{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gray-muted);margin-bottom:14px}
+  /* donut */
+  .donut-wrap{display:flex;align-items:center;gap:20px}
+  .donut{width:120px;height:120px;border-radius:50%;background:conic-gradient(#10B981 0 46%,#6366F1 46% 70%,#F59E0B 70% 88%,#E5E7EB 88% 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .donut .hole{width:78px;height:78px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .donut .hole .big{font-size:22px;font-weight:800;color:var(--gray-dark);font-variant-numeric:tabular-nums}
+  .donut .hole .sm{font-size:9.5px;color:var(--gray-muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+  .leg{display:flex;flex-direction:column;gap:7px}
+  .leg div{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--gray-700)}
+  .leg .d{width:10px;height:10px;border-radius:3px}
+  .leg b{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--gray-dark)}
+  /* bars */
+  .bars{display:flex;align-items:flex-end;gap:10px;height:130px;padding-top:8px}
+  .bcol{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+  .bcol .bar{width:100%;border-radius:6px 6px 0 0;background:linear-gradient(180deg,#6366F1,#818CF8)}
+  .bcol .v{font-size:10px;font-weight:700;color:var(--gray-dark);font-variant-numeric:tabular-nums}
+  .bcol .x{font-size:10px;color:var(--gray-muted)}
+  .bcol.hl .bar{background:linear-gradient(180deg,#10B981,#34D399)}
+  /* sparkline */
+  .spark{display:flex;align-items:center;gap:14px}
+  .spark .n{font-size:24px;font-weight:800;color:var(--gray-dark);font-variant-numeric:tabular-nums}
+  .spark .trend{font-size:11px;font-weight:700;color:#10B981;display:flex;align-items:center;gap:2px}
+  .spark .trend .ms{font-size:15px}
+  svg{display:block}
+</style></head><body>
+  <div class="card"><div class="ttl">Ventas por método</div>
+    <div class="donut-wrap">
+      <div class="donut"><div class="hole"><span class="big">$43.4k</span><span class="sm">Hoy</span></div></div>
+      <div class="leg">
+        <div><span class="d" style="background:#10B981"></span>Efectivo <b>46%</b></div>
+        <div><span class="d" style="background:#6366F1"></span>T. Crédito <b>24%</b></div>
+        <div><span class="d" style="background:#F59E0B"></span>T. Débito <b>18%</b></div>
+        <div><span class="d" style="background:#E5E7EB"></span>Otros <b>12%</b></div>
+      </div>
+    </div>
+  </div>
+  <div class="card"><div class="ttl">Ventas por hora</div>
+    <div class="bars">
+      <div class="bcol"><div class="bar" style="height:30%"></div><div class="x">12</div></div>
+      <div class="bcol"><div class="bar" style="height:55%"></div><div class="x">13</div></div>
+      <div class="bcol"><div class="bar" style="height:80%"></div><div class="x">14</div></div>
+      <div class="bcol hl"><div class="bar" style="height:100%"></div><div class="x">15</div></div>
+      <div class="bcol"><div class="bar" style="height:62%"></div><div class="x">16</div></div>
+      <div class="bcol"><div class="bar" style="height:40%"></div><div class="x">17</div></div>
+    </div>
+  </div>
+  <div class="card span"><div class="ttl">Tendencia de ticket promedio · 7 días</div>
+    <div class="spark">
+      <span class="n">$ 1,803</span>
+      <span class="trend"><span class="ms">trending_up</span>+8.2%</span>
+      <svg width="360" height="56" viewBox="0 0 360 56" preserveAspectRatio="none" style="flex:1">
+        <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#10B981" stop-opacity=".22"/><stop offset="1" stop-color="#10B981" stop-opacity="0"/></linearGradient></defs>
+        <path d="M0,42 L60,36 L120,40 L180,24 L240,28 L300,14 L360,10 L360,56 L0,56 Z" fill="url(#g)"/>
+        <path d="M0,42 L60,36 L120,40 L180,24 L240,28 L300,14 L360,10" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+        <circle cx="360" cy="10" r="4" fill="#10B981" stroke="#fff" stroke-width="2"/>
+      </svg>
+    </div>
+  </div>
+</body></html>

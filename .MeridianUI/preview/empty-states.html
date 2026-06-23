@@ -1,0 +1,36 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Components · Empty states" subtitle="Sin datos, sin resultados, todo al día" viewport="760x240" -->
+<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;background:var(--page-bg);font-family:var(--font);color:var(--gray-dark);padding:20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  .ms{font-family:'Material Symbols Rounded';font-feature-settings:'liga';line-height:1}
+  .es{background:#fff;border-radius:14px;box-shadow:var(--shadow);padding:28px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
+  .ic{width:64px;height:64px;border-radius:18px;display:flex;align-items:center;justify-content:center}
+  .ic .ms{font-size:34px}
+  .ic.in{background:var(--in-bg)}.ic.in .ms{color:#6366F1}
+  .ic.em{background:#DCFCE7}.ic.em .ms{color:#10B981}
+  .ic.gy{background:var(--gray-foot)}.ic.gy .ms{color:#9CA3AF}
+  .es h3{font-size:14px;font-weight:700;color:var(--gray-dark)}
+  .es p{font-size:11.5px;color:var(--gray-muted);line-height:1.45;max-width:200px}
+  .es .btn{margin-top:4px;display:inline-flex;align-items:center;gap:6px;border:none;cursor:pointer;background:#6366F1;color:#fff;padding:8px 16px;border-radius:9px;font:700 12px var(--font)}
+  .es .btn .ms{font-size:16px;font-variation-settings:'FILL' 1}
+  .es .btn.ghost{background:transparent;border:1.5px solid var(--gray-line);color:var(--gray-700)}
+</style></head><body>
+  <div class="es">
+    <div class="ic gy"><span class="ms">table_restaurant</span></div>
+    <h3>Sin mesas abiertas</h3>
+    <p>Cuando abras una mesa, aparecerá aquí su estado en tiempo real.</p>
+    <button class="btn"><span class="ms">add</span>Abrir mesa</button>
+  </div>
+  <div class="es">
+    <div class="ic in"><span class="ms">search_off</span></div>
+    <h3>Sin resultados</h3>
+    <p>No encontramos platillos para "ceviche tropical". Prueba otro término.</p>
+    <button class="btn ghost"><span class="ms">restart_alt</span>Limpiar búsqueda</button>
+  </div>
+  <div class="es">
+    <div class="ic em"><span class="ms">task_alt</span></div>
+    <h3>Todo al día</h3>
+    <p>No hay comandas pendientes en cocina. ¡Buen trabajo!</p>
+  </div>
+</body></html>

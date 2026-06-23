@@ -1,0 +1,70 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="App Shell · Page header" subtitle="Breadcrumb + título + acciones + tabs + barra de facets" viewport="920x280" -->
+<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;background:var(--page-bg);font-family:var(--font);color:var(--gray-dark);padding:0}
+  .ms{font-family:'Material Symbols Rounded';font-feature-settings:'liga';line-height:1}
+  .ph{background:#fff;border-bottom:1px solid var(--gray-line);padding:16px 22px 0}
+  .crumb{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--gray-muted);margin-bottom:10px}
+  .crumb a{color:var(--gray-muted);text-decoration:none}
+  .crumb a:hover{color:#6366F1}
+  .crumb .ms{font-size:15px;opacity:.6}
+  .crumb .cur{color:var(--gray-dark);font-weight:600}
+  .ptop{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px}
+  .picon{width:48px;height:48px;border-radius:13px;background:var(--in-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .picon .ms{font-size:26px;color:#6366F1;font-variation-settings:'FILL' 1}
+  .ptitle{flex:1}
+  .ptitle h1{font-size:21px;font-weight:700;letter-spacing:-.01em}
+  .ptitle .sub{font-size:12.5px;color:var(--gray-muted);margin-top:3px;display:flex;align-items:center;gap:10px}
+  .ptitle .sub .dot{opacity:.4}
+  .pactions{display:flex;gap:8px}
+  .pbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--gray-line);background:#fff;border-radius:9px;padding:8px 13px;font:600 12.5px var(--font);color:var(--gray-700);cursor:pointer}
+  .pbtn .ms{font-size:17px;color:var(--gray-muted)}
+  .pbtn.pri{background:#6366F1;border-color:#6366F1;color:#fff}
+  .pbtn.pri .ms{color:#fff;font-variation-settings:'FILL' 1}
+  .ptabs{display:flex;gap:2px}
+  .ptab{padding:11px 15px;font:600 12.5px var(--font);color:var(--gray-muted);border-bottom:2px solid transparent;cursor:pointer;display:flex;align-items:center;gap:6px;margin-bottom:-1px}
+  .ptab .ms{font-size:17px}
+  .ptab .cnt{background:var(--gray-foot);color:var(--gray-700);font-size:10px;font-weight:700;padding:1px 6px;border-radius:999px}
+  .ptab.on{color:#6366F1;border-bottom-color:#6366F1}
+  .ptab.on .ms{font-variation-settings:'FILL' 1}
+  .ptab.on .cnt{background:#E0E7FF;color:#6366F1}
+  /* facet filters bar */
+  .facets{padding:12px 22px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .facet{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--gray-line);background:#fff;border-radius:999px;padding:6px 12px;font:600 12px var(--font);color:var(--gray-700);cursor:pointer}
+  .facet .ms{font-size:15px;color:var(--gray-muted)}
+  .facet.active{background:var(--in-bg);border-color:#A5B4FC;color:#4338CA}
+  .facet.active .ms{color:#6366F1}
+  .facet .x{font-size:14px}
+  .facet.add{border-style:dashed;color:var(--gray-muted)}
+  .facet .pill{background:#6366F1;color:#fff;font-size:9.5px;font-weight:800;border-radius:999px;padding:1px 6px}
+  .clear{font-size:11.5px;color:#6366F1;font-weight:700;cursor:pointer;margin-left:4px}
+</style></head><body>
+  <div class="ph">
+    <div class="crumb"><a href="#">Inicio</a><span class="ms">chevron_right</span><a href="#">Gerencial</a><span class="ms">chevron_right</span><span class="cur">Reproceso de notas</span></div>
+    <div class="ptop">
+      <div class="picon"><span class="ms">restart_alt</span></div>
+      <div class="ptitle">
+        <h1>Reproceso de notas</h1>
+        <div class="sub"><span>356 notas</span><span class="dot">·</span><span>Turno matutino</span><span class="dot">·</span><span>Actualizado hace 2 min</span></div>
+      </div>
+      <div class="pactions">
+        <button class="pbtn"><span class="ms">download</span>Exportar</button>
+        <button class="pbtn pri"><span class="ms">play_arrow</span>Reprocesar</button>
+      </div>
+    </div>
+    <div class="ptabs">
+      <span class="ptab on"><span class="ms">list_alt</span>Todas<span class="cnt">356</span></span>
+      <span class="ptab"><span class="ms">error</span>Con error<span class="cnt">12</span></span>
+      <span class="ptab"><span class="ms">check_circle</span>Procesadas<span class="cnt">344</span></span>
+    </div>
+  </div>
+  <div class="facets">
+    <span class="facet active"><span class="ms">store</span>Sucursal: GDL<span class="ms x">close</span></span>
+    <span class="facet active"><span class="ms">payments</span>Efectivo<span class="ms x">close</span></span>
+    <span class="facet add"><span class="ms">add</span>Agregar filtro</span>
+    <span style="flex:1"></span>
+    <span class="facet"><span class="ms">sort</span>Más reciente</span>
+    <span class="clear">Limpiar filtros</span>
+  </div>
+</body></html>

@@ -1,0 +1,70 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Components · Buttons extended" subtitle="Tonal, icon, FAB, button group, split, loading" viewport="700x320" -->
+<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;background:#fff;font-family:var(--font);color:var(--gray-dark);padding:20px;display:flex;flex-direction:column;gap:18px}
+  .ms{font-family:'Material Symbols Rounded';font-feature-settings:'liga';line-height:1}
+  .lbl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);width:100%;margin-bottom:-4px}
+  .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:6px;border:none;cursor:pointer;font:700 13px var(--font);border-radius:10px;padding:0 16px;height:40px;transition:all .15s;letter-spacing:.01em}
+  .btn .ms{font-size:18px}
+  /* tonal/soft */
+  .tonal-in{background:var(--in-bg);color:#4338CA}.tonal-in:hover{background:#D7DEFF}
+  .tonal-em{background:#DCFCE7;color:#065F46}.tonal-em:hover{background:#BBF7D0}
+  .tonal-or{background:#FFEDD5;color:#9A3412}
+  /* ghost / link */
+  .ghost{background:transparent;border:1.5px solid var(--gray-line);color:var(--gray-700)}.ghost:hover{background:var(--gray-foot)}
+  .link{background:transparent;color:#6366F1;padding:0 6px;height:auto}.link:hover{text-decoration:underline}
+  /* icon buttons */
+  .ib{width:40px;height:40px;border-radius:10px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--gray-foot);color:var(--gray-700)}
+  .ib:hover{background:#E9EBEF}
+  .ib .ms{font-size:20px}
+  .ib.round{border-radius:50%}
+  .ib.pri{background:#6366F1;color:#fff}
+  /* FAB */
+  .fab{height:52px;border:none;cursor:pointer;border-radius:16px;background:#6366F1;color:#fff;display:inline-flex;align-items:center;gap:8px;padding:0 22px;font:800 14px var(--font);box-shadow:0 8px 20px rgba(99,102,241,.32)}
+  .fab .ms{font-size:24px;font-variation-settings:'FILL' 1}
+  .fab.circle{width:56px;padding:0;border-radius:50%;justify-content:center}
+  .fab.em{background:#10B981;box-shadow:0 8px 20px rgba(16,185,129,.32)}
+  /* button group */
+  .grp{display:inline-flex;border:1px solid var(--gray-line);border-radius:10px;overflow:hidden}
+  .grp button{border:none;background:#fff;cursor:pointer;font:600 12.5px var(--font);color:var(--gray-700);padding:9px 14px;display:flex;align-items:center;gap:5px}
+  .grp button + button{border-left:1px solid var(--gray-line)}
+  .grp button:hover{background:var(--gray-foot)}
+  .grp button.on{background:var(--in-bg);color:#6366F1}
+  .grp button .ms{font-size:16px}
+  /* split */
+  .split{display:inline-flex;border-radius:10px;overflow:hidden;box-shadow:0 4px 10px rgba(16,185,129,.25)}
+  .split .main{border:none;background:#10B981;color:#fff;cursor:pointer;font:700 13px var(--font);padding:0 16px;height:40px;display:flex;align-items:center;gap:6px}
+  .split .more{border:none;background:#059669;color:#fff;cursor:pointer;width:38px;display:flex;align-items:center;justify-content:center}
+  .split .ms{font-size:18px}
+  /* loading button */
+  .btn.loading{background:#A5B4FC;color:#fff;cursor:wait}
+  .spin{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.5);border-top-color:#fff;animation:sp .8s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+</style></head><body>
+  <div class="row"><span class="lbl">Tonal / soft (acción secundaria con color)</span>
+    <button class="btn tonal-in"><span class="ms">add</span>Agregar</button>
+    <button class="btn tonal-em"><span class="ms">check</span>Confirmar</button>
+    <button class="btn tonal-or"><span class="ms">local_fire_department</span>A cocina</button>
+    <button class="btn ghost"><span class="ms">tune</span>Filtros</button>
+    <button class="btn link">Ver todo</button>
+  </div>
+  <div class="row"><span class="lbl">Icon buttons</span>
+    <button class="ib"><span class="ms">edit</span></button>
+    <button class="ib round"><span class="ms">more_vert</span></button>
+    <button class="ib pri round"><span class="ms">add</span></button>
+    <button class="ib"><span class="ms">print</span></button>
+    <button class="ib"><span class="ms">favorite</span></button>
+  </div>
+  <div class="row"><span class="lbl">FAB (acción flotante principal)</span>
+    <button class="fab"><span class="ms">add</span>Nuevo pedido</button>
+    <button class="fab circle"><span class="ms">add</span></button>
+    <button class="fab em circle"><span class="ms">point_of_sale</span></button>
+  </div>
+  <div class="row"><span class="lbl">Button group · split · loading</span>
+    <div class="grp"><button class="on"><span class="ms">format_align_left</span></button><button><span class="ms">format_align_center</span></button><button><span class="ms">format_align_right</span></button></div>
+    <div class="split"><button class="main"><span class="ms">save</span>Guardar</button><button class="more"><span class="ms">expand_more</span></button></div>
+    <button class="btn loading"><span class="spin"></span>Procesando…</button>
+  </div>
+</body></html>

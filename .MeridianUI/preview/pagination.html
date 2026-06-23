@@ -1,0 +1,52 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Components · Pagination" subtitle="Paginación numérica + barra completa de tabla" viewport="700x220" -->
+<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;background:#fff;font-family:var(--font);color:var(--gray-dark);padding:22px;display:flex;flex-direction:column;gap:22px}
+  .ms{font-family:'Material Symbols Rounded';font-feature-settings:'liga';line-height:1}
+  .lbl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);margin-bottom:10px}
+  .pg{display:flex;align-items:center;gap:4px}
+  .pg button{min-width:34px;height:34px;border:1px solid var(--gray-line);background:#fff;border-radius:8px;cursor:pointer;font:600 12.5px var(--font);color:var(--gray-700);display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+  .pg button:hover{background:var(--gray-foot)}
+  .pg button.on{background:#6366F1;border-color:#6366F1;color:#fff}
+  .pg button.nav .ms{font-size:18px}
+  .pg button:disabled{opacity:.4;cursor:not-allowed}
+  .pg .dots{color:var(--gray-muted);padding:0 4px}
+  .meta{font-size:12px;color:var(--gray-muted);display:flex;align-items:center;gap:12px}
+  .meta b{color:var(--gray-dark)}
+  .perpage{display:flex;align-items:center;gap:6px;border:1px solid var(--gray-line);border-radius:8px;padding:6px 10px;font-size:12px;color:var(--gray-700);cursor:pointer}
+  .perpage .ms{font-size:16px;color:var(--gray-muted)}
+  .bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+</style></head><body>
+  <div><div class="lbl">Paginación numérica</div>
+    <div class="pg">
+      <button class="nav" disabled><span class="ms">first_page</span></button>
+      <button class="nav"><span class="ms">chevron_left</span></button>
+      <button class="on">1</button>
+      <button>2</button>
+      <button>3</button>
+      <button>4</button>
+      <span class="dots">…</span>
+      <button>18</button>
+      <button class="nav"><span class="ms">chevron_right</span></button>
+      <button class="nav"><span class="ms">last_page</span></button>
+    </div>
+  </div>
+  <div><div class="lbl">Barra de paginación completa (tabla)</div>
+    <div class="bar">
+      <div class="meta">Mostrando <b>1–20</b> de <b>356</b> notas</div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="perpage">20 por página <span class="ms">expand_more</span></div>
+        <div class="pg">
+          <button class="nav"><span class="ms">chevron_left</span></button>
+          <button class="on">1</button>
+          <button>2</button>
+          <button>3</button>
+          <span class="dots">…</span>
+          <button>18</button>
+          <button class="nav"><span class="ms">chevron_right</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body></html>

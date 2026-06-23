@@ -1,0 +1,49 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Components · Avatars" subtitle="Tamaños, presencia, grupo apilado, chip" viewport="700x280" -->
+<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;background:#fff;font-family:var(--font);color:var(--gray-dark);padding:20px;display:flex;flex-direction:column;gap:18px}
+  .ms{font-family:'Material Symbols Rounded';font-feature-settings:'liga';line-height:1;font-variation-settings:'FILL' 1,'wght' 500}
+  .row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .lbl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);width:100%;margin-bottom:-4px}
+  .av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0;position:relative}
+  .av.s28{width:28px;height:28px;font-size:11px}
+  .av.s36{width:36px;height:36px;font-size:13px}
+  .av.s48{width:48px;height:48px;font-size:16px}
+  .av.g1{background:linear-gradient(135deg,#8B5CF6,#6366F1)}
+  .av.g2{background:linear-gradient(135deg,#10B981,#059669)}
+  .av.g3{background:linear-gradient(135deg,#F59E0B,#F97316)}
+  .av.g4{background:linear-gradient(135deg,#EC4899,#8B5CF6)}
+  .av.sq{border-radius:12px}
+  .pres{position:absolute;bottom:-1px;right:-1px;width:12px;height:12px;border-radius:50%;border:2.5px solid #fff}
+  .pres.on{background:#10B981}.pres.busy{background:#F59E0B}.pres.off{background:#9CA3AF}
+  .grp{display:flex}
+  .grp .av{border:2.5px solid #fff;margin-left:-10px}
+  .grp .av:first-child{margin-left:0}
+  .grp .more{background:var(--gray-foot);color:var(--gray-700);font-size:11px;font-weight:800}
+  .chiprow{display:flex;align-items:center;gap:8px;background:var(--gray-foot);border-radius:999px;padding:4px 12px 4px 4px}
+  .chiprow .name{font-size:12px;font-weight:600}
+  .chiprow .role{font-size:10px;color:var(--gray-muted)}
+</style></head><body>
+  <div class="row"><span class="lbl">Tamaños · iniciales con gradiente de marca</span>
+    <span class="av s28 g1">JR</span>
+    <span class="av s36 g2">MP</span>
+    <span class="av s48 g3">LU</span>
+    <span class="av s48 sq g4">AN</span>
+  </div>
+  <div class="row"><span class="lbl">Con indicador de presencia</span>
+    <span class="av s48 g2">MP<span class="pres on"></span></span>
+    <span class="av s48 g3">LU<span class="pres busy"></span></span>
+    <span class="av s48 g1">JR<span class="pres off"></span></span>
+  </div>
+  <div class="row"><span class="lbl">Grupo apilado (meseros del turno)</span>
+    <div class="grp">
+      <span class="av s36 g1">JR</span>
+      <span class="av s36 g2">MP</span>
+      <span class="av s36 g3">LU</span>
+      <span class="av s36 g4">AN</span>
+      <span class="av s36 more">+5</span>
+    </div>
+    <div class="chiprow"><span class="av s28 g1">JR</span><div><div class="name">J. Rodríguez</div><div class="role">Recepcionista · Mat.</div></div></div>
+  </div>
+</body></html>

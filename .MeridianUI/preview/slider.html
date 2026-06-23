@@ -1,0 +1,30 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Components · Sliders & range" subtitle="Slider simple, con ticks, y rango de 2 knobs" viewport="540x300" -->
+<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;background:#fff;font-family:var(--font);color:var(--gray-dark);padding:24px;display:flex;flex-direction:column;gap:26px;max-width:520px}
+  .ms{font-family:'Material Symbols Rounded';font-feature-settings:'liga';line-height:1}
+  .lbl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);margin-bottom:14px;display:flex;justify-content:space-between}
+  .lbl .v{color:var(--in);font-variant-numeric:tabular-nums}
+  /* slider */
+  .sld{position:relative;height:6px;border-radius:6px;background:var(--gray-line)}
+  .sld .fill{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:#6366F1}
+  .sld .knob{position:absolute;top:50%;width:20px;height:20px;border-radius:50%;background:#fff;border:2.5px solid #6366F1;transform:translate(-50%,-50%);box-shadow:0 2px 6px rgba(0,0,0,.15)}
+  .sld.em .fill{background:#10B981}.sld.em .knob{border-color:#10B981}
+  .ticks{display:flex;justify-content:space-between;margin-top:8px;font-size:10.5px;color:var(--gray-muted);font-variant-numeric:tabular-nums}
+  /* range (2 knobs) */
+  .sld .range{position:absolute;top:0;bottom:0;border-radius:6px;background:#6366F1}
+</style></head><body>
+  <div><div class="lbl"><span>Propina</span><span class="v">10%</span></div>
+    <div class="sld"><div class="fill" style="width:40%"></div><div class="knob" style="left:40%"></div></div>
+    <div class="ticks"><span>0%</span><span>5%</span><span>10%</span><span>15%</span><span>20%</span></div>
+  </div>
+  <div><div class="lbl"><span>Comensales por mesa</span><span class="v">6 personas</span></div>
+    <div class="sld em"><div class="fill" style="width:62%"></div><div class="knob" style="left:62%"></div></div>
+    <div class="ticks"><span>1</span><span>4</span><span>8</span><span>12+</span></div>
+  </div>
+  <div><div class="lbl"><span>Rango de precio (filtro de menú)</span><span class="v">$ 120 – $ 380</span></div>
+    <div class="sld"><div class="range" style="left:18%;right:30%"></div><div class="knob" style="left:18%"></div><div class="knob" style="left:70%"></div></div>
+    <div class="ticks"><span>$ 0</span><span>$ 250</span><span>$ 500</span></div>
+  </div>
+</body></html>

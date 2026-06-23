@@ -1,0 +1,50 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Components · Tabs" subtitle="Underline tabs, segmented control, pill tabs" viewport="700x280" -->
+<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;background:#fff;font-family:var(--font);color:var(--gray-dark);padding:20px;display:flex;flex-direction:column;gap:18px}
+  .ms{font-family:'Material Symbols Rounded';font-feature-settings:'liga';line-height:1}
+  .lbl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);margin-bottom:8px}
+  /* underline tabs */
+  .tabs-u{display:flex;gap:4px;border-bottom:1px solid var(--gray-line)}
+  .tab-u{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;font-size:12.5px;font-weight:600;color:var(--gray-muted);border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px}
+  .tab-u .ms{font-size:17px}
+  .tab-u:hover{color:var(--gray-dark)}
+  .tab-u.on{color:#6366F1;border-bottom-color:#6366F1}
+  .tab-u.on .ms{font-variation-settings:'FILL' 1}
+  .tab-u .cnt{background:var(--gray-foot);color:var(--gray-700);font-size:10px;font-weight:700;padding:1px 6px;border-radius:999px}
+  .tab-u.on .cnt{background:#E0E7FF;color:#6366F1}
+  /* pill/segmented */
+  .seg{display:inline-flex;background:var(--gray-foot);border-radius:10px;padding:3px;gap:2px}
+  .seg button{border:none;background:transparent;padding:7px 14px;border-radius:7px;cursor:pointer;font:600 12.5px var(--font);color:var(--gray-muted);display:flex;align-items:center;gap:5px}
+  .seg button .ms{font-size:16px}
+  .seg button.on{background:#fff;box-shadow:var(--shadow);color:var(--gray-dark);font-weight:700}
+  /* solid pill tabs */
+  .pillt{display:flex;gap:6px}
+  .pillt button{border:none;border-radius:999px;padding:7px 15px;cursor:pointer;font:600 12px var(--font);background:var(--gray-foot);color:var(--gray-700)}
+  .pillt button.on{background:#1C1E26;color:#fff}
+</style></head><body>
+  <div><div class="lbl">Underline tabs (con icono + contador)</div>
+    <div class="tabs-u">
+      <span class="tab-u on"><span class="ms">receipt_long</span>Cuenta<span class="cnt">9</span></span>
+      <span class="tab-u"><span class="ms">restaurant_menu</span>Comandas<span class="cnt">3</span></span>
+      <span class="tab-u"><span class="ms">payments</span>Pagos</span>
+      <span class="tab-u"><span class="ms">history</span>Historial</span>
+    </div>
+  </div>
+  <div><div class="lbl">Segmented control</div>
+    <div class="seg">
+      <button class="on"><span class="ms">grid_view</span>Mesas</button>
+      <button><span class="ms">list_alt</span>Lista</button>
+      <button><span class="ms">map</span>Plano</button>
+    </div>
+  </div>
+  <div><div class="lbl">Pill tabs (filtros)</div>
+    <div class="pillt">
+      <button class="on">Todas</button>
+      <button>En cocina</button>
+      <button>Servidas</button>
+      <button>Por cobrar</button>
+    </div>
+  </div>
+</body></html>

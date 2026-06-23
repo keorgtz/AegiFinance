@@ -1,0 +1,55 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Components · Form fields & validation" subtitle="Inputs con icono, estados ok/focus/error, segmented, textarea" viewport="760x460" -->
+<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;background:#fff;font-family:var(--font);color:var(--gray-dark);padding:22px;display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:760px}
+  .ms{font-family:'Material Symbols Rounded';font-feature-settings:'liga';line-height:1}
+  .field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+  .flbl{font-size:11px;font-weight:700;color:var(--gray-700);display:flex;align-items:center;gap:5px}
+  .flbl .req{color:#DC2626}
+  .inp{position:relative}
+  .inp input,.inp select{width:100%;border:1.5px solid var(--gray-line);border-radius:9px;padding:9px 12px;font:13px var(--font);color:var(--gray-dark);outline:none;background:#fff}
+  .inp.ic input{padding-left:36px}
+  .inp .lead{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--gray-muted);font-size:18px}
+  .inp.ok input{border-color:#10B981}
+  .inp.ok .trail{position:absolute;right:11px;top:50%;transform:translateY(-50%);color:#10B981;font-size:18px}
+  .inp.err input{border-color:#EF4444;background:#FEF2F2}
+  .hint{font-size:10.5px;color:var(--gray-muted)}
+  .hint.err{color:#DC2626;display:flex;align-items:center;gap:4px;font-weight:600}
+  .hint.err .ms{font-size:13px}
+  .inp.focus input{border-color:#6366F1;box-shadow:0 0 0 3px rgba(99,102,241,.12)}
+  .full{grid-column:span 2}
+  .seg{display:flex;gap:6px}
+  .seg label{flex:1;cursor:pointer}
+  .seg input{display:none}
+  .seg .opt{border:1.5px solid var(--gray-line);border-radius:9px;padding:9px;text-align:center;font:600 12.5px var(--font);color:var(--gray-700)}
+  .seg input:checked + .opt{border-color:#6366F1;background:var(--in-bg);color:#6366F1}
+  .ta{width:100%;border:1.5px solid var(--gray-line);border-radius:9px;padding:9px 12px;font:13px var(--font);outline:none;resize:vertical;min-height:64px;color:var(--gray-dark)}
+  .help{font-size:10.5px;color:var(--gray-muted);display:flex;justify-content:space-between}
+</style></head><body>
+  <div class="field"><label class="flbl">Nombre del cliente <span class="req">*</span></label>
+    <div class="inp ic ok"><span class="ms lead">person</span><input value="Familia Pérez"/><span class="ms trail">check_circle</span></div>
+  </div>
+  <div class="field"><label class="flbl">Teléfono</label>
+    <div class="inp ic focus"><span class="ms lead">call</span><input value="33 1820 ..."/></div>
+    <span class="hint">Para confirmar la reservación por SMS</span>
+  </div>
+  <div class="field"><label class="flbl">Correo <span class="req">*</span></label>
+    <div class="inp ic err"><span class="ms lead">mail</span><input value="perez@correo"/></div>
+    <span class="hint err"><span class="ms">error</span>Formato de correo inválido</span>
+  </div>
+  <div class="field"><label class="flbl">Comensales</label>
+    <div class="inp"><select><option>6 personas</option></select></div>
+  </div>
+  <div class="field full"><label class="flbl">Tipo de servicio <span class="req">*</span></label>
+    <div class="seg">
+      <label><input type="radio" name="srv" checked/><div class="opt">Comer aquí</div></label>
+      <label><input type="radio" name="srv"/><div class="opt">Para llevar</div></label>
+      <label><input type="radio" name="srv"/><div class="opt">A domicilio</div></label>
+    </div>
+  </div>
+  <div class="field full"><label class="flbl">Notas / preferencias</label>
+    <textarea class="ta">Mesa cerca de la ventana. Cliente alérgico al ajo.</textarea>
+    <div class="help"><span>Visible para cocina y meseros</span><span>52 / 240</span></div>
+  </div>
+</body></html>

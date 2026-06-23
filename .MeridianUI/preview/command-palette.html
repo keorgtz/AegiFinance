@@ -1,0 +1,45 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Components · Command palette" subtitle="Búsqueda global ⌘K con acciones y navegación" viewport="600x440" -->
+<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;background:rgba(28,30,38,.30);font-family:var(--font);color:var(--gray-dark);padding:28px;display:flex;justify-content:center;align-items:flex-start;min-height:420px}
+  .ms{font-family:'Material Symbols Rounded';font-feature-settings:'liga';line-height:1}
+  .cmd{width:540px;background:#fff;border-radius:16px;box-shadow:0 24px 60px rgba(28,30,38,.28),0 0 0 1px rgba(0,0,0,.05);overflow:hidden}
+  .cin{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--gray-line)}
+  .cin .ms{font-size:22px;color:var(--gray-muted)}
+  .cin input{flex:1;border:none;outline:none;font:15px var(--font);color:var(--gray-dark)}
+  .cin .kbd{font-size:10px;font-family:var(--font-mono);color:var(--gray-muted);background:var(--gray-foot);border:1px solid var(--gray-line);border-radius:5px;padding:2px 6px}
+  .grp{padding:8px}
+  .ghd{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--gray-muted);padding:8px 12px 4px}
+  .ci{display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:9px;cursor:pointer}
+  .ci.on{background:var(--in-bg)}
+  .ci:hover{background:var(--gray-foot)}
+  .ci .ic{width:32px;height:32px;border-radius:8px;background:var(--gray-foot);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .ci.on .ic{background:#fff}
+  .ci .ic .ms{font-size:18px;color:var(--gray-700)}
+  .ci.on .ic .ms{color:#6366F1}
+  .ci .tx{flex:1}
+  .ci .t{font-size:13px;font-weight:600;color:var(--gray-dark)}
+  .ci .s{font-size:11px;color:var(--gray-muted)}
+  .ci .meta{font-size:10px;font-family:var(--font-mono);color:var(--gray-muted);background:var(--gray-foot);padding:2px 7px;border-radius:5px}
+  .ci .ms.go{font-size:18px;color:var(--gray-muted)}
+  .cf{display:flex;align-items:center;gap:14px;padding:8px 16px;border-top:1px solid var(--gray-line);font-size:10.5px;color:var(--gray-muted)}
+  .cf span{display:flex;align-items:center;gap:4px}
+  .cf .kbd{font-family:var(--font-mono);background:var(--gray-foot);border:1px solid var(--gray-line);border-radius:4px;padding:1px 5px}
+</style></head><body>
+  <div class="cmd">
+    <div class="cin"><span class="ms">search</span><input value="mesa 6" /><span class="kbd">ESC</span></div>
+    <div class="grp">
+      <div class="ghd">Acciones rápidas</div>
+      <div class="ci on"><span class="ic"><span class="ms">add_circle</span></span><div class="tx"><div class="t">Abrir cuenta — Mesa 06</div><div class="s">Salón principal · 4 lugares libres</div></div><span class="ms go">subdirectory_arrow_left</span></div>
+      <div class="ci"><span class="ic"><span class="ms">receipt_long</span></span><div class="tx"><div class="t">Ver estado de cuenta — Mesa 06</div><div class="s">Saldo $1,766.25</div></div><span class="meta">⌘E</span></div>
+      <div class="ci"><span class="ic"><span class="ms">payments</span></span><div class="tx"><div class="t">Cobrar — Mesa 06</div></div><span class="meta">⌘P</span></div>
+    </div>
+    <div class="grp" style="border-top:1px solid var(--gray-line)">
+      <div class="ghd">Navegar</div>
+      <div class="ci"><span class="ic"><span class="ms">grid_view</span></span><div class="tx"><div class="t">Rack de mesas</div></div><span class="meta">G R</span></div>
+      <div class="ci"><span class="ic"><span class="ms">bar_chart</span></span><div class="tx"><div class="t">Métricas del turno</div></div><span class="meta">G M</span></div>
+    </div>
+    <div class="cf"><span><span class="kbd">↑↓</span> navegar</span><span><span class="kbd">↵</span> seleccionar</span><span><span class="kbd">⌘K</span> abrir</span></div>
+  </div>
+</body></html>

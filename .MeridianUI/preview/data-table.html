@@ -1,0 +1,72 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Components · Data table (advanced)" subtitle="Selección masiva, sort, toolbar, search, avatares y badges" viewport="920x360" -->
+<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;background:var(--page-bg);font-family:var(--font);color:var(--gray-dark);padding:18px}
+  .ms{font-family:'Material Symbols Rounded';font-feature-settings:'liga';line-height:1}
+  .tw{background:#fff;border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+  /* toolbar */
+  .tbar{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--gray-line)}
+  .sel-pill{display:flex;align-items:center;gap:8px;background:var(--in-bg);color:#4338CA;border-radius:999px;padding:5px 12px;font-size:12px;font-weight:700}
+  .sel-pill .ms{font-size:16px}
+  .sel-pill button{border:none;background:transparent;color:#4338CA;cursor:pointer;font:700 11.5px var(--font);display:inline-flex;align-items:center;gap:3px;padding:0 2px}
+  .sb{position:relative;flex:1;max-width:280px}
+  .sb input{width:100%;border:1.5px solid var(--gray-line);border-radius:9px;padding:7px 10px 7px 32px;font:12.5px var(--font);outline:none}
+  .sb .ms{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--gray-muted);font-size:16px}
+  .tb-btn{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--gray-line);background:#fff;border-radius:8px;padding:7px 11px;font:600 12px var(--font);color:var(--gray-700);cursor:pointer}
+  .tb-btn .ms{font-size:16px;color:var(--gray-muted)}
+  /* table */
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  thead th{background:#FAFBFC;padding:9px 12px;text-align:left;font-size:10.5px;font-weight:700;color:var(--gray-muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--gray-line);white-space:nowrap;cursor:pointer;user-select:none}
+  thead th.sortable:hover{color:var(--gray-dark)}
+  thead th .ms{font-size:15px;vertical-align:-3px;color:#6366F1}
+  thead th.right{text-align:right}
+  thead th.chk,tbody td.chk{width:40px;text-align:center;cursor:default}
+  tbody td{padding:9px 12px;border-bottom:.5px solid var(--gray-line);color:#374151}
+  tbody tr:hover{background:#FAFBFC}
+  tbody tr.sel{background:var(--in-bg)}
+  tbody tr.sel:hover{background:#E0E7FF}
+  td.right{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+  .cb{width:17px;height:17px;border-radius:5px;border:2px solid var(--gray-line);background:#fff;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;vertical-align:middle}
+  .cb.on{background:#6366F1;border-color:#6366F1}
+  .cb.on::after{content:"";width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg) translateY(-1px)}
+  .who{display:flex;align-items:center;gap:9px}
+  .av{width:30px;height:30px;border-radius:50%;color:#fff;font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .g1{background:linear-gradient(135deg,#8B5CF6,#6366F1)}.g2{background:linear-gradient(135deg,#10B981,#059669)}.g3{background:linear-gradient(135deg,#F59E0B,#F97316)}
+  .who .nm{font-weight:600;color:var(--gray-dark)}.who .em{font-size:10.5px;color:var(--gray-muted)}
+  .bdg{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;font-size:10.5px;font-weight:700}
+  .bdg .ms{font-size:12px}
+  .bdg.ok{background:#DCFCE7;color:#065F46}.bdg.pend{background:#FEF3C7;color:#92400E}.bdg.off{background:#F3F4F6;color:#6B7280}
+  .rowact{border:none;background:transparent;cursor:pointer;width:28px;height:28px;border-radius:6px;color:var(--gray-muted)}
+  .rowact:hover{background:var(--gray-foot);color:var(--gray-dark)}
+  .rowact .ms{font-size:18px}
+</style></head><body>
+  <div class="tw">
+    <div class="tbar">
+      <div class="sel-pill"><span class="ms">check_box</span>2 seleccionadas <button>Facturar</button><button>Exportar</button><button><span class="ms" style="font-size:14px">close</span></button></div>
+      <span style="flex:1"></span>
+      <div class="sb"><span class="ms">search</span><input placeholder="Buscar mesero…"/></div>
+      <button class="tb-btn"><span class="ms">filter_list</span>Filtros</button>
+      <button class="tb-btn"><span class="ms">download</span>Exportar</button>
+      <button class="tb-btn"><span class="ms">view_column</span>Columnas</button>
+    </div>
+    <table>
+      <thead><tr>
+        <th class="chk"><span class="cb on"></span></th>
+        <th class="sortable">Mesero <span class="ms">arrow_downward</span></th>
+        <th class="sortable">Turno</th>
+        <th class="sortable">Mesas</th>
+        <th class="right sortable">Ventas</th>
+        <th class="right sortable">Propinas</th>
+        <th>Estado</th>
+        <th></th>
+      </tr></thead>
+      <tbody>
+        <tr class="sel"><td class="chk"><span class="cb on"></span></td><td><div class="who"><span class="av g1">MR</span><div><div class="nm">María Robles</div><div class="em">maria.r@hotel.mx</div></div></div></td><td>Matutino</td><td>8</td><td class="right">$ 18,420</td><td class="right">$ 1,842</td><td><span class="bdg ok"><span class="ms">check_circle</span>Activo</span></td><td><button class="rowact"><span class="ms">more_vert</span></button></td></tr>
+        <tr class="sel"><td class="chk"><span class="cb on"></span></td><td><div class="who"><span class="av g2">LU</span><div><div class="nm">Luis Untiveros</div><div class="em">luis.u@hotel.mx</div></div></div></td><td>Matutino</td><td>6</td><td class="right">$ 14,200</td><td class="right">$ 1,280</td><td><span class="bdg ok"><span class="ms">check_circle</span>Activo</span></td><td><button class="rowact"><span class="ms">more_vert</span></button></td></tr>
+        <tr><td class="chk"><span class="cb"></span></td><td><div class="who"><span class="av g3">PG</span><div><div class="nm">Pedro García</div><div class="em">pedro.g@hotel.mx</div></div></div></td><td>Vespertino</td><td>5</td><td class="right">$ 9,840</td><td class="right">$ 720</td><td><span class="bdg pend"><span class="ms">schedule</span>En turno</span></td><td><button class="rowact"><span class="ms">more_vert</span></button></td></tr>
+        <tr><td class="chk"><span class="cb"></span></td><td><div class="who"><span class="av g1">AN</span><div><div class="nm">Ana Núñez</div><div class="em">ana.n@hotel.mx</div></div></div></td><td>Nocturno</td><td>0</td><td class="right">$ 0</td><td class="right">$ 0</td><td><span class="bdg off">Descanso</span></td><td><button class="rowact"><span class="ms">more_vert</span></button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</body></html>

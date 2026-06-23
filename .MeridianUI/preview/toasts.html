@@ -1,0 +1,53 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Components · Toasts / Snackbars" subtitle="Success / error / warn / info con progress y dismiss" viewport="480x320" -->
+<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;background:var(--page-bg);font-family:var(--font);color:var(--gray-dark);padding:20px;display:flex;flex-direction:column;gap:10px}
+  .ms{font-family:'Material Symbols Rounded';font-feature-settings:'liga';line-height:1;font-variation-settings:'FILL' 1,'wght' 500}
+  .toast{
+    display:flex;align-items:flex-start;gap:12px;
+    background:#fff;border-radius:12px;padding:12px 14px;
+    box-shadow:0 8px 24px rgba(28,30,38,.12),0 0 0 1px rgba(0,0,0,.04);
+    max-width:440px;position:relative;overflow:hidden;
+  }
+  .toast::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px}
+  .toast .ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .toast .ic .ms{font-size:20px}
+  .toast .body{flex:1;min-width:0}
+  .toast .ttl{font-size:13px;font-weight:700;color:var(--gray-dark)}
+  .toast .msg{font-size:12px;color:var(--gray-muted);margin-top:2px;line-height:1.4}
+  .toast .x{border:none;background:transparent;cursor:pointer;color:var(--gray-muted);width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .toast .x:hover{background:var(--gray-foot)}
+  .toast .x .ms{font-size:16px;font-variation-settings:'FILL' 0,'wght' 500}
+  .t-success::before{background:#10B981}.t-success .ic{background:#DCFCE7}.t-success .ic .ms{color:#10B981}
+  .t-error::before{background:#F44336}.t-error .ic{background:#FEE2E2}.t-error .ic .ms{color:#DC2626}
+  .t-warn::before{background:#F59E0B}.t-warn .ic{background:#FEF3C7}.t-warn .ic .ms{color:#D97706}
+  .t-info::before{background:#6366F1}.t-info .ic{background:#E0E7FF}.t-info .ic .ms{color:#6366F1}
+  .prog{position:absolute;left:0;bottom:0;height:3px;background:rgba(0,0,0,.08);width:100%}
+  .prog span{display:block;height:100%}
+  .t-success .prog span{background:#10B981;width:62%}
+  .t-info .prog span{background:#6366F1;width:40%}
+</style></head><body>
+  <div class="toast t-success">
+    <div class="ic"><span class="ms">check_circle</span></div>
+    <div class="body"><div class="ttl">Comanda enviada a cocina</div><div class="msg">C-1823 · 3 platillos · mesa 06</div></div>
+    <button class="x"><span class="ms">close</span></button>
+    <div class="prog"><span></span></div>
+  </div>
+  <div class="toast t-error">
+    <div class="ic"><span class="ms">error</span></div>
+    <div class="body"><div class="ttl">No se pudo procesar el pago</div><div class="msg">Terminal sin conexión. Reintenta o cambia de método.</div></div>
+    <button class="x"><span class="ms">close</span></button>
+  </div>
+  <div class="toast t-warn">
+    <div class="ic"><span class="ms">warning</span></div>
+    <div class="body"><div class="ttl">Mesa 06 lleva 1h 24m abierta</div><div class="msg">Considera ofrecer la cuenta.</div></div>
+    <button class="x"><span class="ms">close</span></button>
+  </div>
+  <div class="toast t-info">
+    <div class="ic"><span class="ms">info</span></div>
+    <div class="body"><div class="ttl">Turno matutino cierra en 30 min</div><div class="msg">Recuerda hacer el corte de caja.</div></div>
+    <button class="x"><span class="ms">close</span></button>
+    <div class="prog"><span></span></div>
+  </div>
+</body></html>

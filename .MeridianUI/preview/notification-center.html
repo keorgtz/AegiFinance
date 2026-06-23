@@ -1,0 +1,46 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="App Shell · Notification center" subtitle="Panel de notificaciones con filtros, unread y íconos semánticos" viewport="420x470" -->
+<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;background:var(--page-bg);font-family:var(--font);color:var(--gray-dark);padding:18px;display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+  .ms{font-family:'Material Symbols Rounded';font-feature-settings:'liga';line-height:1}
+  .lbl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);margin-bottom:8px}
+  .nc{width:380px;background:#fff;border-radius:14px;box-shadow:0 12px 34px rgba(28,30,38,.14),0 0 0 1px rgba(0,0,0,.04);overflow:hidden}
+  .nch{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--gray-line)}
+  .nch .t{font-size:14px;font-weight:700;flex:1}
+  .nch .cnt{background:#EF4444;color:#fff;font-size:10px;font-weight:800;border-radius:999px;padding:2px 7px}
+  .nch button{border:none;background:transparent;color:#6366F1;font:700 11.5px var(--font);cursor:pointer}
+  .ni{display:flex;gap:11px;padding:12px 16px;border-bottom:.5px solid var(--gray-line);position:relative;cursor:pointer}
+  .ni:hover{background:#FAFBFC}
+  .ni.unread{background:#F8FAFF}
+  .ni.unread::before{content:"";position:absolute;left:6px;top:18px;width:6px;height:6px;border-radius:50%;background:#6366F1}
+  .ni .ic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .ni .ic .ms{font-size:19px;font-variation-settings:'FILL' 1}
+  .ic.em{background:#DCFCE7}.ic.em .ms{color:#10B981}
+  .ic.am{background:#FEF3C7}.ic.am .ms{color:#D97706}
+  .ic.in{background:#E0E7FF}.ic.in .ms{color:#6366F1}
+  .ic.or{background:#FFEDD5}.ic.or .ms{color:#F97316}
+  .ni .bd{flex:1;min-width:0}
+  .ni .nt{font-size:12.5px;font-weight:600;color:var(--gray-dark);line-height:1.35}
+  .ni .nt b{font-weight:800}
+  .ni .tm{font-size:10.5px;color:var(--gray-muted);margin-top:3px;display:flex;align-items:center;gap:4px}
+  .ni .tm .ms{font-size:12px}
+  .ncf{padding:10px;text-align:center}
+  .ncf button{border:none;background:transparent;color:#6366F1;font:700 12px var(--font);cursor:pointer}
+  /* segmented filter on top */
+  .nfilters{display:flex;gap:4px;padding:8px 12px;border-bottom:1px solid var(--gray-line)}
+  .nfilters button{border:none;background:transparent;border-radius:7px;padding:5px 11px;font:600 11.5px var(--font);color:var(--gray-muted);cursor:pointer}
+  .nfilters button.on{background:var(--in-bg);color:#6366F1}
+</style></head><body>
+  <div><div class="lbl">Notification center</div>
+    <div class="nc">
+      <div class="nch"><span class="ms" style="font-size:20px;color:#6366F1;font-variation-settings:'FILL' 1">notifications</span><span class="t">Notificaciones</span><span class="cnt">4</span><button>Marcar leídas</button></div>
+      <div class="nfilters"><button class="on">Todas</button><button>Cocina</button><button>Caja</button><button>Sistema</button></div>
+      <div class="ni unread"><span class="ic am"><span class="ms">priority_high</span></span><div class="bd"><div class="nt"><b>Mesa 06</b> requiere atención · lleva 1h 24m abierta</div><div class="tm"><span class="ms">schedule</span>hace 2 min</div></div></div>
+      <div class="ni unread"><span class="ic em"><span class="ms">room_service</span></span><div class="bd"><div class="nt">Comanda <b>C-1820</b> lista para servir</div><div class="tm"><span class="ms">schedule</span>hace 6 min</div></div></div>
+      <div class="ni unread"><span class="ic in"><span class="ms">event</span></span><div class="bd"><div class="nt">Nueva reserva: <b>Vega</b> · 15:00 · Terraza T3</div><div class="tm"><span class="ms">schedule</span>hace 18 min</div></div></div>
+      <div class="ni"><span class="ic or"><span class="ms">inventory_2</span></span><div class="bd"><div class="nt">Stock bajo: <b>Vino tinto copa</b> (3 restantes)</div><div class="tm"><span class="ms">schedule</span>hace 40 min</div></div></div>
+      <div class="ncf"><button>Ver todas las notificaciones</button></div>
+    </div>
+  </div>
+</body></html>

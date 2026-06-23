@@ -1,0 +1,52 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Components · Timeline & status track" subtitle="Activity timeline vertical + status track horizontal" viewport="700x320" -->
+<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;background:#fff;font-family:var(--font);color:var(--gray-dark);padding:22px;display:flex;gap:40px;flex-wrap:wrap}
+  .ms{font-family:'Material Symbols Rounded';font-feature-settings:'liga';line-height:1;font-variation-settings:'FILL' 1,'wght' 500}
+  .lbl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);margin-bottom:14px}
+  /* vertical timeline */
+  .tl{position:relative;padding-left:6px}
+  .ev{position:relative;padding:0 0 18px 30px}
+  .ev:last-child{padding-bottom:0}
+  .ev::before{content:"";position:absolute;left:9px;top:20px;bottom:-2px;width:2px;background:var(--gray-line)}
+  .ev:last-child::before{display:none}
+  .node{position:absolute;left:0;top:1px;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:1}
+  .node .ms{font-size:13px;color:#fff}
+  .node.em{background:#10B981}.node.in{background:#6366F1}.node.am{background:#F59E0B}.node.gy{background:#D1D5DB}
+  .ev .t{font-size:12.5px;font-weight:700;color:var(--gray-dark)}
+  .ev .m{font-size:11px;color:var(--gray-muted);margin-top:2px;line-height:1.4}
+  .ev .time{font-size:10.5px;color:var(--gray-muted);font-variant-numeric:tabular-nums;margin-top:3px;display:flex;align-items:center;gap:4px}
+  .ev .time .ms{font-size:12px}
+  /* horizontal status track */
+  .track{display:flex;align-items:center;gap:0}
+  .step{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative}
+  .step .c{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:1;background:#fff;border:2px solid var(--gray-line)}
+  .step .c .ms{font-size:18px;color:var(--gray-muted)}
+  .step.done .c{background:#10B981;border-color:#10B981}.step.done .c .ms{color:#fff}
+  .step.now .c{background:#6366F1;border-color:#6366F1}.step.now .c .ms{color:#fff}
+  .step .cap{font-size:10.5px;font-weight:600;color:var(--gray-muted)}
+  .step.done .cap,.step.now .cap{color:var(--gray-dark)}
+  .bar{width:54px;height:2px;background:var(--gray-line);margin-bottom:22px}
+  .bar.fill{background:#10B981}
+</style></head><body>
+  <div><div class="lbl">Activity timeline (vida del pedido)</div>
+    <div class="tl">
+      <div class="ev"><span class="node em"><span class="ms">restaurant</span></span><div class="t">Mesa abierta</div><div class="m">6 comensales · mesero María R.</div><div class="time"><span class="ms">schedule</span>13:08</div></div>
+      <div class="ev"><span class="node in"><span class="ms">restaurant_menu</span></span><div class="t">Comanda C-1820 enviada</div><div class="m">3 platillos a cocina</div><div class="time"><span class="ms">schedule</span>13:14</div></div>
+      <div class="ev"><span class="node am"><span class="ms">room_service</span></span><div class="t">Platillos servidos</div><div class="m">Filete, pasta, ensalada</div><div class="time"><span class="ms">schedule</span>13:38</div></div>
+      <div class="ev"><span class="node gy"><span class="ms">payments</span></span><div class="t" style="color:var(--gray-muted)">Cobro pendiente</div><div class="m">Saldo $1,766.25</div></div>
+    </div>
+  </div>
+  <div><div class="lbl">Status track (estado del platillo)</div>
+    <div class="track">
+      <div class="step done"><span class="c"><span class="ms">edit_note</span></span><span class="cap">Capturado</span></div>
+      <div class="bar fill"></div>
+      <div class="step done"><span class="c"><span class="ms">send</span></span><span class="cap">En cocina</span></div>
+      <div class="bar fill"></div>
+      <div class="step now"><span class="c"><span class="ms">room_service</span></span><span class="cap">Servido</span></div>
+      <div class="bar"></div>
+      <div class="step"><span class="c"><span class="ms">check</span></span><span class="cap">Cobrado</span></div>
+    </div>
+  </div>
+</body></html>

@@ -1,0 +1,55 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Components · Menus & dropdowns" subtitle="Dropdown, select con check, menú de usuario" viewport="760x360" -->
+<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;background:var(--page-bg);font-family:var(--font);color:var(--gray-dark);padding:20px;display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+  .ms{font-family:'Material Symbols Rounded';font-feature-settings:'liga';line-height:1}
+  .lbl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);margin-bottom:8px}
+  .menu{width:230px;background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(28,30,38,.12),0 0 0 1px rgba(0,0,0,.05);padding:6px;overflow:hidden}
+  .mhead{padding:8px 10px 6px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gray-muted)}
+  .mi{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:12.5px;color:var(--gray-dark);font-weight:500}
+  .mi:hover{background:var(--gray-foot)}
+  .mi .ms{font-size:18px;color:var(--gray-muted)}
+  .mi .k{margin-left:auto;font-size:10px;color:var(--gray-muted);font-family:var(--font-mono);background:var(--gray-foot);padding:1px 5px;border-radius:4px}
+  .mi.on{background:var(--in-bg);color:var(--in)}.mi.on .ms{color:var(--in)}
+  .mi.on .check{margin-left:auto;color:var(--in)}
+  .msep{height:1px;background:var(--gray-line);margin:5px 8px}
+  .mi.danger{color:#B91C1C}.mi.danger .ms{color:#B91C1C}.mi.danger:hover{background:#FEE2E2}
+</style></head><body>
+  <div><div class="lbl">Dropdown menu</div>
+    <div class="menu">
+      <div class="mhead">Pedido C-1823</div>
+      <div class="mi"><span class="ms">edit</span>Editar comanda<span class="k">E</span></div>
+      <div class="mi"><span class="ms">print</span>Reimprimir<span class="k">⌘P</span></div>
+      <div class="mi"><span class="ms">content_copy</span>Duplicar</div>
+      <div class="mi"><span class="ms">swap_horiz</span>Trasladar mesa</div>
+      <div class="msep"></div>
+      <div class="mi danger"><span class="ms">delete</span>Cancelar pedido</div>
+    </div>
+  </div>
+  <div><div class="lbl">Select / opciones (con check)</div>
+    <div class="menu">
+      <div class="mhead">Ordenar por</div>
+      <div class="mi on">Más reciente<span class="ms check">check</span></div>
+      <div class="mi">Mayor total</div>
+      <div class="mi">Número de mesa</div>
+      <div class="mi">Mesero</div>
+      <div class="msep"></div>
+      <div class="mi"><span class="ms">swap_vert</span>Invertir orden</div>
+    </div>
+  </div>
+  <div><div class="lbl">Menú de usuario</div>
+    <div class="menu">
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 10px">
+        <span style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#8B5CF6,#6366F1);color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center">JR</span>
+        <div><div style="font-size:12.5px;font-weight:700">J. Rodríguez</div><div style="font-size:10.5px;color:var(--gray-muted)">Recepcionista</div></div>
+      </div>
+      <div class="msep"></div>
+      <div class="mi"><span class="ms">person</span>Mi perfil</div>
+      <div class="mi"><span class="ms">settings</span>Preferencias</div>
+      <div class="mi"><span class="ms">help</span>Ayuda</div>
+      <div class="msep"></div>
+      <div class="mi danger"><span class="ms">logout</span>Cerrar sesión</div>
+    </div>
+  </div>
+</body></html>

@@ -1,0 +1,42 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Components · Tooltips & popover" subtitle="Tooltips dark direccionales + popover con acción" viewport="600x280" -->
+<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;background:#fff;font-family:var(--font);color:var(--gray-dark);padding:24px;display:flex;flex-direction:column;gap:26px}
+  .ms{font-family:'Material Symbols Rounded';font-feature-settings:'liga';line-height:1}
+  .lbl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);margin-bottom:14px}
+  .row{display:flex;gap:40px;align-items:center;flex-wrap:wrap}
+  /* tooltip */
+  .tip{position:relative;background:#1C1E26;color:#fff;font-size:11.5px;font-weight:600;padding:6px 10px;border-radius:7px;display:inline-block;max-width:200px;line-height:1.4}
+  .tip::after{content:"";position:absolute;width:8px;height:8px;background:#1C1E26;transform:rotate(45deg)}
+  .tip.top::after{bottom:-4px;left:50%;margin-left:-4px}
+  .tip.bottom::after{top:-4px;left:50%;margin-left:-4px}
+  .tip.right::after{left:-4px;top:50%;margin-top:-4px}
+  .tip .k{color:#9CA3AF;font-family:var(--font-mono);margin-left:6px}
+  /* rich popover */
+  .pop{width:260px;background:#fff;border-radius:12px;box-shadow:0 10px 30px rgba(28,30,38,.16),0 0 0 1px rgba(0,0,0,.05);overflow:hidden}
+  .pop-h{padding:11px 13px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--gray-line)}
+  .pop-h .ic{width:32px;height:32px;border-radius:9px;background:var(--in-bg);display:flex;align-items:center;justify-content:center}
+  .pop-h .ic .ms{font-size:18px;color:#6366F1;font-variation-settings:'FILL' 1}
+  .pop-h .ttl{font-size:12.5px;font-weight:700}
+  .pop-b{padding:11px 13px;font-size:11.5px;color:var(--gray-muted);line-height:1.5}
+  .pop-f{padding:9px 13px;border-top:1px solid var(--gray-line);display:flex;justify-content:flex-end;gap:8px}
+  .pop-f button{border:none;cursor:pointer;font:700 11.5px var(--font);padding:6px 12px;border-radius:7px}
+  .pop-f .ghost{background:transparent;color:var(--gray-muted)}
+  .pop-f .pri{background:#6366F1;color:#fff}
+</style></head><body>
+  <div><div class="lbl">Tooltips (dark, con posición de flecha)</div>
+    <div class="row">
+      <span class="tip top">Reprocesar notas<span class="k">⌘R</span></span>
+      <span class="tip right">Esta mesa lleva 1h 24m abierta</span>
+      <span class="tip bottom">Saldo pendiente de la cuenta</span>
+    </div>
+  </div>
+  <div><div class="lbl">Popover enriquecido (con acción)</div>
+    <div class="pop">
+      <div class="pop-h"><span class="ic"><span class="ms">info</span></span><span class="ttl">Propina sugerida</span></div>
+      <div class="pop-b">Se calcula como 10% del subtotal de comandas. Puedes editarla o eliminarla antes de cobrar.</div>
+      <div class="pop-f"><button class="ghost">Entendido</button><button class="pri">Ajustar</button></div>
+    </div>
+  </div>
+</body></html>

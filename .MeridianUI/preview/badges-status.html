@@ -1,0 +1,53 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Components · Badges & status dots" subtitle="Status dots, badges soft/solid, count badges" viewport="700x280" -->
+<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;background:#fff;font-family:var(--font);color:var(--gray-dark);padding:20px;display:flex;flex-direction:column;gap:16px}
+  .ms{font-family:'Material Symbols Rounded';font-feature-settings:'liga';line-height:1}
+  .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .lbl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);width:100%;margin-bottom:-2px}
+  /* status dot pill */
+  .sdot{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:11.5px;font-weight:600;background:var(--gray-foot);color:var(--gray-700)}
+  .sdot .d{width:7px;height:7px;border-radius:50%}
+  .sdot.live{background:#F0FDF4;color:#065F46}.sdot.live .d{background:#10B981;box-shadow:0 0 0 3px rgba(16,185,129,.18)}
+  .sdot.busy{background:#FFFBEB;color:#92400E}.sdot.busy .d{background:#F59E0B}
+  .sdot.off{background:#F3F4F6;color:#6B7280}.sdot.off .d{background:#9CA3AF}
+  .sdot.err{background:#FEF2F2;color:#991B1B}.sdot.err .d{background:#EF4444}
+  /* solid badges */
+  .bdg{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:6px;font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase}
+  .bdg .ms{font-size:13px}
+  .bdg.em{background:#DCFCE7;color:#065F46}.bdg.am{background:#FEF3C7;color:#92400E}
+  .bdg.in{background:#E0E7FF;color:#3730A3}.bdg.vi{background:#EDE9FE;color:#6D28D9}
+  .bdg.or{background:#FFEDD5;color:#9A3412}.bdg.gy{background:#F3F4F6;color:#374151}
+  .bdg.solid-em{background:#10B981;color:#fff}.bdg.solid-in{background:#6366F1;color:#fff}.bdg.solid-or{background:#F97316;color:#fff}
+  /* count badge */
+  .cwrap{position:relative;width:40px;height:40px;border-radius:10px;background:var(--gray-foot);display:flex;align-items:center;justify-content:center}
+  .cwrap .ms{font-size:22px;color:var(--gray-700)}
+  .cnt{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#EF4444;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid #fff;font-variant-numeric:tabular-nums}
+  .cnt.in{background:#6366F1}
+</style></head><body>
+  <div class="row"><span class="lbl">Status dots (presencia / estado en vivo)</span>
+    <span class="sdot live"><span class="d"></span>En servicio</span>
+    <span class="sdot busy"><span class="d"></span>Ocupado</span>
+    <span class="sdot off"><span class="d"></span>Libre</span>
+    <span class="sdot err"><span class="d"></span>Atención</span>
+  </div>
+  <div class="row"><span class="lbl">Badges semánticos (soft)</span>
+    <span class="bdg em"><span class="ms">check_circle</span>Pagado</span>
+    <span class="bdg am">Pendiente</span>
+    <span class="bdg in">Nuevo</span>
+    <span class="bdg vi">Resumen</span>
+    <span class="bdg or">Gasto</span>
+    <span class="bdg gy">Borrador</span>
+  </div>
+  <div class="row"><span class="lbl">Badges sólidos (énfasis)</span>
+    <span class="bdg solid-em">Activo</span>
+    <span class="bdg solid-in">Beta</span>
+    <span class="bdg solid-or">Urgente</span>
+  </div>
+  <div class="row"><span class="lbl">Count badges (notificaciones)</span>
+    <span class="cwrap"><span class="ms">notifications</span><span class="cnt">3</span></span>
+    <span class="cwrap"><span class="ms">receipt_long</span><span class="cnt in">12</span></span>
+    <span class="cwrap"><span class="ms">restaurant</span><span class="cnt">99+</span></span>
+  </div>
+</body></html>

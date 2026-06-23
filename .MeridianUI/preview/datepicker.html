@@ -1,0 +1,77 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Components · Date & time picker" subtitle="Calendario con rango, atajos y time picker" viewport="700x380" -->
+<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;background:var(--page-bg);font-family:var(--font);color:var(--gray-dark);padding:18px;display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+  .ms{font-family:'Material Symbols Rounded';font-feature-settings:'liga';line-height:1}
+  .lbl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);margin-bottom:8px}
+  .cal{width:280px;background:#fff;border-radius:14px;box-shadow:0 10px 30px rgba(28,30,38,.12),0 0 0 1px rgba(0,0,0,.04);padding:14px}
+  .ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .ch .mname{font-size:13.5px;font-weight:700}
+  .ch button{border:none;background:var(--gray-foot);width:30px;height:30px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--gray-700)}
+  .ch button:hover{background:#E9EBEF}
+  .ch .ms{font-size:18px}
+  .dow{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px}
+  .dow span{text-align:center;font-size:10px;font-weight:700;color:var(--gray-muted);padding:4px 0}
+  .days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+  .day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:12px;border-radius:8px;cursor:pointer;color:var(--gray-dark);font-variant-numeric:tabular-nums;position:relative}
+  .day:hover{background:var(--gray-foot)}
+  .day.mut{color:#C4C8D0}
+  .day.today{font-weight:800;color:#6366F1}
+  .day.today::after{content:"";position:absolute;bottom:4px;width:4px;height:4px;border-radius:50%;background:#6366F1}
+  .day.sel{background:#6366F1;color:#fff;font-weight:700}
+  .day.rng{background:var(--in-bg);border-radius:0}
+  .day.rs{background:#6366F1;color:#fff;border-radius:8px 0 0 8px}
+  .day.re{background:#6366F1;color:#fff;border-radius:0 8px 8px 0}
+  .day.dot::before{content:"";position:absolute;top:5px;right:7px;width:5px;height:5px;border-radius:50%;background:#F59E0B}
+  .cf{display:flex;gap:6px;margin-top:12px;padding-top:10px;border-top:1px solid var(--gray-line)}
+  .cf button{flex:1;border:none;cursor:pointer;font:700 11.5px var(--font);padding:8px;border-radius:8px}
+  .cf .g{background:var(--gray-foot);color:var(--gray-700)}.cf .p{background:#6366F1;color:#fff}
+  /* time picker */
+  .time{width:200px;background:#fff;border-radius:14px;box-shadow:0 10px 30px rgba(28,30,38,.12),0 0 0 1px rgba(0,0,0,.04);padding:14px}
+  .time-disp{text-align:center;font-size:30px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.02em;margin-bottom:4px}
+  .time-disp .am{font-size:13px;color:#6366F1;font-weight:700;margin-left:4px}
+  .qslots{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+  .slot{border:1px solid var(--gray-line);background:#fff;border-radius:8px;padding:7px 0;text-align:center;font:600 11.5px var(--font);color:var(--gray-700);cursor:pointer;font-variant-numeric:tabular-nums}
+  .slot:hover{border-color:#6366F1;color:#6366F1}
+  .slot.on{background:#6366F1;border-color:#6366F1;color:#fff}
+  /* presets */
+  .presets{width:150px;display:flex;flex-direction:column;gap:4px;background:#fff;border-radius:14px;box-shadow:var(--shadow);padding:8px}
+  .preset{padding:8px 10px;border-radius:8px;font-size:12px;font-weight:600;color:var(--gray-700);cursor:pointer}
+  .preset:hover{background:var(--gray-foot)}
+  .preset.on{background:var(--in-bg);color:#6366F1}
+</style></head><body>
+  <div><div class="lbl">Calendar · selección de rango</div>
+    <div class="cal">
+      <div class="ch"><button><span class="ms">chevron_left</span></button><span class="mname">Junio 2026</span><button><span class="ms">chevron_right</span></button></div>
+      <div class="dow"><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+      <div class="days">
+        <span class="day mut">26</span><span class="day mut">27</span><span class="day mut">28</span><span class="day mut">29</span><span class="day mut">30</span><span class="day mut">31</span><span class="day">1</span>
+        <span class="day today">2</span><span class="day">3</span><span class="day">4</span><span class="day">5</span><span class="day dot">6</span><span class="day">7</span><span class="day">8</span>
+        <span class="day rs">9</span><span class="day rng">10</span><span class="day rng">11</span><span class="day rng">12</span><span class="day re">13</span><span class="day">14</span><span class="day">15</span>
+        <span class="day">16</span><span class="day">17</span><span class="day dot">18</span><span class="day">19</span><span class="day">20</span><span class="day">21</span><span class="day">22</span>
+        <span class="day">23</span><span class="day">24</span><span class="day">25</span><span class="day">26</span><span class="day">27</span><span class="day">28</span><span class="day">29</span>
+      </div>
+      <div class="cf"><button class="g">Limpiar</button><button class="p">Aplicar · 9–13 jun</button></div>
+    </div>
+  </div>
+  <div><div class="lbl">Atajos</div>
+    <div class="presets">
+      <div class="preset">Hoy</div>
+      <div class="preset">Ayer</div>
+      <div class="preset on">Esta semana</div>
+      <div class="preset">Este mes</div>
+      <div class="preset">Últimos 30 días</div>
+      <div class="preset">Personalizado</div>
+    </div>
+  </div>
+  <div><div class="lbl">Time picker</div>
+    <div class="time">
+      <div class="time-disp">14:30<span class="am">PM</span></div>
+      <div class="qslots">
+        <div class="slot">08:00</div><div class="slot">12:00</div><div class="slot on">14:30</div>
+        <div class="slot">16:00</div><div class="slot">18:30</div><div class="slot">20:00</div>
+      </div>
+    </div>
+  </div>
+</body></html>

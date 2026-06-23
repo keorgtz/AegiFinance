@@ -1,0 +1,44 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Components · Stepper / wizard" subtitle="Wizard numerado + progreso compacto" viewport="700x260" -->
+<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;background:#fff;font-family:var(--font);color:var(--gray-dark);padding:24px;display:flex;flex-direction:column;gap:26px}
+  .ms{font-family:'Material Symbols Rounded';font-feature-settings:'liga';line-height:1}
+  .lbl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);margin-bottom:14px}
+  /* numbered wizard */
+  .wz{display:flex;align-items:flex-start}
+  .ws{display:flex;flex-direction:column;align-items:center;gap:7px;width:120px;position:relative}
+  .ws .n{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;border:2px solid var(--gray-line);background:#fff;color:var(--gray-muted);z-index:1;font-variant-numeric:tabular-nums}
+  .ws .n .ms{font-size:19px}
+  .ws.done .n{background:#10B981;border-color:#10B981;color:#fff}
+  .ws.now .n{background:#6366F1;border-color:#6366F1;color:#fff;box-shadow:0 0 0 4px rgba(99,102,241,.15)}
+  .ws .tt{font-size:12px;font-weight:700;color:var(--gray-muted);text-align:center}
+  .ws.done .tt,.ws.now .tt{color:var(--gray-dark)}
+  .ws .sub{font-size:10px;color:var(--gray-muted);text-align:center}
+  .wbar{flex:1;height:2px;background:var(--gray-line);margin-top:18px}
+  .wbar.fill{background:#10B981}
+  /* compact dotted progress */
+  .dotsp{display:flex;align-items:center;gap:8px}
+  .dotsp .d{width:8px;height:8px;border-radius:50%;background:var(--gray-line)}
+  .dotsp .d.on{width:24px;border-radius:5px;background:#6366F1}
+  .dotsp .d.done{background:#10B981}
+  .dotsp .txt{font-size:12px;color:var(--gray-muted);margin-left:6px;font-weight:600}
+</style></head><body>
+  <div><div class="lbl">Wizard / stepper (cobro multi-paso)</div>
+    <div class="wz">
+      <div class="ws done"><span class="n"><span class="ms">check</span></span><span class="tt">Revisar cuenta</span><span class="sub">$ 1,766.25</span></div>
+      <div class="wbar fill"></div>
+      <div class="ws done"><span class="n"><span class="ms">check</span></span><span class="tt">Descuentos</span><span class="sub">2 aplicados</span></div>
+      <div class="wbar fill"></div>
+      <div class="ws now"><span class="n">3</span><span class="tt">Forma de pago</span><span class="sub">en proceso</span></div>
+      <div class="wbar"></div>
+      <div class="ws"><span class="n">4</span><span class="tt">Confirmar</span><span class="sub">cerrar cuenta</span></div>
+    </div>
+  </div>
+  <div><div class="lbl">Progreso compacto (onboarding)</div>
+    <div class="dotsp">
+      <span class="d done"></span><span class="d done"></span><span class="d on"></span><span class="d"></span><span class="d"></span>
+      <span class="txt">Paso 3 de 5</span>
+    </div>
+  </div>
+</body></html>
