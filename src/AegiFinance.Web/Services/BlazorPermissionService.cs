@@ -23,7 +23,8 @@ public class BlazorPermissionService : IPermissionService
         }
 
         var userType = user.FindFirst("UserType")?.Value;
-        return userType == "Admin";
+        var hasAdminRole = user.HasClaim(ClaimTypes.Role, "Admin");
+        return userType == "Administrator" || hasAdminRole;
     }
 
     public async Task<bool> HasPermissionAsync(string permissionCode)
