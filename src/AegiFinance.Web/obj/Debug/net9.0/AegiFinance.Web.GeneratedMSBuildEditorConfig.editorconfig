@@ -47,6 +47,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBbGxvY2F0aW9ucy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/kevin/KeorSoft/Development/Web/AegiFinance/src/AegiFinance.Web/Components/Pages/BankReconciliation.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYW5rUmVjb25jaWxpYXRpb24ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/kevin/KeorSoft/Development/Web/AegiFinance/src/AegiFinance.Web/Components/Pages/Billing.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCaWxsaW5nLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
@@ -73,6 +77,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/kevin/KeorSoft/Development/Web/AegiFinance/src/AegiFinance.Web/Components/Pages/Login.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xMb2dpbi5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kevin/KeorSoft/Development/Web/AegiFinance/src/AegiFinance.Web/Components/Pages/MonthlyTracker.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xNb250aGx5VHJhY2tlci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/kevin/KeorSoft/Development/Web/AegiFinance/src/AegiFinance.Web/Components/Pages/Services.razor]

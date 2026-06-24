@@ -994,3 +994,4 @@ C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Web\obj\Debu
 C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Web\obj\Debug\net9.0\AegiFina.DFA69C02.Up2Date
 C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Web\obj\Debug\net9.0\AegiFinance.Web.genruntimeconfig.cache
 C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Web\obj\Debug\net9.0\ref\AegiFinance.Web.dll
+C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Web\bin\Debug\net9.0\CsvHelper.dll

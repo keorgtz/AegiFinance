@@ -34,6 +34,8 @@ public interface IApplicationDbContext
     DbSet<LedgerAllocation> LedgerAllocations { get; }
     DbSet<TransferGroup> TransferGroups { get; }
     DbSet<SubscriptionAllocation> SubscriptionAllocations { get; }
+    DbSet<BankStatement> BankStatements { get; }
+    DbSet<BankStatementLine> BankStatementLines { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

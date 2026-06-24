@@ -45,6 +45,8 @@ public class AegiFinanceDbContext : DbContext
     public DbSet<LedgerAllocation> LedgerAllocations => Set<LedgerAllocation>();
     public DbSet<TransferGroup> TransferGroups => Set<TransferGroup>();
     public DbSet<SubscriptionAllocation> SubscriptionAllocations => Set<SubscriptionAllocation>();
+    public DbSet<BankStatement> BankStatements => Set<BankStatement>();
+    public DbSet<BankStatementLine> BankStatementLines => Set<BankStatementLine>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -79,6 +81,8 @@ public class AegiFinanceDbContext : DbContext
         ConfigureLedgerAllocation(modelBuilder);
         ConfigureTransferGroup(modelBuilder);
         ConfigureSubscriptionAllocation(modelBuilder);
+        ConfigureBankStatement(modelBuilder);
+        ConfigureBankStatementLine(modelBuilder);
 
         ApplySoftDeleteQueryFilters(modelBuilder);
     }
@@ -655,6 +659,46 @@ public class AegiFinanceDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(e => e.BillingItemId)
                 .IsRequired();
+        });
+    }
+
+    private static void ConfigureBankStatement(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<BankStatement>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.StatementDate).IsRequired();
+            entity.Property(e => e.StartDate).IsRequired();
+            entity.Property(e => e.EndDate).IsRequired();
+            entity.Property(e => e.OpeningBalance).HasPrecision(18, 2);
+            entity.Property(e => e.ClosingBalance).HasPrecision(18, 2);
+            entity.Property(e => e.FileUrl).HasMaxLength(1000);
+
+            entity.HasOne(bs => bs.BankAccount)
+                .WithMany()
+                .HasForeignKey(bs => bs.BankAccountId)
+                .IsRequired();
+                
+            entity.HasMany(bs => bs.Lines)
+                .WithOne(bsl => bsl.BankStatement)
+                .HasForeignKey(bsl => bsl.BankStatementId);
+        });
+    }
+
+    private static void ConfigureBankStatementLine(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<BankStatementLine>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.TransactionDate).IsRequired();
+            entity.Property(e => e.Description).HasMaxLength(1000).IsRequired();
+            entity.Property(e => e.Reference).HasMaxLength(200);
+            entity.Property(e => e.Amount).HasPrecision(18, 2);
+            
+            entity.HasOne(bsl => bsl.LedgerEntry)
+                .WithMany()
+                .HasForeignKey(bsl => bsl.LedgerEntryId)
+                .IsRequired(false);
         });
     }
 

@@ -1,0 +1,145 @@
+@page "/tracker"
+@using AegiFinance.Application.Features.Tracker.Queries
+@using AegiFinance.Domain.Enums
+@using MediatR
+@inject ISender Sender
+
+<style>
+  .card { background: #fff; border-radius: var(--r-lg); box-shadow: var(--shadow); width: 100%; margin-bottom: 24px; display: flex; flex-direction: column; }
+  .h { padding: 16px 20px; background: var(--in-bg); display: flex; align-items: center; justify-content: space-between; border-radius: var(--r-lg) var(--r-lg) 0 0; }
+  .h-left { display: flex; flex-direction: column; gap: 4px; }
+  .h-title { font-size: 11px; font-weight: 600; color: var(--gray-muted); text-transform: uppercase; letter-spacing: .06em; }
+  .h-sub { font-size: 13px; color: var(--in); font-weight: 500; }
+  
+  .table-container { width: 100%; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 1000px; }
+  thead th { background: #fff; padding: 10px 8px; text-align: center; font-size: 11px; font-weight: 600; color: var(--gray-muted); border-bottom: 1px solid var(--gray-line); text-transform: uppercase; letter-spacing: .05em; }
+  thead th:first-child { text-align: left; padding-left: 16px; position: sticky; left: 0; background: #fff; z-index: 2; border-right: 1px solid var(--gray-line); }
+  
+  tbody td { padding: 8px; border-bottom: 1px solid var(--gray-line); text-align: center; }
+  tbody td:first-child { text-align: left; padding-left: 16px; font-weight: 500; color: var(--gray-dark); position: sticky; left: 0; background: #fff; z-index: 1; border-right: 1px solid var(--gray-line); }
+  
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: #FAFAFA; }
+  tbody tr:hover td:first-child { background: #FAFAFA; }
+
+  .status-cell { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--r-md); font-size: 18px; cursor: pointer; transition: all 0.2s ease; }
+  .status-cell:hover { filter: brightness(0.95); transform: scale(1.05); }
+  
+  .status-Pending { background: #FEE2E2; color: #EF4444; }
+  .status-Partial { background: #FEF3C7; color: #F59E0B; }
+  .status-Paid { background: var(--em-pl); color: var(--em); }
+  
+  .year-selector { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+  .year-selector select { padding: 8px 12px; border-radius: var(--r-md); border: 1px solid var(--gray-line); outline: none; font-size: 14px; font-family: inherit; }
+</style>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+    <div class="h-page-title">Matriz Visual Mensual</div>
+</div>
+
+<div class="year-selector">
+    <span style="font-size: 14px; font-weight: 500;">Año a consultar:</span>
+    <select @bind="selectedYear" @bind:after="LoadData">
+        @for(int y = DateTime.Now.Year - 2; y <= DateTime.Now.Year + 1; y++)
+        {
+            <option value="@y">@y</option>
+        }
+    </select>
+</div>
+
+@if (TrackerData == null)
+{
+    <p><em>Cargando matriz...</em></p>
+}
+else
+{
+    <div class="card">
+        <div class="h">
+            <div class="h-left">
+                <span class="h-title">TRACKER</span>
+                <span class="h-sub">Seguimiento de Pagos por Cliente (@selectedYear)</span>
+            </div>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="min-width: 250px;">Cliente</th>
+                        <th>Ene</th>
+                        <th>Feb</th>
+                        <th>Mar</th>
+                        <th>Abr</th>
+                        <th>May</th>
+                        <th>Jun</th>
+                        <th>Jul</th>
+                        <th>Ago</th>
+                        <th>Sep</th>
+                        <th>Oct</th>
+                        <th>Nov</th>
+                        <th>Dic</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var client in TrackerData)
+                    {
+                        <tr>
+                            <td>
+                                <div>@client.ClientName</div>
+                                <div style="font-size: 11px; color: var(--gray-muted); font-weight: 400;">@client.ClientCode</div>
+                            </td>
+                            @for (int m = 1; m <= 12; m++)
+                            {
+                                var monthData = client.Months.FirstOrDefault(x => x.Month == m);
+                                <td>
+                                    @if (monthData != null)
+                                    {
+                                        <div class="status-cell status-@monthData.Status" title="Facturado: @monthData.TotalBilled.ToString("C") | Pagado: @monthData.TotalPaid.ToString("C")">
+                                            @if (monthData.Status == BillingItemStatus.Paid)
+                                            {
+                                                <span class="material-symbols-rounded">check</span>
+                                            }
+                                            else if (monthData.Status == BillingItemStatus.Partial)
+                                            {
+                                                <span class="material-symbols-rounded">contrast</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="material-symbols-rounded">close</span>
+                                            }
+                                        </div>
+                                    }
+                                </td>
+                            }
+                        </tr>
+                    }
+                    @if (TrackerData.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="13" style="text-align: center; padding: 32px; color: var(--gray-muted);">No hay facturación registrada para el año @selectedYear.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@code {
+    private List<ClientTrackerModel>? TrackerData;
+    private int selectedYear = DateTime.Now.Year;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        TrackerData = null; // show loading
+        StateHasChanged();
+        
+        var result = await Sender.Send(new GetMonthlyTrackerQuery { Year = selectedYear });
+        TrackerData = result;
+    }
+}

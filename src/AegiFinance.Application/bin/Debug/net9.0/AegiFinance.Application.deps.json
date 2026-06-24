@@ -9,6 +9,7 @@
       "AegiFinance.Application/1.0.0": {
         "dependencies": {
           "AegiFinance.Domain": "1.0.0",
+          "CsvHelper": "33.1.0",
           "FluentValidation": "11.11.0",
           "FluentValidation.DependencyInjectionExtensions": "11.11.0",
           "MediatR": "12.4.1",
@@ -17,6 +18,14 @@
         },
         "runtime": {
           "AegiFinance.Application.dll": {}
+        }
+      },
+      "CsvHelper/33.1.0": {
+        "runtime": {
+          "lib/net9.0/CsvHelper.dll": {
+            "assemblyVersion": "33.0.0.0",
+            "fileVersion": "33.1.0.26"
+          }
         }
       },
       "FluentValidation/11.11.0": {
@@ -184,6 +193,13 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "CsvHelper/33.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-kqfTOZGrn7NarNeXgjh86JcpTHUoeQDMB8t9NVa/ZtlSYiV1rxfRnQ49WaJsob4AiGrbK0XDzpyKkBwai4F8eg==",
+      "path": "csvhelper/33.1.0",
+      "hashPath": "csvhelper.33.1.0.nupkg.sha512"
     },
     "FluentValidation/11.11.0": {
       "type": "package",

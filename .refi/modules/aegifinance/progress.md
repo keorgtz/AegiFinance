@@ -12,8 +12,8 @@
 | 6 | Financial Ledger | 🟢 Completado | 22/Jun/2026 | 22/Jun/2026 | Ryou Orchestrator |
 | 7 | Subscription Allocations | 🟢 Completado | 22/Jun/2026 | 22/Jun/2026 | Ryou Orchestrator |
 | 8 | Customer Account Statements | 🟢 Completado | 22/Jun/2026 | 22/Jun/2026 | Ryou Orchestrator |
-| 9 | Bank Reconciliation | ⚪ Pendiente | — | — | — |
-| 10 | Dashboard | ⚪ Pendiente | — | — | — |
+| 9 | Bank Reconciliation | 🟢 Completado | 23/Jun/2026 | 23/Jun/2026 | Ryou Orchestrator |
+| 10 | Dashboard | 🟢 Completado | 23/Jun/2026 | 23/Jun/2026 | Ryou Orchestrator |
 | 11 | Reporting | ⚪ Pendiente | — | — | — |
 | 12 | Support Tickets | ⚪ Pendiente | — | — | — |
 | 13 | License Management | ⚪ Pendiente | — | — | — |
