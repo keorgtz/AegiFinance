@@ -2,9 +2,11 @@
 @using AegiFinance.Application.Features.Clients.Queries.GetClients
 @using AegiFinance.Application.Features.Clients.Commands.CreateClient
 @using AegiFinance.Application.Features.Clients.Commands.UpdateClient
+@using AegiFinance.Application.Features.Clients.Commands.DeleteClient
 @using AegiFinance.Application.Dtos
 @using MediatR
 @inject ISender Sender
+@inject IJSRuntime JSRuntime
 
 <style>
   .card { background: #fff; border-radius: var(--r-lg); box-shadow: var(--shadow); width: 100%; margin-bottom: 24px; display: flex; flex-direction: column; }
@@ -80,6 +82,9 @@ else
                             <td style="display: flex; gap: 8px; align-items: center;">
                                 <button class="btn-icon" @onclick="() => OpenEditModal(client)" title="Editar">
                                     <span class="material-symbols-rounded" style="font-size: 18px;">edit</span>
+                                </button>
+                                <button class="btn-icon" @onclick="() => DeleteClient(client)" title="Eliminar" style="color: #EF4444;">
+                                    <span class="material-symbols-rounded" style="font-size: 18px;">delete</span>
                                 </button>
                                 <a href="/clients/@client.Id/statement" class="btn-icon" style="text-decoration: none;" title="Ver Edo. Cuenta">
                                     <span class="material-symbols-rounded" style="font-size: 18px; color: var(--primary);">receipt_long</span>
@@ -211,6 +216,23 @@ else
         {
             isSaving = false;
             StateHasChanged();
+        }
+    }
+
+    private async Task DeleteClient(ClientListDto client)
+    {
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"¿Estás seguro de que deseas eliminar al cliente '{client.Name}'?");
+        if (confirmed)
+        {
+            try
+            {
+                await Sender.Send(new DeleteClientCommand(client.Id));
+                await LoadClients();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }
