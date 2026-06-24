@@ -84,14 +84,14 @@ public static class SeedData
         }
 
         // Seed default admin user
-        if (!await context.Users.AnyAsync(u => u.UserName == "admin"))
+        if (!await context.Users.AnyAsync(u => u.UserName == "Admin"))
         {
             var adminUser = new User
             {
                 Id = Guid.NewGuid(),
-                UserName = "admin",
+                UserName = "Admin",
                 Email = "admin@aegifinance.com",
-                PasswordHash = passwordHasher.HashPassword("Admin123!"),
+                PasswordHash = passwordHasher.HashPassword("Admin"),
                 UserType = UserType.Administrator,
                 Name = "Administrador",
                 IsActive = true,
