@@ -3801,11 +3801,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Worker\\AegiFinance.Worker.csproj",
+      "projectUniqueName": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Worker\\AegiFinance.Worker.csproj",
       "projectName": "AegiFinance.Worker",
-      "projectPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Worker\\AegiFinance.Worker.csproj",
+      "projectPath": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Worker\\AegiFinance.Worker.csproj",
       "packagesPath": "C:\\Users\\kevin\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Worker\\obj\\",
+      "outputPath": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Worker\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\DevExpress 24.2\\Components\\Offline Packages",
@@ -3831,11 +3831,11 @@
           "framework": "net9.0",
           "targetAlias": "net9.0",
           "projectReferences": {
-            "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Application\\AegiFinance.Application.csproj": {
-              "projectPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Application\\AegiFinance.Application.csproj"
+            "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Application\\AegiFinance.Application.csproj": {
+              "projectPath": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Application\\AegiFinance.Application.csproj"
             },
-            "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Infrastructure\\AegiFinance.Infrastructure.csproj": {
-              "projectPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Infrastructure\\AegiFinance.Infrastructure.csproj"
+            "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Infrastructure\\AegiFinance.Infrastructure.csproj": {
+              "projectPath": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Infrastructure\\AegiFinance.Infrastructure.csproj"
             }
           }
         }

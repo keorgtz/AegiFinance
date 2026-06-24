@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AegiFinance.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+379f2b837ea999a6b487beb0b6f1964ddbae8562")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b36a76f9ffe55122db5b874c03e6a5def94cc554")]
 [assembly: System.Reflection.AssemblyProductAttribute("AegiFinance.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AegiFinance.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

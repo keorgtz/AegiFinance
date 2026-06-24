@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "cFaoz6yzRGU=",
+  "dgSpecHash": "WWlMZ7TO6yg=",
   "success": true,
-  "projectFilePath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Web\\AegiFinance.Web.csproj",
+  "projectFilePath": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Web\\AegiFinance.Web.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\kevin\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\kevin\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

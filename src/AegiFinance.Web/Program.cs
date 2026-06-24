@@ -3,6 +3,7 @@ using AegiFinance.Infrastructure;
 using AegiFinance.Web.Components;
 using AegiFinance.Web.Seed;
 using AegiFinance.Web.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using Serilog;
 
@@ -33,7 +34,20 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<IPermissionService, MockPermissionService>();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/login";
+        options.LogoutPath = "/api/auth/logout";
+        options.Cookie.Name = "AegiFinance.Auth";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+    });
+
+builder.Services.AddCascadingAuthenticationState();
+
+builder.Services.AddScoped<IPermissionService, BlazorPermissionService>();
 
 // Configure Blazor Web App (mantener existente)
 builder.Services.AddRazorComponents()

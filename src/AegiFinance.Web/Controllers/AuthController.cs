@@ -1,13 +1,13 @@
+using System.Security.Claims;
 using AegiFinance.Application.Common.Interfaces;
-using AegiFinance.Application.Common.Models;
-using AegiFinance.Web.Extensions;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AegiFinance.Web.Controllers;
 
-[ApiController]
 [Route("api/[controller]")]
+[ApiController]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
@@ -18,39 +18,66 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    [AllowAnonymous]
-    public async Task<ActionResult<AuthResult>> Login(LoginRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Login([FromForm] string username, [FromForm] string password, [FromQuery] string? returnUrl = null)
     {
-        var result = await _authService.LoginAsync(request.UsernameOrEmail, request.Password, cancellationToken);
-        return Ok(result);
-    }
+        try
+        {
+            var authResult = await _authService.LoginAsync(username, password);
 
-    [HttpPost("login-pin")]
-    [AllowAnonymous]
-    public async Task<ActionResult<AuthResult>> LoginWithPin(LoginPinRequest request, CancellationToken cancellationToken)
-    {
-        var result = await _authService.LoginWithPinAsync(request.Username, request.Pin, cancellationToken);
-        return Ok(result);
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, authResult.User.Id.ToString()),
+                new Claim(ClaimTypes.Name, authResult.User.Name),
+                new Claim(ClaimTypes.Email, authResult.User.Email),
+                new Claim("UserType", authResult.User.UserType)
+            };
+
+            if (authResult.User.ClientId.HasValue)
+            {
+                claims.Add(new Claim("ClientId", authResult.User.ClientId.Value.ToString()));
+            }
+
+            foreach (var role in authResult.User.Roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
+            foreach (var permission in authResult.User.Permissions)
+            {
+                claims.Add(new Claim("Permission", permission));
+            }
+
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties
+            {
+                IsPersistent = true,
+                ExpiresUtc = DateTime.UtcNow.AddDays(7)
+            });
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+
+            return Redirect("/");
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Redirect("/login?error=invalid_credentials");
+        }
+        catch (Exception)
+        {
+            return Redirect("/login?error=server_error");
+        }
     }
 
     [HttpPost("logout")]
-    [Authorize]
-    public async Task<IActionResult> Logout(CancellationToken cancellationToken)
+    [HttpGet("logout")] // Allow GET for easier logout from UI buttons
+    public async Task<IActionResult> Logout()
     {
-        var userId = User.GetUserId();
-        await _authService.LogoutAsync(userId, cancellationToken);
-        return NoContent();
-    }
-
-    [HttpPost("refresh")]
-    [AllowAnonymous]
-    public async Task<ActionResult<AuthResult>> Refresh(RefreshRequest request, CancellationToken cancellationToken)
-    {
-        var result = await _authService.RefreshTokenAsync(request.RefreshToken, cancellationToken);
-        return Ok(result);
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        return Redirect("/login");
     }
 }
-
-public record LoginRequest(string UsernameOrEmail, string Password);
-public record LoginPinRequest(string Username, string Pin);
-public record RefreshRequest(string RefreshToken);

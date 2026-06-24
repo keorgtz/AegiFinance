@@ -65,7 +65,14 @@
             <div class="crumb"><span>AegiFinance</span><span style="opacity:.5">›</span><span class="current">App</span></div>
         </div>
         <div class="tb-right">
-            <span class="av">AF</span>
+            <AuthorizeView Context="authState">
+                <Authorized>
+                    <span class="av" title="@authState.User.Identity?.Name">@GetInitials(authState.User.Identity?.Name)</span>
+                    <form method="post" action="/api/auth/logout" style="margin: 0; padding: 0;">
+                        <button type="submit" class="btn btn-sm btn-outline-secondary" style="font-size: 11px; padding: 2px 8px; border-radius: 4px; margin-left: 8px;">Salir</button>
+                    </form>
+                </Authorized>
+            </AuthorizeView>
         </div>
     </div>
     
@@ -102,5 +109,13 @@
     private void ToggleSidebar()
     {
         isSidebarOpen = !isSidebarOpen;
+    }
+
+    private string GetInitials(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return "AF";
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 1) return parts[0].Substring(0, Math.Min(2, parts[0].Length)).ToUpper();
+        return $"{parts[0][0]}{parts[^1][0]}".ToUpper();
     }
 }

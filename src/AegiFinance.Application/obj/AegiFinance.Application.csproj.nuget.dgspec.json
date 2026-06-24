@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Application\\AegiFinance.Application.csproj": {}
+    "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Application\\AegiFinance.Application.csproj": {}
   },
   "projects": {
-    "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Application\\AegiFinance.Application.csproj": {
+    "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Application\\AegiFinance.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Application\\AegiFinance.Application.csproj",
+        "projectUniqueName": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Application\\AegiFinance.Application.csproj",
         "projectName": "AegiFinance.Application",
-        "projectPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Application\\AegiFinance.Application.csproj",
+        "projectPath": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Application\\AegiFinance.Application.csproj",
         "packagesPath": "C:\\Users\\kevin\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Application\\obj\\",
+        "outputPath": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\DevExpress 24.2\\Components\\Offline Packages",
@@ -37,8 +37,8 @@
             "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {
-              "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj": {
-                "projectPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj"
+              "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj": {
+                "projectPath": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj"
               }
             }
           }
@@ -101,14 +101,14 @@
         }
       }
     },
-    "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj": {
+    "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj",
+        "projectUniqueName": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj",
         "projectName": "AegiFinance.Domain",
-        "projectPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj",
+        "projectPath": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Domain\\AegiFinance.Domain.csproj",
         "packagesPath": "C:\\Users\\kevin\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\kevin\\.gemini\\antigravity\\worktrees\\AegiFinance\\mvp-clean-meridian-ui\\src\\AegiFinance.Domain\\obj\\",
+        "outputPath": "C:\\Users\\kevin\\KeorSoft\\Development\\Web\\AegiFinance\\src\\AegiFinance.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\DevExpress 24.2\\Components\\Offline Packages",
