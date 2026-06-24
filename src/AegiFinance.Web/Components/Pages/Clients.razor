@@ -1,5 +1,7 @@
 @page "/clients"
 @using AegiFinance.Application.Features.Clients.Queries.GetClients
+@using AegiFinance.Application.Features.Clients.Commands.CreateClient
+@using AegiFinance.Application.Features.Clients.Commands.UpdateClient
 @using AegiFinance.Application.Dtos
 @using MediatR
 @inject ISender Sender
@@ -20,13 +22,20 @@
   .status-active { background: var(--em-pl); color: var(--em); }
   .btn-primary { background: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: var(--r-md); font-size: 13px; font-weight: 500; cursor: pointer; box-shadow: var(--shadow); display: flex; align-items: center; gap: 6px; }
   .btn-primary:hover { background: var(--primary-dark); }
+  .btn-secondary { background: var(--gray-line); color: var(--gray-dark); border: none; padding: 8px 16px; border-radius: var(--r-md); font-size: 13px; font-weight: 500; cursor: pointer; }
+  .btn-secondary:hover { background: #D1D5DB; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 4px; color: var(--gray-dark); }
+  .form-control { width: 100%; padding: 8px 12px; border: 1px solid var(--gray-line); border-radius: var(--r-md); font-size: 14px; outline: none; }
+  .btn-icon { background: none; border: none; padding: 4px; cursor: pointer; color: var(--gray-muted); border-radius: var(--r-sm); }
+  .btn-icon:hover { background: #F3F4F6; color: var(--primary); }
 </style>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
     <div class="h-page-title">Clientes</div>
     @if (canCreateClient)
     {
-        <button class="btn-primary">
+        <button class="btn-primary" @onclick="OpenCreateModal">
             <span class="material-symbols-rounded" style="font-size: 18px;">add</span> Nuevo Cliente
         </button>
     }
@@ -68,8 +77,13 @@ else
                                     @client.Status
                                 </span>
                             </td>
-                            <td>
-                                <a href="/clients/@client.Id/statement" style="color: var(--primary); text-decoration: none; font-size: 13px; font-weight: 500;">Ver Edo. Cuenta</a>
+                            <td style="display: flex; gap: 8px; align-items: center;">
+                                <button class="btn-icon" @onclick="() => OpenEditModal(client)" title="Editar">
+                                    <span class="material-symbols-rounded" style="font-size: 18px;">edit</span>
+                                </button>
+                                <a href="/clients/@client.Id/statement" class="btn-icon" style="text-decoration: none;" title="Ver Edo. Cuenta">
+                                    <span class="material-symbols-rounded" style="font-size: 18px; color: var(--primary);">receipt_long</span>
+                                </a>
                             </td>
                         </tr>
                     }
@@ -85,14 +99,118 @@ else
     </div>
 }
 
+<Modal IsVisible="@isModalVisible" Title="@(isEditing ? "Editar Cliente" : "Nuevo Cliente")" OnClose="CloseModal">
+    <ChildContent>
+        <div class="form-group">
+            <label>Nombre Fiscal (Name)</label>
+            <input class="form-control" @bind="clientForm.Name" placeholder="Razón Social" />
+        </div>
+        <div class="form-group">
+            <label>Nombre Comercial (Trade Name)</label>
+            <input class="form-control" @bind="clientForm.TradeName" placeholder="Nombre visible" />
+        </div>
+        <div class="form-group">
+            <label>Tax ID (RFC)</label>
+            <input class="form-control" @bind="clientForm.TaxId" placeholder="RFC" />
+        </div>
+        <div class="form-group">
+            <label>Email de Facturación</label>
+            <input class="form-control" type="email" @bind="clientForm.BillingEmail" placeholder="contacto@empresa.com" />
+        </div>
+    </ChildContent>
+    <FooterContent>
+        <button class="btn-secondary" @onclick="CloseModal">Cancelar</button>
+        <button class="btn-primary" @onclick="SaveClient" disabled="@isSaving">
+            @(isSaving ? "Guardando..." : "Guardar")
+        </button>
+    </FooterContent>
+</Modal>
+
 @code {
     private List<ClientListDto>? ClientsList;
     private bool canCreateClient;
+    
+    // Modal state
+    private bool isModalVisible;
+    private bool isEditing;
+    private bool isSaving;
+    private UpdateClientCommand clientForm = new();
 
     protected override async Task OnInitializedAsync()
     {
         canCreateClient = await PermissionService.HasPermissionAsync("CreateClient");
+        await LoadClients();
+    }
+
+    private async Task LoadClients()
+    {
         var result = await Sender.Send(new GetClientsQuery { PageSize = 100 });
         ClientsList = result.Items.ToList();
+    }
+
+    private void OpenCreateModal()
+    {
+        isEditing = false;
+        clientForm = new UpdateClientCommand();
+        isModalVisible = true;
+    }
+
+    private void OpenEditModal(ClientListDto client)
+    {
+        isEditing = true;
+        clientForm = new UpdateClientCommand
+        {
+            Id = client.Id,
+            Name = client.Name,
+            TradeName = client.TradeName,
+            // (Mock map, we might need a GetClientById query for full details but for now we map what we have)
+            // or let the update command ignore nulls if we don't have them.
+        };
+        isModalVisible = true;
+    }
+
+    private void CloseModal()
+    {
+        isModalVisible = false;
+    }
+
+    private async Task SaveClient()
+    {
+        if (string.IsNullOrWhiteSpace(clientForm.Name)) return;
+
+        isSaving = true;
+        StateHasChanged();
+
+        try
+        {
+            if (isEditing)
+            {
+                await Sender.Send(clientForm);
+            }
+            else
+            {
+                var createCommand = new CreateClientCommand
+                {
+                    Name = clientForm.Name,
+                    TradeName = clientForm.TradeName,
+                    TaxId = clientForm.TaxId,
+                    BillingEmail = clientForm.BillingEmail
+                };
+                await Sender.Send(createCommand);
+            }
+
+            await LoadClients();
+            CloseModal();
+        }
+        catch (Exception ex)
+        {
+            // Handle error (show a toast or error message in modal)
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            isSaving = false;
+            StateHasChanged();
+        }
     }
 }

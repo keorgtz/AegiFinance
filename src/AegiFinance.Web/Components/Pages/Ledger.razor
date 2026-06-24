@@ -1,5 +1,9 @@
 @page "/ledger"
 @using AegiFinance.Application.Features.Ledger.Queries.GetLedgerEntries
+@using AegiFinance.Application.Features.Ledger.Commands.RegisterIncome
+@using AegiFinance.Application.Features.Ledger.Commands.RegisterExpense
+@using AegiFinance.Application.Features.Clients.Queries.GetClients
+@using AegiFinance.Application.Features.BankAccounts.Queries.GetBankAccounts
 @using AegiFinance.Application.Dtos
 @using MediatR
 @inject ISender Sender
@@ -23,15 +27,19 @@
   .type-Adjustment { background: #F3F4F6; color: #6B7280; }
   .price { font-weight: 600; font-variant-numeric: tabular-nums; }
   .date { font-variant-numeric: tabular-nums; }
-  .btn-primary { background: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: var(--r-md); font-size: 13px; font-weight: 500; cursor: pointer; box-shadow: var(--shadow); display: flex; align-items: center; gap: 6px; }
   .btn-primary:hover { background: var(--primary-dark); }
+  .btn-secondary { background: var(--gray-line); color: var(--gray-dark); border: none; padding: 8px 16px; border-radius: var(--r-md); font-size: 13px; font-weight: 500; cursor: pointer; }
+  .btn-secondary:hover { background: #D1D5DB; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 4px; color: var(--gray-dark); }
+  .form-control { width: 100%; padding: 8px 12px; border: 1px solid var(--gray-line); border-radius: var(--r-md); font-size: 14px; outline: none; }
 </style>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
     <div class="h-page-title">Libro Mayor Financiero</div>
     @if (canCreateEntry)
     {
-        <button class="btn-primary">
+        <button class="btn-primary" @onclick="OpenCreateModal">
             <span class="material-symbols-rounded" style="font-size: 18px;">add</span> Registrar Movimiento
         </button>
     }
@@ -103,14 +111,145 @@ else
     </div>
 }
 
+<Modal IsVisible="@isModalVisible" Title="Registrar Movimiento" OnClose="CloseModal">
+    <ChildContent>
+        <div class="form-group">
+            <label>Tipo de Movimiento</label>
+            <select class="form-control" @bind="entryType">
+                <option value="Income">Ingreso</option>
+                <option value="Expense">Egreso</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Cuenta Bancaria (Id por ahora)</label>
+            <input class="form-control" @bind="bankAccountIdInput" placeholder="Guid de cuenta" />
+        </div>
+        <div class="form-group">
+            <label>Cliente Relacionado (Opcional)</label>
+            <select class="form-control" @bind="selectedClientId">
+                <option value="">-- Sin Cliente --</option>
+                @if (ClientsList != null)
+                {
+                    @foreach (var c in ClientsList)
+                    {
+                        <option value="@c.Id">@c.Name</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Fecha</label>
+            <input type="date" class="form-control" @bind="entryDate" />
+        </div>
+        <div class="form-group">
+            <label>Descripción</label>
+            <input class="form-control" @bind="entryDescription" placeholder="Motivo del movimiento" />
+        </div>
+        <div class="form-group">
+            <label>Monto</label>
+            <input type="number" step="0.01" class="form-control" @bind="entryAmount" placeholder="0.00" />
+        </div>
+    </ChildContent>
+    <FooterContent>
+        <button class="btn-secondary" @onclick="CloseModal">Cancelar</button>
+        <button class="btn-primary" @onclick="SaveEntry" disabled="@isSaving">
+            @(isSaving ? "Guardando..." : "Guardar")
+        </button>
+    </FooterContent>
+</Modal>
+
 @code {
     private List<LedgerEntryListDto>? LedgerEntriesList;
+    private List<ClientListDto>? ClientsList;
+    
     private bool canCreateEntry;
+
+    // Modal state
+    private bool isModalVisible;
+    private bool isSaving;
+    
+    private string entryType = "Income";
+    private string bankAccountIdInput = "00000000-0000-0000-0000-000000000000"; // Mock default BankAccount
+    private Guid? selectedClientId;
+    private DateTime entryDate = DateTime.Today;
+    private string entryDescription = string.Empty;
+    private decimal entryAmount;
 
     protected override async Task OnInitializedAsync()
     {
         canCreateEntry = await PermissionService.HasPermissionAsync("CreateLedgerEntry");
+        await LoadData();
+        
+        var clientsResult = await Sender.Send(new GetClientsQuery { PageSize = 100 });
+        ClientsList = clientsResult.Items.ToList();
+    }
+
+    private async Task LoadData()
+    {
         var result = await Sender.Send(new GetLedgerEntriesQuery { PageSize = 100 });
         LedgerEntriesList = result.Items.ToList();
+    }
+
+    private void OpenCreateModal()
+    {
+        entryType = "Income";
+        entryDate = DateTime.Today;
+        entryDescription = string.Empty;
+        entryAmount = 0;
+        selectedClientId = null;
+        isModalVisible = true;
+    }
+
+    private void CloseModal()
+    {
+        isModalVisible = false;
+    }
+
+    private async Task SaveEntry()
+    {
+        if (entryAmount <= 0) return;
+        if (!Guid.TryParse(bankAccountIdInput, out Guid bankId)) return;
+
+        isSaving = true;
+        StateHasChanged();
+
+        try
+        {
+            if (entryType == "Income")
+            {
+                var cmd = new RegisterIncomeCommand
+                {
+                    BankAccountId = bankId,
+                    Amount = entryAmount,
+                    Date = entryDate,
+                    Description = entryDescription,
+                    ClientId = selectedClientId
+                };
+                await Sender.Send(cmd);
+            }
+            else
+            {
+                var cmd = new RegisterExpenseCommand
+                {
+                    BankAccountId = bankId,
+                    Amount = entryAmount,
+                    Date = entryDate,
+                    Description = entryDescription
+                };
+                await Sender.Send(cmd);
+            }
+
+            await LoadData();
+            CloseModal();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            isSaving = false;
+            StateHasChanged();
+        }
     }
 }

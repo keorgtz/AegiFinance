@@ -114,3 +114,7 @@ build_metadata.AdditionalFiles.CssScope = b-zdzfvk4a0d
 [C:/Users/kevin/KeorSoft/Development/Web/AegiFinance/src/AegiFinance.Web/Components/Layout/NavMenu.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTmF2TWVudS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-rxfi3w2mj8
+
+[C:/Users/kevin/KeorSoft/Development/Web/AegiFinance/src/AegiFinance.Web/Components/UI/Modal.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xVSVxNb2RhbC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-ln790ruqws

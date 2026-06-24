@@ -1,0 +1,49 @@
+@if (IsVisible)
+{
+    <div class="modal-backdrop" @onclick="Close">
+        <div class="modal-container" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <span class="modal-title">@Title</span>
+                <button class="modal-close" @onclick="Close">
+                    <span class="material-symbols-rounded">close</span>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                @ChildContent
+            </div>
+            
+            @if (FooterContent != null)
+            {
+                <div class="modal-footer">
+                    @FooterContent
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    [Parameter]
+    public string Title { get; set; } = "Modal Title";
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? FooterContent { get; set; }
+
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    private async Task Close()
+    {
+        if (OnClose.HasDelegate)
+        {
+            await OnClose.InvokeAsync();
+        }
+    }
+}

@@ -1,5 +1,6 @@
 using AegiFinance.Application;
 using AegiFinance.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using AegiFinance.Web.Components;
 using AegiFinance.Web.Seed;
 using AegiFinance.Web.Services;
@@ -79,6 +80,18 @@ app.MapRazorComponents<App>()
 // Seed data
 using (var scope = app.Services.CreateScope())
 {
+    var context = scope.ServiceProvider.GetRequiredService<AegiFinance.Infrastructure.Data.ApplicationDbContext>();
+    try
+    {
+        Log.Information("Applying database migrations...");
+        await context.Database.MigrateAsync();
+        Log.Information("Database migrations applied successfully.");
+    }
+    catch (Exception ex)
+    {
+        Log.Error(ex, "An error occurred while applying database migrations.");
+    }
+
     await SeedData.InitializeAsync(scope.ServiceProvider);
 }
 

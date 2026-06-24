@@ -71,8 +71,6 @@ C:/Users/kevin/KeorSoft/Development/Web/AegiFinance/src/AegiFinance.Web/obj/Debu
 C:/Users/kevin/KeorSoft/Development/Web/AegiFinance/src/AegiFinance.Web/obj/Debug/net9.0/compressed/2krtph6rs2-{0}-h1s4sie4z3-h1s4sie4z3.gz
 C:/Users/kevin/KeorSoft/Development/Web/AegiFinance/src/AegiFinance.Web/obj/Debug/net9.0/compressed/tnq3zewu7d-{0}-63fj8s7r0e-63fj8s7r0e.gz
 C:/Users/kevin/KeorSoft/Development/Web/AegiFinance/src/AegiFinance.Web/obj/Debug/net9.0/compressed/o727emd8kc-{0}-0j3bgjxly4-0j3bgjxly4.gz
-C:/Users/kevin/KeorSoft/Development/Web/AegiFinance/src/AegiFinance.Web/obj/Debug/net9.0/compressed/vyxit30qbo-{0}-s7lhaztkl8-s7lhaztkl8.gz
-C:/Users/kevin/KeorSoft/Development/Web/AegiFinance/src/AegiFinance.Web/obj/Debug/net9.0/compressed/ksr9y62cey-{0}-s7lhaztkl8-s7lhaztkl8.gz
 C:/Users/kevin/KeorSoft/Development/Web/AegiFinance/src/AegiFinance.Web/obj/Debug/net9.0/staticwebassets.build.json
 C:/Users/kevin/KeorSoft/Development/Web/AegiFinance/src/AegiFinance.Web/obj/Debug/net9.0/staticwebassets.build.json.cache
 C:/Users/kevin/KeorSoft/Development/Web/AegiFinance/src/AegiFinance.Web/obj/Debug/net9.0/staticwebassets.development.json
@@ -984,8 +982,6 @@ C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Web\obj\Debu
 C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Web\obj\Debug\net9.0\compressed\2krtph6rs2-{0}-h1s4sie4z3-h1s4sie4z3.gz
 C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Web\obj\Debug\net9.0\compressed\tnq3zewu7d-{0}-63fj8s7r0e-63fj8s7r0e.gz
 C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Web\obj\Debug\net9.0\compressed\o727emd8kc-{0}-0j3bgjxly4-0j3bgjxly4.gz
-C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Web\obj\Debug\net9.0\compressed\vyxit30qbo-{0}-s7lhaztkl8-s7lhaztkl8.gz
-C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Web\obj\Debug\net9.0\compressed\ksr9y62cey-{0}-s7lhaztkl8-s7lhaztkl8.gz
 C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Web\obj\Debug\net9.0\staticwebassets.build.json
 C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Web\obj\Debug\net9.0\staticwebassets.build.json.cache
 C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Web\obj\Debug\net9.0\staticwebassets.development.json
@@ -995,3 +991,6 @@ C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Web\obj\Debu
 C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Web\obj\Debug\net9.0\AegiFinance.Web.genruntimeconfig.cache
 C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Web\obj\Debug\net9.0\ref\AegiFinance.Web.dll
 C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Web\bin\Debug\net9.0\CsvHelper.dll
+C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Web\obj\Debug\net9.0\scopedcss\Components\UI\Modal.razor.rz.scp.css
+C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Web\obj\Debug\net9.0\compressed\vyxit30qbo-{0}-od4hmecbw2-od4hmecbw2.gz
+C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Web\obj\Debug\net9.0\compressed\ksr9y62cey-{0}-od4hmecbw2-od4hmecbw2.gz
