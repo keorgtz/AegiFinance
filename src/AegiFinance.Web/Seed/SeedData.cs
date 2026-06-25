@@ -57,7 +57,9 @@ public static class SeedData
         await context.SaveChangesAsync();
 
         // Seed Admin Role
-        var adminRole = await context.Roles.FirstOrDefaultAsync(r => r.Name == "Admin");
+        var adminRole = await context.Roles
+            .Include(r => r.Permissions)
+            .FirstOrDefaultAsync(r => r.Name == "Admin");
         if (adminRole == null)
         {
             adminRole = new Role
