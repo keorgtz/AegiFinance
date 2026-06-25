@@ -1,7 +1,7 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Common.Models;
 using AegiFinance.Application.Dtos;
-using AegiFinance.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,10 +26,7 @@ public class GetSubscriptionsQueryHandler : IRequestHandler<GetSubscriptionsQuer
             .Include(s => s.Service)
             .AsQueryable();
 
-        var isClientUser = Enum.TryParse<UserType>(_currentUserService.UserType, out var userType)
-            && userType == UserType.Client;
-
-        if (isClientUser)
+        if (_currentUserService.IsClientUser())
         {
             if (!_currentUserService.ClientId.HasValue)
             {
@@ -37,6 +34,23 @@ public class GetSubscriptionsQueryHandler : IRequestHandler<GetSubscriptionsQuer
             }
 
             query = query.Where(s => s.ClientId == _currentUserService.ClientId.Value);
+
+            if (_currentUserService.UserId.HasValue)
+            {
+                var hasRestrictions = await _context.SubscriptionPermissions
+                    .AsNoTracking()
+                    .AnyAsync(sp => sp.UserId == _currentUserService.UserId.Value, cancellationToken);
+
+                if (hasRestrictions)
+                {
+                    var allowedSubscriptionIds = _context.SubscriptionPermissions
+                        .AsNoTracking()
+                        .Where(sp => sp.UserId == _currentUserService.UserId.Value)
+                        .Select(sp => sp.SubscriptionId);
+
+                    query = query.Where(s => allowedSubscriptionIds.Contains(s.Id));
+                }
+            }
         }
         else if (request.ClientId.HasValue)
         {

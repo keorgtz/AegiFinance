@@ -1,0 +1,45 @@
+# ── Secretos ──────────────────────────────────────────────────────────────────
+.env
+*.env.local
+*.env.production
+
+# ── .NET ──────────────────────────────────────────────────────────────────────
+**/bin/
+**/obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.pdb
+
+# ── Visual Studio / Rider ─────────────────────────────────────────────────────
+.vs/
+.idea/
+*.swp
+*~
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
+logs/
+
+# ── NuGet ─────────────────────────────────────────────────────────────────────
+*.nupkg
+*.snupkg
+.nuget/packages/
+packages/
+
+# ── Node / Next.js (cuando exista web/) ──────────────────────────────────────
+node_modules/
+.next/
+out/
+npm-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ── Docker ────────────────────────────────────────────────────────────────────
+# (docker-compose.yml sí se versiona; .env no)
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini

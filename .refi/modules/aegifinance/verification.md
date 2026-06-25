@@ -95,7 +95,7 @@
 
 ### Gate 10 — Dashboard
 
-- [ ] Existe un único componente `Dashboard.razor`.
+- [ ] Existe una única ruta `app/(app)/dashboard/page.tsx` (`<Dashboard />`).
 - [ ] El contenido se adapta según permisos del usuario.
 - [ ] KPIs calculados correctamente.
 - [ ] Gráficos muestran tendencias cuando aplica.
@@ -109,7 +109,7 @@
 - [ ] 7 reportes generan correctamente en PDF.
 - [ ] Se pueden exportar los reportes a Excel (.xlsx).
 - [ ] Se puede generar vista previa HTML.
-- [ ] Los PDFs/Excel/HTML usan estilo MeridianUI.
+- [ ] Los PDFs/Excel/HTML usan estilo AegisUI.
 - [ ] Datos consistentes.
 - [ ] Usuarios `Client` solo ven su información.
 - [ ] La conversión de moneda funciona desde MXN con tasa automática o manual.
@@ -160,14 +160,31 @@
 - [ ] Domain no depende de infraestructura.
 - [ ] No hay lógica de negocio en controllers.
 - [ ] Validaciones en FluentValidation.
-- [ ] Single View Architecture (SVA) aplicada: una vista por módulo.
-- [ ] Cero duplicación de componentes para administradores y clientes.
+- [ ] Single View Architecture (SVA) aplicada: una ruta de Next.js por módulo.
+- [ ] Cero duplicación de componentes/rutas para administradores y clientes.
+- [ ] `web/` (Next.js) consume `AegiFinance.Web` solo vía HTTP/JSON; no referencia proyectos .NET.
+- [ ] El access token JWT se mantiene solo en memoria en el cliente (nunca `localStorage`); el refresh token vive en cookie `HttpOnly`/`Secure`.
 
 ### UX/UI
-- [ ] Toda la UI sigue MeridianUI (colores, tipografía, iconografía, spacing).
-- [ ] El menú de navegación se construye dinámicamente por permisos.
+- [ ] Toda la UI sigue AegisUI (colores, tipografía, iconografía, spacing) — no se reutilizan tokens de MeridianUI.
+- [ ] El menú de navegación se construye dinámicamente por permisos (`usePermissions()` / `GET /api/auth/me`).
 - [ ] Fechas presentadas en formato `22/Jun/2026`.
 - [ ] Importes con `font-variant-numeric: tabular-nums`.
+
+### Teclado (obligatorio)
+- [ ] `Ctrl/Cmd+K` abre la paleta de comandos con navegación y acciones rápidas.
+- [ ] En listados: `N` crea registro, `/` enfoca el buscador, `↑`/`↓` mueven la selección de fila, `Enter` abre/edita.
+- [ ] En formularios: `Enter` envía (excepto `textarea`, donde `Ctrl/Cmd+Enter` envía), `Esc` cancela/cierra con confirmación si hay cambios sin guardar.
+- [ ] El primer campo se autofocusa al abrir un formulario o modal; el foco queda atrapado dentro de modales/drawers.
+- [ ] Todo botón de solo-ícono tiene `aria-label` y anillo de foco visible.
+- [ ] Ninguna acción crítica depende exclusivamente del mouse.
+
+### Eficiencia de Captura (desktop + mobile)
+- [ ] Los listados de alto volumen (Clientes, Suscripciones, Ledger) ofrecen alta rápida inline/drawer sin navegar a página nueva.
+- [ ] Las mutaciones usan UI optimista (TanStack Query) con rollback y toast en caso de error.
+- [ ] Los inputs numéricos usan `inputMode="decimal"`/`"numeric"`; los de fecha usan selector nativo.
+- [ ] En mobile (< 768px), los formularios son de una sola columna con barra de acción inferior fija y objetivos táctiles ≥ 44×44px.
+- [ ] Existen valores por defecto inteligentes (fecha actual, moneda MXN, última cuenta/banco usado) para minimizar campos a llenar.
 
 ### Moneda
 - [ ] Todo monto se almacena en MXN.

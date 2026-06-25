@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
 using MediatR;
@@ -9,15 +10,22 @@ public class RegisterAdjustmentCommandHandler : IRequestHandler<RegisterAdjustme
 {
     private readonly ILedgerService _ledgerService;
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public RegisterAdjustmentCommandHandler(ILedgerService ledgerService, IApplicationDbContext context)
+    public RegisterAdjustmentCommandHandler(ILedgerService ledgerService, IApplicationDbContext context, ICurrentUserService currentUserService)
     {
         _ledgerService = ledgerService;
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task<LedgerEntryDto> Handle(RegisterAdjustmentCommand request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No tiene permiso para registrar ajustes.");
+        }
+
         var entry = await _ledgerService.RegisterAdjustmentAsync(
             new RegisterAdjustmentRequest(
                 request.BankAccountId,

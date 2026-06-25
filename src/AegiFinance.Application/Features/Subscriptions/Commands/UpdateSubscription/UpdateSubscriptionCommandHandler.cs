@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Helpers;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
@@ -11,14 +12,21 @@ namespace AegiFinance.Application.Features.Subscriptions.Commands.UpdateSubscrip
 public class UpdateSubscriptionCommandHandler : IRequestHandler<UpdateSubscriptionCommand, SubscriptionDto>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public UpdateSubscriptionCommandHandler(IApplicationDbContext context)
+    public UpdateSubscriptionCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task<SubscriptionDto> Handle(UpdateSubscriptionCommand request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No se permite editar suscripciones desde el portal.");
+        }
+
         var subscription = await _context.Subscriptions
             .Include(s => s.Client)
             .Include(s => s.Service)

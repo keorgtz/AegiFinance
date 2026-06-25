@@ -200,3 +200,4 @@ C:\Users\kevin\.gemini\antigravity\worktrees\AegiFinance\mvp-clean-meridian-ui\s
 C:\Users\kevin\.gemini\antigravity\worktrees\AegiFinance\mvp-clean-meridian-ui\src\AegiFinance.Worker\obj\Debug\net9.0\AegiFinance.Worker.pdb
 C:\Users\kevin\.gemini\antigravity\worktrees\AegiFinance\mvp-clean-meridian-ui\src\AegiFinance.Worker\obj\Debug\net9.0\AegiFinance.Worker.genruntimeconfig.cache
 C:\Users\kevin\.gemini\antigravity\worktrees\AegiFinance\mvp-clean-meridian-ui\src\AegiFinance.Worker\obj\Debug\net9.0\ref\AegiFinance.Worker.dll
+C:\Users\kevin\KeorSoft\Development\Web\AegiFinance\src\AegiFinance.Worker\bin\Debug\net9.0\CsvHelper.dll

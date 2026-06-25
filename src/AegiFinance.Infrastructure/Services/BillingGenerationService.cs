@@ -5,7 +5,6 @@ using AegiFinance.Domain.Entities;
 using AegiFinance.Domain.Enums;
 using AegiFinance.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace AegiFinance.Infrastructure.Services;
 
@@ -34,6 +33,7 @@ public class BillingGenerationService : IBillingGenerationService
 
             var subscriptions = await _context.Subscriptions
                 .AsNoTracking()
+                .Include(s => s.Service)
                 .Where(s => s.Status == SubscriptionStatus.Active
                     && s.NextBillingDate.HasValue
                     && s.NextBillingDate.Value >= startDate
@@ -76,6 +76,7 @@ public class BillingGenerationService : IBillingGenerationService
 
         var subscription = await _context.Subscriptions
             .AsNoTracking()
+            .Include(s => s.Service)
             .FirstOrDefaultAsync(s => s.Id == subscriptionId, cancellationToken);
 
         if (subscription is null)
@@ -156,6 +157,7 @@ public class BillingGenerationService : IBillingGenerationService
 
             var subscriptions = await _context.Subscriptions
                 .AsNoTracking()
+                .Include(s => s.Service)
                 .Where(s => s.Status == SubscriptionStatus.Active
                     && s.NextBillingDate.HasValue
                     && s.NextBillingDate.Value >= cycle.StartDate
@@ -173,7 +175,7 @@ public class BillingGenerationService : IBillingGenerationService
                         await GenerateItemForSubscriptionAsync(subscription, cycle, triggeredBy, cancellationToken);
                         result.ItemsGenerated++;
                     }
-                    else if (onlyPending && existingItem.Status is BillingItemStatus.Pending or BillingItemStatus.Partial or BillingItemStatus.Cancelled)
+                    else if (!onlyPending || existingItem.Status is BillingItemStatus.Pending or BillingItemStatus.Partial or BillingItemStatus.Cancelled)
                     {
                         existingItem.Amount = subscription.Price;
                         existingItem.Description = BuildDescription(subscription);
@@ -263,7 +265,8 @@ public class BillingGenerationService : IBillingGenerationService
 
     private static string BuildDescription(Subscription subscription)
     {
-        return $"Cargo por servicio {subscription.ServiceId} - Suscripción {subscription.Code}";
+        var serviceName = subscription.Service?.Name ?? subscription.ServiceId.ToString();
+        return $"Cargo por servicio {serviceName} - Suscripción {subscription.Code}";
     }
 
     private static DateTime CalculateDueDate(Subscription subscription)

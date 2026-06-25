@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
 using MediatR;
@@ -8,14 +9,23 @@ namespace AegiFinance.Application.Features.BankAccounts.Commands.UpdateBankAccou
 public class UpdateBankAccountCommandHandler : IRequestHandler<UpdateBankAccountCommand, BankAccountDto>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
+    private readonly IAccountNumberProtector _accountNumberProtector;
 
-    public UpdateBankAccountCommandHandler(IApplicationDbContext context)
+    public UpdateBankAccountCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService, IAccountNumberProtector accountNumberProtector)
     {
         _context = context;
+        _currentUserService = currentUserService;
+        _accountNumberProtector = accountNumberProtector;
     }
 
     public async Task<BankAccountDto> Handle(UpdateBankAccountCommand request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No tiene permiso para modificar cuentas bancarias.");
+        }
+
         var account = await _context.BankAccounts
             .FirstOrDefaultAsync(ba => ba.Id == request.Id, cancellationToken);
 
@@ -35,7 +45,7 @@ public class UpdateBankAccountCommandHandler : IRequestHandler<UpdateBankAccount
 
         account.Name = request.Name;
         account.BankName = request.BankName;
-        account.AccountNumber = request.AccountNumber;
+        account.AccountNumber = string.IsNullOrWhiteSpace(request.AccountNumber) ? null : _accountNumberProtector.Protect(request.AccountNumber);
         account.Currency = request.Currency;
         account.OpeningBalance = request.OpeningBalance;
         account.OpeningDate = request.OpeningDate;
@@ -48,7 +58,7 @@ public class UpdateBankAccountCommandHandler : IRequestHandler<UpdateBankAccount
             Id = account.Id,
             Name = account.Name,
             BankName = account.BankName,
-            AccountNumber = account.AccountNumber,
+            MaskedAccountNumber = _accountNumberProtector.MaskFromProtected(account.AccountNumber),
             Currency = account.Currency,
             OpeningBalance = account.OpeningBalance,
             OpeningDate = account.OpeningDate,

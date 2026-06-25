@@ -94,8 +94,8 @@ namespace AegiFinance.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("AccountNumber")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("BankName")
                         .HasMaxLength(200)
@@ -399,6 +399,9 @@ namespace AegiFinance.Infrastructure.Migrations
 
                     b.Property<Guid>("BillingCycleId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CancellationReason")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("ClientId")
                         .HasColumnType("uniqueidentifier");
@@ -933,53 +936,6 @@ namespace AegiFinance.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ExchangeRates");
-                });
-
-            modelBuilder.Entity("AegiFinance.Domain.Entities.LedgerAllocation", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("Amount")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid>("BillingItemId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("DeletedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("LedgerEntryId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BillingItemId");
-
-                    b.HasIndex("LedgerEntryId", "BillingItemId")
-                        .IsUnique();
-
-                    b.ToTable("LedgerAllocations");
                 });
 
             modelBuilder.Entity("AegiFinance.Domain.Entities.LedgerEntry", b =>
@@ -1937,25 +1893,6 @@ namespace AegiFinance.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Client");
-                });
-
-            modelBuilder.Entity("AegiFinance.Domain.Entities.LedgerAllocation", b =>
-                {
-                    b.HasOne("AegiFinance.Domain.Entities.BillingItem", "BillingItem")
-                        .WithMany()
-                        .HasForeignKey("BillingItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AegiFinance.Domain.Entities.LedgerEntry", "LedgerEntry")
-                        .WithMany()
-                        .HasForeignKey("LedgerEntryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("BillingItem");
-
-                    b.Navigation("LedgerEntry");
                 });
 
             modelBuilder.Entity("AegiFinance.Domain.Entities.LedgerEntry", b =>

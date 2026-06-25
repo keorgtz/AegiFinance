@@ -1,11 +1,9 @@
 using AegiFinance.Application;
 using AegiFinance.Infrastructure;
-using Microsoft.EntityFrameworkCore;
-using AegiFinance.Web.Components;
+using AegiFinance.Web.Middleware;
 using AegiFinance.Web.Seed;
-using AegiFinance.Web.Services;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,33 +24,31 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.KnownProxies.Clear();
 });
 
+const string NextJsCorsPolicy = "NextJsClient";
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(NextJsCorsPolicy, policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 // Add services
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/login";
-        options.LogoutPath = "/api/auth/logout";
-        options.Cookie.Name = "AegiFinance.Auth";
-        options.Cookie.HttpOnly = true;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        options.Cookie.SameSite = SameSiteMode.Lax;
-    });
-
-builder.Services.AddCascadingAuthenticationState();
-
-builder.Services.AddScoped<IPermissionService, BlazorPermissionService>();
-
-// Configure Blazor Web App (mantener existente)
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
 
 var app = builder.Build();
 
@@ -63,19 +59,18 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseExceptionHandler();
+
 app.UseForwardedHeaders();
 app.UseHttpsRedirection();
+app.UseCors(NextJsCorsPolicy);
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseAntiforgery();
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok", service = "AegiFinance.Web", utc = DateTime.UtcNow }))
     .AllowAnonymous();
 
 app.MapControllers();
-app.MapStaticAssets();
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
 
 // Seed data
 using (var scope = app.Services.CreateScope())

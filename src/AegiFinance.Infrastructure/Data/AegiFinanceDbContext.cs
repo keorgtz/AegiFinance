@@ -42,7 +42,6 @@ public class AegiFinanceDbContext : DbContext
     public DbSet<BillingGenerationLog> BillingGenerationLogs => Set<BillingGenerationLog>();
     public DbSet<BankAccount> BankAccounts => Set<BankAccount>();
     public DbSet<LedgerEntry> LedgerEntries => Set<LedgerEntry>();
-    public DbSet<LedgerAllocation> LedgerAllocations => Set<LedgerAllocation>();
     public DbSet<TransferGroup> TransferGroups => Set<TransferGroup>();
     public DbSet<SubscriptionAllocation> SubscriptionAllocations => Set<SubscriptionAllocation>();
     public DbSet<BankStatement> BankStatements => Set<BankStatement>();
@@ -78,7 +77,6 @@ public class AegiFinanceDbContext : DbContext
         ConfigureBillingGenerationLog(modelBuilder);
         ConfigureBankAccount(modelBuilder);
         ConfigureLedgerEntry(modelBuilder);
-        ConfigureLedgerAllocation(modelBuilder);
         ConfigureTransferGroup(modelBuilder);
         ConfigureSubscriptionAllocation(modelBuilder);
         ConfigureBankStatement(modelBuilder);
@@ -554,7 +552,7 @@ public class AegiFinanceDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).HasMaxLength(200).IsRequired();
             entity.Property(e => e.BankName).HasMaxLength(200);
-            entity.Property(e => e.AccountNumber).HasMaxLength(100);
+            entity.Property(e => e.AccountNumber).HasMaxLength(500);
             entity.Property(e => e.Currency).HasMaxLength(3).IsRequired().HasDefaultValue("MXN");
             entity.Property(e => e.OpeningBalance).HasPrecision(18, 2);
             entity.Property(e => e.OpeningDate).IsRequired();
@@ -594,27 +592,6 @@ public class AegiFinanceDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(le => le.BillingItemId)
                 .IsRequired(false);
-        });
-    }
-
-    private static void ConfigureLedgerAllocation(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<LedgerAllocation>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.Property(e => e.Amount).HasPrecision(18, 2);
-
-            entity.HasIndex(e => new { e.LedgerEntryId, e.BillingItemId }).IsUnique();
-
-            entity.HasOne(la => la.LedgerEntry)
-                .WithMany()
-                .HasForeignKey(la => la.LedgerEntryId)
-                .IsRequired();
-
-            entity.HasOne(la => la.BillingItem)
-                .WithMany()
-                .HasForeignKey(la => la.BillingItemId)
-                .IsRequired();
         });
     }
 

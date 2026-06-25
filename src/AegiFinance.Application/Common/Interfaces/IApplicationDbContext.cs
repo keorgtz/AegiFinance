@@ -31,7 +31,6 @@ public interface IApplicationDbContext
     DbSet<BillingGenerationLog> BillingGenerationLogs { get; }
     DbSet<BankAccount> BankAccounts { get; }
     DbSet<LedgerEntry> LedgerEntries { get; }
-    DbSet<LedgerAllocation> LedgerAllocations { get; }
     DbSet<TransferGroup> TransferGroups { get; }
     DbSet<SubscriptionAllocation> SubscriptionAllocations { get; }
     DbSet<BankStatement> BankStatements { get; }

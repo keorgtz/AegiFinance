@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
 using AegiFinance.Domain.Entities;
@@ -9,14 +10,21 @@ namespace AegiFinance.Application.Features.Services.Commands.AddServicePriceHist
 public class AddServicePriceHistoryCommandHandler : IRequestHandler<AddServicePriceHistoryCommand, ServicePriceHistoryDto>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public AddServicePriceHistoryCommandHandler(IApplicationDbContext context)
+    public AddServicePriceHistoryCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task<ServicePriceHistoryDto> Handle(AddServicePriceHistoryCommand request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No tiene permiso para registrar cambios de precio.");
+        }
+
         var service = await _context.Services
             .FirstOrDefaultAsync(s => s.Id == request.ServiceId, cancellationToken);
 

@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
 using AegiFinance.Domain.Entities;
@@ -9,14 +10,21 @@ namespace AegiFinance.Application.Features.Services.Commands.UpdateService;
 public class UpdateServiceCommandHandler : IRequestHandler<UpdateServiceCommand, ServiceDto>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public UpdateServiceCommandHandler(IApplicationDbContext context)
+    public UpdateServiceCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task<ServiceDto> Handle(UpdateServiceCommand request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No tiene permiso para modificar servicios.");
+        }
+
         var service = await _context.Services
             .Include(s => s.Category)
             .Include(s => s.PriceHistory)

@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
 using AegiFinance.Application.Features.AccountStatements.Common;
@@ -22,28 +23,35 @@ public class GetClientStatementQueryHandler : IRequestHandler<GetClientStatement
 
     public async Task<AccountStatementDto> Handle(GetClientStatementQuery request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser() && _currentUserService.ClientId != request.ClientId)
+        {
+            throw new UnauthorizedAccessException("No tiene permiso para consultar el estado de cuenta de otro cliente.");
+        }
+
         var client = await _context.Clients.AsNoTracking().FirstOrDefaultAsync(x => x.Id == request.ClientId, cancellationToken)
             ?? throw new InvalidOperationException("El cliente no existe.");
 
-        EnsureClientAccess(request.ClientId);
-
         var from = request.From?.Date;
         var to = request.To?.Date;
+
+        decimal rate = 1m;
+        decimal? rateUsed = null;
+        if (!string.Equals(request.Currency, "MXN", StringComparison.OrdinalIgnoreCase))
+        {
+            var rateResult = await _currencyConverter.GetRateAsync(request.Currency, to ?? DateTime.UtcNow, cancellationToken);
+            rate = rateResult.Rate;
+            rateUsed = rate;
+        }
+
         var movements = await LoadMovementsAsync(request.ClientId, cancellationToken);
-        var initialBalance = movements.Where(x => from.HasValue && x.Date.Date < from.Value).Sum(x => x.DebitMXN - x.CreditMXN);
+        var initialBalanceMxN = movements.Where(x => from.HasValue && x.Date.Date < from.Value).Sum(x => x.DebitMXN - x.CreditMXN);
         var filtered = movements
             .Where(x => (!from.HasValue || x.Date.Date >= from.Value) && (!to.HasValue || x.Date.Date <= to.Value))
             .OrderBy(x => x.Date)
             .ThenBy(x => x.Type)
             .ToList();
 
-        decimal? rateUsed = null;
-        if (!string.Equals(request.Currency, "MXN", StringComparison.OrdinalIgnoreCase))
-        {
-            rateUsed = (await _currencyConverter.GetRateAsync(request.Currency, to ?? DateTime.UtcNow, cancellationToken)).Rate;
-        }
-
-        var runningBalanceMxN = initialBalance;
+        var runningBalanceMxN = initialBalanceMxN;
         var items = new List<AccountStatementItemDto>();
         foreach (var movement in filtered)
         {
@@ -54,9 +62,9 @@ public class GetClientStatementQueryHandler : IRequestHandler<GetClientStatement
                 Type = movement.Type,
                 Description = movement.Description,
                 ReferenceId = movement.ReferenceId,
-                Debit = await ConvertAsync(movement.DebitMXN, request.Currency, movement.Date, cancellationToken),
-                Credit = await ConvertAsync(movement.CreditMXN, request.Currency, movement.Date, cancellationToken),
-                Balance = await ConvertAsync(runningBalanceMxN, request.Currency, movement.Date, cancellationToken),
+                Debit = movement.DebitMXN * rate,
+                Credit = movement.CreditMXN * rate,
+                Balance = runningBalanceMxN * rate,
                 OriginalAmountMXN = movement.DebitMXN > 0 ? movement.DebitMXN : movement.CreditMXN,
                 ExchangeRateUsed = rateUsed
             });
@@ -65,7 +73,7 @@ public class GetClientStatementQueryHandler : IRequestHandler<GetClientStatement
         var totalChargesMxN = filtered.Sum(x => x.DebitMXN);
         var totalPaymentsMxN = filtered.Where(x => x.Type == "Payment").Sum(x => x.CreditMXN);
         var totalAdjustmentsMxN = filtered.Where(x => x.Type == "Adjustment").Sum(x => x.CreditMXN);
-        var finalBalanceMxN = initialBalance + totalChargesMxN - totalPaymentsMxN - totalAdjustmentsMxN;
+        var finalBalanceMxN = initialBalanceMxN + totalChargesMxN - totalPaymentsMxN - totalAdjustmentsMxN;
 
         return new AccountStatementDto
         {
@@ -76,19 +84,13 @@ public class GetClientStatementQueryHandler : IRequestHandler<GetClientStatement
             EndDate = to,
             DisplayCurrency = request.Currency,
             ExchangeRateUsed = rateUsed,
-            InitialBalance = await ConvertAsync(initialBalance, request.Currency, from ?? DateTime.UtcNow, cancellationToken),
-            TotalCharges = await ConvertAsync(totalChargesMxN, request.Currency, to ?? DateTime.UtcNow, cancellationToken),
-            TotalPayments = await ConvertAsync(totalPaymentsMxN, request.Currency, to ?? DateTime.UtcNow, cancellationToken),
-            TotalAdjustments = await ConvertAsync(totalAdjustmentsMxN, request.Currency, to ?? DateTime.UtcNow, cancellationToken),
-            FinalBalance = await ConvertAsync(finalBalanceMxN, request.Currency, to ?? DateTime.UtcNow, cancellationToken),
+            InitialBalance = initialBalanceMxN * rate,
+            TotalCharges = totalChargesMxN * rate,
+            TotalPayments = totalPaymentsMxN * rate,
+            TotalAdjustments = totalAdjustmentsMxN * rate,
+            FinalBalance = finalBalanceMxN * rate,
             Items = items
         };
-    }
-
-    private void EnsureClientAccess(Guid clientId)
-    {
-        if (_currentUserService.UserType == UserType.Client.ToString() && _currentUserService.ClientId != clientId)
-            throw new InvalidOperationException("No puedes consultar el estado de cuenta de otro cliente.");
     }
 
     private async Task<List<AccountStatementMovement>> LoadMovementsAsync(Guid clientId, CancellationToken cancellationToken)
@@ -118,11 +120,5 @@ public class GetClientStatementQueryHandler : IRequestHandler<GetClientStatement
             }).ToListAsync(cancellationToken);
 
         return charges.Concat(credits).ToList();
-    }
-
-    private async Task<decimal> ConvertAsync(decimal amount, string currency, DateTime date, CancellationToken cancellationToken)
-    {
-        if (string.Equals(currency, "MXN", StringComparison.OrdinalIgnoreCase)) return amount;
-        return await _currencyConverter.ConvertAsync(amount, currency, date, cancellationToken);
     }
 }

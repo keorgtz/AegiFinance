@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
 using MediatR;
@@ -9,15 +10,22 @@ public class RegisterExpenseCommandHandler : IRequestHandler<RegisterExpenseComm
 {
     private readonly ILedgerService _ledgerService;
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public RegisterExpenseCommandHandler(ILedgerService ledgerService, IApplicationDbContext context)
+    public RegisterExpenseCommandHandler(ILedgerService ledgerService, IApplicationDbContext context, ICurrentUserService currentUserService)
     {
         _ledgerService = ledgerService;
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task<LedgerEntryDto> Handle(RegisterExpenseCommand request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No tiene permiso para registrar egresos.");
+        }
+
         var entry = await _ledgerService.RegisterExpenseAsync(
             new RegisterExpenseRequest(
                 request.BankAccountId,

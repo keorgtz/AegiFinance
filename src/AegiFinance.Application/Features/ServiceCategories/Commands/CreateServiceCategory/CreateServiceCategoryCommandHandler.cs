@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
 using AegiFinance.Domain.Entities;
@@ -9,14 +10,21 @@ namespace AegiFinance.Application.Features.ServiceCategories.Commands.CreateServ
 public class CreateServiceCategoryCommandHandler : IRequestHandler<CreateServiceCategoryCommand, ServiceCategoryDto>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public CreateServiceCategoryCommandHandler(IApplicationDbContext context)
+    public CreateServiceCategoryCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task<ServiceCategoryDto> Handle(CreateServiceCategoryCommand request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No tiene permiso para crear categorías de servicio.");
+        }
+
         var exists = await _context.ServiceCategories
             .AsNoTracking()
             .AnyAsync(c => c.Name == request.Name, cancellationToken);

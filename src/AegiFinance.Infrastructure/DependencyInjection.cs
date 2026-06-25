@@ -1,9 +1,12 @@
 using System.Text;
 using AegiFinance.Application.Common.Interfaces;
+using AegiFinance.Infrastructure.Authorization;
 using AegiFinance.Infrastructure.Data;
 using AegiFinance.Infrastructure.Data.Interceptors;
 using AegiFinance.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,6 +43,14 @@ public static class DependencyInjection
         services.AddScoped<IAccountBalanceCalculator, AccountBalanceCalculator>();
         services.AddScoped<ILedgerService, LedgerService>();
         services.AddScoped<IAllocationService, AllocationService>();
+        services.AddScoped<IAccountNumberProtector, AccountNumberProtector>();
+
+        var dataProtectionKeysPath = configuration["DataProtection:KeysPath"];
+        var dataProtectionBuilder = services.AddDataProtection().SetApplicationName("AegiFinance");
+        if (!string.IsNullOrWhiteSpace(dataProtectionKeysPath))
+        {
+            dataProtectionBuilder.PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeysPath));
+        }
 
         services.AddHttpClient<IExchangeRateProvider, ExchangeRateApiProvider>();
 
@@ -63,6 +74,8 @@ public static class DependencyInjection
                 };
             });
 
+        services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+        services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
         services.AddAuthorization();
 
         return services;

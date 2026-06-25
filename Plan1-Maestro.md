@@ -6,6 +6,16 @@
 
 ---
 
+# ACTUALIZACIONES POSTERIORES
+
+Este documento es la planeación original. Se mantiene como referencia histórica de visión, principios y fases. Dos extensiones la complementan y tienen prioridad donde haya conflicto:
+
+`Plan1.1-Extension.md` — Arquitectura de usuarios, Portal Cliente integrado y Single View Architecture (SVA).
+
+`Plan1.2-Extension.md` — Migración de frontend a React + TypeScript + Next.js y nuevo sistema de diseño AegisUI (inspirado en MeridianUI, no idéntico). El stack de frontend y la arquitectura de carpetas descritos abajo quedan reemplazados por esa extensión; el backend (.NET, ASP.NET Core, Clean Architecture) no cambia.
+
+---
+
 # VISIÓN
 
 Construir una plataforma financiera web capaz de operar en dos modos
@@ -113,9 +123,15 @@ Serilog
 
 ## Frontend
 
-Blazor Web App
+React
 
-MudBlazor
+TypeScript
+
+Next.js (App Router)
+
+AegisUI — sistema de diseño propio, inspirado en MeridianUI, no idéntico
+
+Ver detalle completo del stack frontend, arquitectura de carpetas, tokens de diseño y reglas de teclado/mobile en `Plan1.2-Extension.md`.
 
 ---
 
@@ -147,15 +163,19 @@ AegiReports
 
 src
 
-SHE.Finance.Domain
+AegiFinance.Domain
 
-SHE.Finance.Application
+AegiFinance.Application
 
-SHE.Finance.Infrastructure
+AegiFinance.Infrastructure
 
-SHE.Finance.Web
+AegiFinance.Web (API-only)
 
-SHE.Finance.Worker
+AegiFinance.Worker
+
+web
+
+AegiFinance Next.js App (React + TypeScript)
 
 ---
 

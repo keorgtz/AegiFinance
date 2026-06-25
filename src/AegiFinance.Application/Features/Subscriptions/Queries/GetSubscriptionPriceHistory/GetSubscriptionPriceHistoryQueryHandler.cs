@@ -1,6 +1,6 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
-using AegiFinance.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,7 +29,7 @@ public class GetSubscriptionPriceHistoryQueryHandler : IRequestHandler<GetSubscr
             throw new InvalidOperationException("La suscripción no existe.");
         }
 
-        EnsureClientAccess(subscription.ClientId);
+        await EnsureAccessAsync(subscription.Id, subscription.ClientId, cancellationToken);
 
         return await _context.SubscriptionPriceHistories
             .AsNoTracking()
@@ -49,12 +49,37 @@ public class GetSubscriptionPriceHistoryQueryHandler : IRequestHandler<GetSubscr
             .ToListAsync(cancellationToken);
     }
 
-    private void EnsureClientAccess(Guid clientId)
+    private async Task EnsureAccessAsync(Guid subscriptionId, Guid clientId, CancellationToken cancellationToken)
     {
-        var isClientUser = Enum.TryParse<UserType>(_currentUserService.UserType, out var userType)
-            && userType == UserType.Client;
+        if (!_currentUserService.IsClientUser())
+        {
+            return;
+        }
 
-        if (isClientUser && (!_currentUserService.ClientId.HasValue || _currentUserService.ClientId.Value != clientId))
+        if (!_currentUserService.ClientId.HasValue || _currentUserService.ClientId.Value != clientId)
+        {
+            throw new InvalidOperationException("No tiene permiso para consultar esta suscripción.");
+        }
+
+        if (!_currentUserService.UserId.HasValue)
+        {
+            return;
+        }
+
+        var hasRestrictions = await _context.SubscriptionPermissions
+            .AsNoTracking()
+            .AnyAsync(sp => sp.UserId == _currentUserService.UserId.Value, cancellationToken);
+
+        if (!hasRestrictions)
+        {
+            return;
+        }
+
+        var isAllowed = await _context.SubscriptionPermissions
+            .AsNoTracking()
+            .AnyAsync(sp => sp.UserId == _currentUserService.UserId.Value && sp.SubscriptionId == subscriptionId, cancellationToken);
+
+        if (!isAllowed)
         {
             throw new InvalidOperationException("No tiene permiso para consultar esta suscripción.");
         }

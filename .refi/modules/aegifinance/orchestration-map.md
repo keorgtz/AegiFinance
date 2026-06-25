@@ -96,7 +96,8 @@ El producto ya es operativo internamente al terminar la fase 8. Esto permite:
 - Configurar Docker Compose con SQL Server.
 - Configurar Serilog y base de logging.
 - Configurar zona horaria México (Central Standard Time) y cultura `es-MX`.
-- Definir tokens de MeridianUI para Blazor/MudBlazor.
+- Crear proyecto `web/` (Next.js + TypeScript + Tailwind) y definir tokens de **AegisUI** (paleta de 5 niveles, tipografía Manrope/Sora, espaciado, radios, elevación) — ver `Plan1.2-Extension.md`.
+- Ajustar `AegiFinance.Web` para hosting API-only: CORS para el origen de Next.js, refresh token en cookie `HttpOnly`, nuevo endpoint `GET /api/auth/me`.
 
 ### Sprints 1-3 — Fase 1 (Foundation)
 - Autenticación JWT + refresh tokens.
@@ -126,8 +127,23 @@ El producto ya es operativo internamente al terminar la fase 8. Esto permite:
 ### Sprint 14 — Fase 8 (Customer Account Statements)
 - Estados de cuenta y resumen financiero.
 
+### Sprints Frontend F1-F8 (paralelos/posteriores, `Plan1.2-Extension.md`)
+Migran a React/Next.js/AegisUI cada módulo del MVP en el mismo orden de dependencia, retirando la vista Razor equivalente al cerrar cada sprint:
+
+| Sprint | Módulo | Equivale a |
+|--------|--------|------------|
+| F1 | Login + usuarios/roles/permisos | Fase 1 |
+| F2 | Clientes | Fase 2 |
+| F3 | Catálogo de servicios | Fase 3 |
+| F4 | Suscripciones | Fase 4 |
+| F5 | Facturación | Fase 5 |
+| F6 | Ledger / cuentas bancarias | Fase 6 |
+| F7 | Asignaciones de pago | Fase 7 |
+| F8 | Estado de cuenta | Fase 8 |
+
 ### Post-MVP
-- Fases 9-15 según prioridad de negocio.
+- Backend: Fases 9-15 según prioridad de negocio.
+- Frontend: Sprints F9-F15 (Conciliación, Dashboard, Reporting, Tickets, Licencias, Portal Cliente, Automatizaciones), siguiendo el mismo patrón de `Plan1.2-Extension.md`.
 
 ## Decisiones Confirmadas
 
@@ -138,9 +154,10 @@ El producto ya es operativo internamente al terminar la fase 8. Esto permite:
 5. **Formato de fechas:** `22/Jun/2026` (`dd/MMM/yyyy` en `es-MX`).
 6. **Zona horaria:** América/Ciudad de México (Jalisco) — `Central Standard Time (Mexico)`.
 7. **Motor de reportes:** QuestPDF para PDF, ClosedXML para Excel (.xlsx), HTML para vista previa.
-8. **Reportes:** estáticos generados automáticamente con estilo MeridianUI; AegiReports se integra en el futuro.
-9. **UX/UI:** MeridianUI (design system oficial de Keorsoft).
+8. **Reportes:** estáticos generados automáticamente con estilo AegisUI; AegiReports se integra en el futuro.
+9. **UX/UI:** AegisUI — sistema de diseño propio de AegiFinance, inspirado en MeridianUI (misma filosofía), no idéntico (paleta, tipografía e iconografía propias).
 10. **Portal cliente:** Integrado dentro de AegiFinance, sin aplicación separada, siguiendo Single View Architecture (SVA).
+11. **Frontend (24/Jun/2026):** React + TypeScript + Next.js, reemplaza a Blazor Web App + MudBlazor. Backend sin cambios. Detalle en `Plan1.2-Extension.md`.
 
 ## Puntos de Decisión Pendientes
 

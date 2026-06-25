@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AegiFinance.Worker")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b36a76f9ffe55122db5b874c03e6a5def94cc554")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8cffa94c15cab800bd65dee3c5100c1cc3e21cb3")]
 [assembly: System.Reflection.AssemblyProductAttribute("AegiFinance.Worker")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AegiFinance.Worker")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

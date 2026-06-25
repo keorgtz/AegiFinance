@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -7,14 +8,21 @@ namespace AegiFinance.Application.Features.BankAccounts.Commands.DeleteBankAccou
 public class DeleteBankAccountCommandHandler : IRequestHandler<DeleteBankAccountCommand>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public DeleteBankAccountCommandHandler(IApplicationDbContext context)
+    public DeleteBankAccountCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task Handle(DeleteBankAccountCommand request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No tiene permiso para eliminar cuentas bancarias.");
+        }
+
         var account = await _context.BankAccounts
             .FirstOrDefaultAsync(ba => ba.Id == request.Id, cancellationToken);
 

@@ -1,3 +1,5 @@
+using AegiFinance.Application.Common.Validators;
+using AegiFinance.Domain.Enums;
 using FluentValidation;
 
 namespace AegiFinance.Application.Features.Users.Commands.CreateUser;
@@ -17,9 +19,17 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage("La contraseña es obligatoria.")
-            .MinimumLength(8).WithMessage("La contraseña debe tener al menos 8 caracteres.");
+            .MustBeStrongPassword();
 
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("El nombre es obligatorio.");
+
+        RuleFor(x => x.ClientId)
+            .NotNull().WithMessage("Los usuarios de tipo Client requieren un ClientId.")
+            .When(x => x.UserType == UserType.Client);
+
+        RuleFor(x => x.ClientId)
+            .Null().WithMessage("Los usuarios de tipo Administrator no deben tener ClientId.")
+            .When(x => x.UserType == UserType.Administrator);
     }
 }

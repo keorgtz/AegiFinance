@@ -1,6 +1,6 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
-using AegiFinance.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,11 +19,16 @@ public class GetBillingItemAllocationsQueryHandler : IRequestHandler<GetBillingI
 
     public async Task<List<SubscriptionAllocationDto>> Handle(GetBillingItemAllocationsQuery request, CancellationToken cancellationToken)
     {
-        var billingItem = await _context.BillingItems.AsNoTracking().FirstOrDefaultAsync(x => x.Id == request.BillingItemId, cancellationToken)
-            ?? throw new InvalidOperationException("El cargo no existe.");
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No tiene permiso para consultar asignaciones de pagos.");
+        }
 
-        if (_currentUserService.UserType == UserType.Client.ToString() && _currentUserService.ClientId != billingItem.ClientId)
-            throw new InvalidOperationException("No puedes consultar asignaciones de otro cliente.");
+        var billingItemExists = await _context.BillingItems.AsNoTracking().AnyAsync(x => x.Id == request.BillingItemId, cancellationToken);
+        if (!billingItemExists)
+        {
+            throw new InvalidOperationException("El cargo no existe.");
+        }
 
         return await _context.SubscriptionAllocations
             .AsNoTracking()

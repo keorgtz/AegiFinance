@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Helpers;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
@@ -12,15 +13,22 @@ public class CreateSubscriptionCommandHandler : IRequestHandler<CreateSubscripti
 {
     private readonly IApplicationDbContext _context;
     private readonly ISubscriptionCodeGenerator _codeGenerator;
+    private readonly ICurrentUserService _currentUserService;
 
-    public CreateSubscriptionCommandHandler(IApplicationDbContext context, ISubscriptionCodeGenerator codeGenerator)
+    public CreateSubscriptionCommandHandler(IApplicationDbContext context, ISubscriptionCodeGenerator codeGenerator, ICurrentUserService currentUserService)
     {
         _context = context;
         _codeGenerator = codeGenerator;
+        _currentUserService = currentUserService;
     }
 
     public async Task<SubscriptionDto> Handle(CreateSubscriptionCommand request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No se permite crear suscripciones desde el portal.");
+        }
+
         var client = await _context.Clients
             .AsNoTracking()
             .FirstOrDefaultAsync(c => c.Id == request.ClientId, cancellationToken);
@@ -28,6 +36,11 @@ public class CreateSubscriptionCommandHandler : IRequestHandler<CreateSubscripti
         if (client is null)
         {
             throw new InvalidOperationException("El cliente seleccionado no existe.");
+        }
+
+        if (client.Status != ClientStatus.Active)
+        {
+            throw new InvalidOperationException("No se pueden crear suscripciones para un cliente que no está activo.");
         }
 
         var service = await _context.Services

@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
 using MediatR;
@@ -8,14 +9,23 @@ namespace AegiFinance.Application.Features.BankAccounts.Queries.GetBankAccountBy
 public class GetBankAccountByIdQueryHandler : IRequestHandler<GetBankAccountByIdQuery, BankAccountDto>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
+    private readonly IAccountNumberProtector _accountNumberProtector;
 
-    public GetBankAccountByIdQueryHandler(IApplicationDbContext context)
+    public GetBankAccountByIdQueryHandler(IApplicationDbContext context, ICurrentUserService currentUserService, IAccountNumberProtector accountNumberProtector)
     {
         _context = context;
+        _currentUserService = currentUserService;
+        _accountNumberProtector = accountNumberProtector;
     }
 
     public async Task<BankAccountDto> Handle(GetBankAccountByIdQuery request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No tiene permiso para consultar cuentas bancarias.");
+        }
+
         var account = await _context.BankAccounts
             .AsNoTracking()
             .FirstOrDefaultAsync(ba => ba.Id == request.Id, cancellationToken);
@@ -30,7 +40,7 @@ public class GetBankAccountByIdQueryHandler : IRequestHandler<GetBankAccountById
             Id = account.Id,
             Name = account.Name,
             BankName = account.BankName,
-            AccountNumber = account.AccountNumber,
+            MaskedAccountNumber = _accountNumberProtector.MaskFromProtected(account.AccountNumber),
             Currency = account.Currency,
             OpeningBalance = account.OpeningBalance,
             OpeningDate = account.OpeningDate,

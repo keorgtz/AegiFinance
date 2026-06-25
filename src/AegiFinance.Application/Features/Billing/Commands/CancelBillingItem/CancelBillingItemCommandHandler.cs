@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Domain.Enums;
 using MediatR;
@@ -18,17 +19,17 @@ public class CancelBillingItemCommandHandler : IRequestHandler<CancelBillingItem
 
     public async Task Handle(CancelBillingItemCommand request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No tiene permiso para cancelar cargos.");
+        }
+
         var item = await _context.BillingItems
             .FirstOrDefaultAsync(bi => bi.Id == request.BillingItemId, cancellationToken);
 
         if (item is null)
         {
             throw new InvalidOperationException("El cargo no existe.");
-        }
-
-        if (IsClientUser() && item.ClientId != _currentUserService.ClientId)
-        {
-            throw new UnauthorizedAccessException("No tiene permiso para cancelar este cargo.");
         }
 
         if (item.Status == BillingItemStatus.Paid)
@@ -42,12 +43,7 @@ public class CancelBillingItemCommandHandler : IRequestHandler<CancelBillingItem
         }
 
         item.Status = BillingItemStatus.Cancelled;
+        item.CancellationReason = request.Reason;
         await _context.SaveChangesAsync(cancellationToken);
-    }
-
-    private bool IsClientUser()
-    {
-        return Enum.TryParse<UserType>(_currentUserService.UserType, out var userType)
-            && userType == UserType.Client;
     }
 }

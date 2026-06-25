@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
 using AegiFinance.Domain.Entities;
@@ -9,14 +10,21 @@ namespace AegiFinance.Application.Features.Clients.Commands.UpdateClient;
 public class UpdateClientCommandHandler : IRequestHandler<UpdateClientCommand, ClientDto>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public UpdateClientCommandHandler(IApplicationDbContext context)
+    public UpdateClientCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task<ClientDto> Handle(UpdateClientCommand request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No tiene permiso para modificar clientes.");
+        }
+
         var client = await _context.Clients
             .Include(c => c.Tags)
             .Include(c => c.Category)

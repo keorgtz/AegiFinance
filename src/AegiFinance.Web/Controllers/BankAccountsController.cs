@@ -25,18 +25,21 @@ public class BankAccountsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "ViewPayments")]
     public async Task<ActionResult<PaginatedList<BankAccountListDto>>> GetAll([FromQuery] GetBankAccountsQuery query, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(query, cancellationToken));
     }
 
     [HttpGet("{id:guid}")]
+    [Authorize(Policy = "ViewPayments")]
     public async Task<ActionResult<BankAccountDto>> GetById(Guid id, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(new GetBankAccountByIdQuery(id), cancellationToken));
     }
 
     [HttpPost]
+    [Authorize(Policy = "ManageBilling")]
     public async Task<ActionResult<BankAccountDto>> Create(CreateBankAccountCommand command, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(command, cancellationToken);
@@ -44,6 +47,7 @@ public class BankAccountsController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [Authorize(Policy = "ManageBilling")]
     public async Task<ActionResult<BankAccountDto>> Update(Guid id, UpdateBankAccountCommand command, CancellationToken cancellationToken)
     {
         command.Id = id;
@@ -51,6 +55,7 @@ public class BankAccountsController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Policy = "ManageBilling")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         await _mediator.Send(new DeleteBankAccountCommand(id), cancellationToken);
@@ -58,6 +63,7 @@ public class BankAccountsController : ControllerBase
     }
 
     [HttpGet("{id:guid}/balance")]
+    [Authorize(Policy = "ViewPayments")]
     public async Task<ActionResult<decimal>> GetBalance(Guid id, [FromQuery] DateTime? asOfDate, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(new GetBankAccountBalanceQuery(id, asOfDate), cancellationToken));

@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Common.Models;
 using MediatR;
@@ -17,6 +18,11 @@ public class GenerateBillingCommandHandler : IRequestHandler<GenerateBillingComm
 
     public async Task<BillingGenerationResult> Handle(GenerateBillingCommand request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No tiene permiso para generar facturación.");
+        }
+
         return await _billingGenerationService.GenerateForCycleAsync(
             request.Year,
             request.Month,

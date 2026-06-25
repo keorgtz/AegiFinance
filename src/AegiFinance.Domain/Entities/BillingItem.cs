@@ -18,4 +18,5 @@ public class BillingItem : AuditableEntity
     public decimal PaidAmount { get; set; }
     public DateTime GeneratedAt { get; set; }
     public Guid? GeneratedBy { get; set; }
+    public string? CancellationReason { get; set; }
 }

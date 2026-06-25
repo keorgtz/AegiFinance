@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
 using AegiFinance.Domain.Entities;
@@ -20,6 +21,11 @@ public class ChangeSubscriptionPriceCommandHandler : IRequestHandler<ChangeSubsc
 
     public async Task<SubscriptionDto> Handle(ChangeSubscriptionPriceCommand request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No se permite cambiar el precio de suscripciones desde el portal.");
+        }
+
         var subscription = await _context.Subscriptions
             .Include(s => s.Client)
             .Include(s => s.Service)
@@ -29,8 +35,6 @@ public class ChangeSubscriptionPriceCommandHandler : IRequestHandler<ChangeSubsc
         {
             throw new InvalidOperationException("La suscripción no existe.");
         }
-
-        EnsureClientAccess(subscription.ClientId);
 
         var oldPrice = subscription.Price;
         subscription.Price = request.NewPrice;
@@ -83,16 +87,5 @@ public class ChangeSubscriptionPriceCommandHandler : IRequestHandler<ChangeSubsc
             LastBillingDate = subscription.LastBillingDate,
             NextBillingDate = subscription.NextBillingDate
         };
-    }
-
-    private void EnsureClientAccess(Guid clientId)
-    {
-        var isClientUser = Enum.TryParse<UserType>(_currentUserService.UserType, out var userType)
-            && userType == UserType.Client;
-
-        if (isClientUser && (!_currentUserService.ClientId.HasValue || _currentUserService.ClientId.Value != clientId))
-        {
-            throw new InvalidOperationException("No tiene permiso para modificar esta suscripción.");
-        }
     }
 }

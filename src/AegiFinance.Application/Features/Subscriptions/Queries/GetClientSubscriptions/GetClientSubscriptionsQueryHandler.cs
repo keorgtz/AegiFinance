@@ -1,6 +1,6 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
-using AegiFinance.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,19 +19,38 @@ public class GetClientSubscriptionsQueryHandler : IRequestHandler<GetClientSubsc
 
     public async Task<List<SubscriptionListDto>> Handle(GetClientSubscriptionsQuery request, CancellationToken cancellationToken)
     {
-        var isClientUser = Enum.TryParse<UserType>(_currentUserService.UserType, out var userType)
-            && userType == UserType.Client;
+        var isClientUser = _currentUserService.IsClientUser();
 
         if (isClientUser && (!_currentUserService.ClientId.HasValue || _currentUserService.ClientId.Value != request.ClientId))
         {
             throw new InvalidOperationException("No tiene permiso para consultar las suscripciones de este cliente.");
         }
 
-        return await _context.Subscriptions
+        var query = _context.Subscriptions
             .AsNoTracking()
             .Include(s => s.Client)
             .Include(s => s.Service)
             .Where(s => s.ClientId == request.ClientId)
+            .AsQueryable();
+
+        if (isClientUser && _currentUserService.UserId.HasValue)
+        {
+            var hasRestrictions = await _context.SubscriptionPermissions
+                .AsNoTracking()
+                .AnyAsync(sp => sp.UserId == _currentUserService.UserId.Value, cancellationToken);
+
+            if (hasRestrictions)
+            {
+                var allowedSubscriptionIds = _context.SubscriptionPermissions
+                    .AsNoTracking()
+                    .Where(sp => sp.UserId == _currentUserService.UserId.Value)
+                    .Select(sp => sp.SubscriptionId);
+
+                query = query.Where(s => allowedSubscriptionIds.Contains(s.Id));
+            }
+        }
+
+        return await query
             .OrderByDescending(s => s.CreatedAt)
             .Select(s => new SubscriptionListDto
             {

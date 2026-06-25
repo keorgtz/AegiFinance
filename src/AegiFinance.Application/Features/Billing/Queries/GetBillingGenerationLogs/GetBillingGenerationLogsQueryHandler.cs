@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
 using MediatR;
@@ -8,14 +9,21 @@ namespace AegiFinance.Application.Features.Billing.Queries.GetBillingGenerationL
 public class GetBillingGenerationLogsQueryHandler : IRequestHandler<GetBillingGenerationLogsQuery, List<BillingGenerationLogDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public GetBillingGenerationLogsQueryHandler(IApplicationDbContext context)
+    public GetBillingGenerationLogsQueryHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task<List<BillingGenerationLogDto>> Handle(GetBillingGenerationLogsQuery request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No tiene permiso para consultar los logs de generación.");
+        }
+
         var query = _context.BillingGenerationLogs
             .AsNoTracking()
             .Include(log => log.BillingCycle)

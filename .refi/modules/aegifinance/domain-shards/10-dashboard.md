@@ -5,13 +5,13 @@ Proveer indicadores de negocio para la toma de decisiones. El dashboard se alime
 
 ## Principio SVA
 
-- Existe un único componente `Dashboard.razor`.
-- No existirán `DashboardAdmin.razor`, `DashboardClient.razor` ni variantes por rol.
-- El contenido se adapta evaluando permisos en tiempo de renderizado:
-  - `@if(Permissions.CanViewRevenue)`
-  - `@if(Permissions.CanViewSubscriptions)`
-  - `@if(Permissions.CanViewReports)`
-  - `@if(Permissions.CanManageUsers)`
+- Existe una única ruta `app/(app)/dashboard/page.tsx` (`<Dashboard />`).
+- No existirán `dashboard/admin/page.tsx`, `dashboard/client/page.tsx` ni variantes por rol.
+- El contenido se adapta evaluando permisos en tiempo de renderizado con `usePermissions()`:
+  - `{can('ViewRevenue') && ...}`
+  - `{can('ViewSubscriptions') && ...}`
+  - `{can('ViewReports') && ...}`
+  - `{can('ManageUsers') && ...}`
 
 ## KPIs por Tipo de Usuario
 
@@ -74,13 +74,14 @@ No hay entidades nuevas. Se usan vistas/DTOs:
 > Todos los endpoints deben filtrar por `ClientId` cuando el usuario es de tipo `Client`. Los montos se convierten a la moneda solicitada usando `ICurrencyConverter`.
 
 ### UI
-- Dashboard único con tarjetas de KPIs.
+- Dashboard único (`<Dashboard />`) con tarjetas de KPIs (`KpiCard` de AegisUI).
 - Selector de moneda de visualización (default MXN).
-- Gráficos de tendencias (solo si el usuario tiene `ViewRevenue` o equivalente).
-- Tabla de clientes morosos (solo administradores).
+- Gráficos de tendencias con Recharts/visx (solo si el usuario tiene `ViewRevenue` o equivalente).
+- Tabla de clientes morosos (solo administradores), con navegación de fila por teclado (`↑`/`↓`/`Enter`).
 - Tabla de renovaciones próximas.
 - Sección "Mis planes asignados" para subusuarios.
 - Indicador de tasa de cambio usada cuando la visualización no sea MXN.
+- Accesible desde la paleta de comandos (`Ctrl/Cmd+K`).
 
 ## Reglas de Negocio
 
@@ -106,7 +107,7 @@ No hay entidades nuevas. Se usan vistas/DTOs:
 
 ## Criterios de Aceptación
 
-- [ ] Existe un único componente `Dashboard.razor`.
+- [ ] Existe una única ruta `app/(app)/dashboard/page.tsx` (`<Dashboard />`).
 - [ ] El contenido cambia según los permisos del usuario.
 - [ ] Los KPIs principales se muestran en tarjetas.
 - [ ] Los gráficos muestran tendencias mensuales cuando aplica.
@@ -121,7 +122,7 @@ No hay entidades nuevas. Se usan vistas/DTOs:
 
 - Usar consultas SQL optimizadas o vistas materializadas si el volumen lo requiere.
 - Considerar cache en memoria con expiración.
-- Implementar gráficos con MudBlazor Chart o librería compatible estilizada con MeridianUI.
+- Implementar gráficos con Recharts o visx, estilizados con tokens de AegisUI.
 - No almacenar KPIs calculados permanentemente.
 - Centralizar el filtro por `ClientId` en el repositorio base.
 - Calcular KPIs en MXN y aplicar conversión al final para visualización.

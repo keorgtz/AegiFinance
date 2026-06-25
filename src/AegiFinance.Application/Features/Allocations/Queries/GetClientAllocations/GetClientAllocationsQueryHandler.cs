@@ -1,6 +1,6 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
-using AegiFinance.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,12 +19,12 @@ public class GetClientAllocationsQueryHandler : IRequestHandler<GetClientAllocat
 
     public async Task<List<SubscriptionAllocationDto>> Handle(GetClientAllocationsQuery request, CancellationToken cancellationToken)
     {
-        var clientId = request.ClientId;
-        if (_currentUserService.UserType == UserType.Client.ToString())
+        if (_currentUserService.IsClientUser())
         {
-            if (_currentUserService.ClientId != clientId)
-                throw new InvalidOperationException("No puedes consultar asignaciones de otro cliente.");
+            throw new UnauthorizedAccessException("No tiene permiso para consultar asignaciones de pagos.");
         }
+
+        var clientId = request.ClientId;
 
         return await _context.SubscriptionAllocations
             .AsNoTracking()

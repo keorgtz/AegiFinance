@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
 using MediatR;
@@ -9,15 +10,22 @@ public class RegisterTransferCommandHandler : IRequestHandler<RegisterTransferCo
 {
     private readonly ILedgerService _ledgerService;
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public RegisterTransferCommandHandler(ILedgerService ledgerService, IApplicationDbContext context)
+    public RegisterTransferCommandHandler(ILedgerService ledgerService, IApplicationDbContext context, ICurrentUserService currentUserService)
     {
         _ledgerService = ledgerService;
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task<TransferGroupDto> Handle(RegisterTransferCommand request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No tiene permiso para registrar transferencias.");
+        }
+
         var transferGroup = await _ledgerService.RegisterTransferAsync(
             new RegisterTransferRequest(
                 request.FromBankAccountId,

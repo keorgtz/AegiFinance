@@ -1,7 +1,7 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Common.Models;
 using AegiFinance.Application.Dtos;
-using AegiFinance.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,10 +26,7 @@ public class GetLedgerEntriesQueryHandler : IRequestHandler<GetLedgerEntriesQuer
             .Include(le => le.Client)
             .AsQueryable();
 
-        var isClientUser = Enum.TryParse<UserType>(_currentUserService.UserType, out var userType)
-            && userType == UserType.Client;
-
-        if (isClientUser)
+        if (_currentUserService.IsClientUser())
         {
             if (!_currentUserService.ClientId.HasValue)
             {

@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
 using AegiFinance.Domain.Enums;
@@ -21,11 +22,13 @@ public class GetClientFinancialSummaryQueryHandler : IRequestHandler<GetClientFi
 
     public async Task<FinancialSummaryDto> Handle(GetClientFinancialSummaryQuery request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No tiene permiso para consultar el resumen financiero del cliente.");
+        }
+
         var client = await _context.Clients.AsNoTracking().FirstOrDefaultAsync(x => x.Id == request.ClientId, cancellationToken)
             ?? throw new InvalidOperationException("El cliente no existe.");
-
-        if (_currentUserService.UserType == UserType.Client.ToString() && _currentUserService.ClientId != request.ClientId)
-            throw new InvalidOperationException("No puedes consultar el resumen de otro cliente.");
 
         var from = request.From?.Date;
         var to = request.To?.Date;
@@ -43,9 +46,15 @@ public class GetClientFinancialSummaryQueryHandler : IRequestHandler<GetClientFi
             .SumAsync(x => (decimal?)x.Amount, cancellationToken) ?? 0m;
 
         var currentBalanceMxN = charges - payments - adjustments;
+
+        decimal rate = 1m;
         decimal? rateUsed = null;
         if (!string.Equals(request.Currency, "MXN", StringComparison.OrdinalIgnoreCase))
-            rateUsed = (await _currencyConverter.GetRateAsync(request.Currency, to ?? DateTime.UtcNow, cancellationToken)).Rate;
+        {
+            var rateResult = await _currencyConverter.GetRateAsync(request.Currency, to ?? DateTime.UtcNow, cancellationToken);
+            rate = rateResult.Rate;
+            rateUsed = rate;
+        }
 
         return new FinancialSummaryDto
         {
@@ -53,16 +62,10 @@ public class GetClientFinancialSummaryQueryHandler : IRequestHandler<GetClientFi
             ClientName = client.Name,
             DisplayCurrency = request.Currency,
             ExchangeRateUsed = rateUsed,
-            TotalCharges = await ConvertAsync(charges, request.Currency, to ?? DateTime.UtcNow, cancellationToken),
-            TotalPayments = await ConvertAsync(payments, request.Currency, to ?? DateTime.UtcNow, cancellationToken),
-            TotalAdjustments = await ConvertAsync(adjustments, request.Currency, to ?? DateTime.UtcNow, cancellationToken),
-            CurrentBalance = await ConvertAsync(currentBalanceMxN, request.Currency, to ?? DateTime.UtcNow, cancellationToken)
+            TotalCharges = charges * rate,
+            TotalPayments = payments * rate,
+            TotalAdjustments = adjustments * rate,
+            CurrentBalance = currentBalanceMxN * rate
         };
-    }
-
-    private async Task<decimal> ConvertAsync(decimal amount, string currency, DateTime date, CancellationToken cancellationToken)
-    {
-        if (string.Equals(currency, "MXN", StringComparison.OrdinalIgnoreCase)) return amount;
-        return await _currencyConverter.ConvertAsync(amount, currency, date, cancellationToken);
     }
 }

@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
 using AegiFinance.Domain.Entities;
@@ -9,14 +10,21 @@ namespace AegiFinance.Application.Features.Clients.Commands.AddClientContact;
 public class AddClientContactCommandHandler : IRequestHandler<AddClientContactCommand, ClientContactDto>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public AddClientContactCommandHandler(IApplicationDbContext context)
+    public AddClientContactCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task<ClientContactDto> Handle(AddClientContactCommand request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No tiene permiso para agregar contactos de cliente.");
+        }
+
         var clientExists = await _context.Clients
             .AsNoTracking()
             .AnyAsync(c => c.Id == request.ClientId, cancellationToken);

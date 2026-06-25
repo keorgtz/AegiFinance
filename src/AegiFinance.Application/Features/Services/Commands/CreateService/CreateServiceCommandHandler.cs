@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
 using AegiFinance.Domain.Entities;
@@ -10,15 +11,22 @@ public class CreateServiceCommandHandler : IRequestHandler<CreateServiceCommand,
 {
     private readonly IApplicationDbContext _context;
     private readonly IServiceCodeGenerator _codeGenerator;
+    private readonly ICurrentUserService _currentUserService;
 
-    public CreateServiceCommandHandler(IApplicationDbContext context, IServiceCodeGenerator codeGenerator)
+    public CreateServiceCommandHandler(IApplicationDbContext context, IServiceCodeGenerator codeGenerator, ICurrentUserService currentUserService)
     {
         _context = context;
         _codeGenerator = codeGenerator;
+        _currentUserService = currentUserService;
     }
 
     public async Task<ServiceDto> Handle(CreateServiceCommand request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No tiene permiso para crear servicios.");
+        }
+
         ServiceCategory? category = null;
         if (request.CategoryId.HasValue)
         {

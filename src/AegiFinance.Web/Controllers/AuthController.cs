@@ -1,7 +1,13 @@
-using System.Security.Claims;
-using AegiFinance.Application.Common.Interfaces;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using AegiFinance.Application.Dtos;
+using AegiFinance.Application.Features.Auth.Commands.ChangePassword;
+using AegiFinance.Application.Features.Auth.Commands.Login;
+using AegiFinance.Application.Features.Auth.Commands.LoginWithPin;
+using AegiFinance.Application.Features.Auth.Commands.Logout;
+using AegiFinance.Application.Features.Auth.Commands.RefreshToken;
+using AegiFinance.Application.Features.Auth.Queries.GetCurrentUser;
+using AegiFinance.Web.Extensions;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AegiFinance.Web.Controllers;
@@ -10,74 +16,128 @@ namespace AegiFinance.Web.Controllers;
 [ApiController]
 public class AuthController : ControllerBase
 {
-    private readonly IAuthService _authService;
+    private const string RefreshTokenCookieName = "AegiFinance.RefreshToken";
 
-    public AuthController(IAuthService authService)
+    private readonly IMediator _mediator;
+
+    public AuthController(IMediator mediator)
     {
-        _authService = authService;
+        _mediator = mediator;
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromForm] string username, [FromForm] string password, [FromQuery] string? returnUrl = null)
+    [AllowAnonymous]
+    public async Task<ActionResult<AuthResponseDto>> Login(LoginCommand command, CancellationToken cancellationToken)
     {
         try
         {
-            var authResult = await _authService.LoginAsync(username, password);
-
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, authResult.User.Id.ToString()),
-                new Claim(ClaimTypes.Name, authResult.User.Name),
-                new Claim(ClaimTypes.Email, authResult.User.Email),
-                new Claim("UserType", authResult.User.UserType)
-            };
-
-            if (authResult.User.ClientId.HasValue)
-            {
-                claims.Add(new Claim("ClientId", authResult.User.ClientId.Value.ToString()));
-            }
-
-            foreach (var role in authResult.User.Roles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role));
-            }
-
-            foreach (var permission in authResult.User.Permissions)
-            {
-                claims.Add(new Claim("Permission", permission));
-            }
-
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var principal = new ClaimsPrincipal(identity);
-
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties
-            {
-                IsPersistent = true,
-                ExpiresUtc = DateTime.UtcNow.AddDays(7)
-            });
-
-            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-
-            return Redirect("/");
+            var result = await _mediator.Send(command, cancellationToken);
+            SetRefreshTokenCookie(result.RefreshToken, result.RefreshTokenExpiry);
+            return Ok(new AuthResponseDto { AccessToken = result.AccessToken, User = result.User });
         }
-        catch (UnauthorizedAccessException)
+        catch (UnauthorizedAccessException ex)
         {
-            return Redirect("/login?error=invalid_credentials");
+            return Unauthorized(new { message = ex.Message });
         }
-        catch (Exception)
+    }
+
+    [HttpPost("login-pin")]
+    [AllowAnonymous]
+    public async Task<ActionResult<AuthResponseDto>> LoginWithPin(LoginWithPinCommand command, CancellationToken cancellationToken)
+    {
+        try
         {
-            return Redirect("/login?error=server_error");
+            var result = await _mediator.Send(command, cancellationToken);
+            SetRefreshTokenCookie(result.RefreshToken, result.RefreshTokenExpiry);
+            return Ok(new AuthResponseDto { AccessToken = result.AccessToken, User = result.User });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
+    }
+
+    [HttpPost("refresh")]
+    [AllowAnonymous]
+    public async Task<ActionResult<AuthResponseDto>> Refresh(CancellationToken cancellationToken)
+    {
+        var refreshToken = Request.Cookies[RefreshTokenCookieName];
+
+        if (string.IsNullOrEmpty(refreshToken))
+        {
+            return Unauthorized(new { message = "No se encontró un refresh token." });
+        }
+
+        try
+        {
+            var result = await _mediator.Send(new RefreshTokenCommand(refreshToken), cancellationToken);
+            SetRefreshTokenCookie(result.RefreshToken, result.RefreshTokenExpiry);
+            return Ok(new AuthResponseDto { AccessToken = result.AccessToken, User = result.User });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            ClearRefreshTokenCookie();
+            return Unauthorized(new { message = ex.Message });
         }
     }
 
     [HttpPost("logout")]
-    [HttpGet("logout")] // Allow GET for easier logout from UI buttons
-    public async Task<IActionResult> Logout()
+    [Authorize]
+    public async Task<IActionResult> Logout(CancellationToken cancellationToken)
     {
-        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        return Redirect("/login");
+        await _mediator.Send(new LogoutCommand(User.GetUserId()), cancellationToken);
+        ClearRefreshTokenCookie();
+        return NoContent();
+    }
+
+    [HttpPost("change-password")]
+    [Authorize]
+    public async Task<IActionResult> ChangePassword(ChangePasswordCommand command, CancellationToken cancellationToken)
+    {
+        command.UserId = User.GetUserId();
+
+        try
+        {
+            await _mediator.Send(command, cancellationToken);
+            return NoContent();
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
+    }
+
+    [HttpGet("me")]
+    [Authorize]
+    public async Task<ActionResult<UserDto>> Me(CancellationToken cancellationToken)
+    {
+        try
+        {
+            return Ok(await _mediator.Send(new GetCurrentUserQuery(), cancellationToken));
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
+    }
+
+    private void SetRefreshTokenCookie(string refreshToken, DateTime expiry)
+    {
+        Response.Cookies.Append(RefreshTokenCookieName, refreshToken, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Lax,
+            Expires = expiry,
+            Path = "/api/auth"
+        });
+    }
+
+    private void ClearRefreshTokenCookie()
+    {
+        Response.Cookies.Delete(RefreshTokenCookieName, new CookieOptions
+        {
+            Path = "/api/auth"
+        });
     }
 }

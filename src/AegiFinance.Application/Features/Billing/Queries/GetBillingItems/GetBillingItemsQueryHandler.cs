@@ -1,7 +1,7 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Common.Models;
 using AegiFinance.Application.Dtos;
-using AegiFinance.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,10 +26,7 @@ public class GetBillingItemsQueryHandler : IRequestHandler<GetBillingItemsQuery,
             .Include(bi => bi.Subscription)
             .AsQueryable();
 
-        var isClientUser = Enum.TryParse<UserType>(_currentUserService.UserType, out var userType)
-            && userType == UserType.Client;
-
-        if (isClientUser)
+        if (_currentUserService.IsClientUser())
         {
             if (!_currentUserService.ClientId.HasValue)
             {
@@ -75,7 +72,8 @@ public class GetBillingItemsQueryHandler : IRequestHandler<GetBillingItemsQuery,
             Currency = bi.Currency,
             DueDate = bi.DueDate,
             Status = bi.Status.ToString(),
-            PaidAmount = bi.PaidAmount
+            PaidAmount = bi.PaidAmount,
+            CancellationReason = bi.CancellationReason
         });
 
         return await projected.ToPaginatedListAsync(request.PageNumber, request.PageSize, cancellationToken);

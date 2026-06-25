@@ -42,10 +42,14 @@ Construir una plataforma financiera web capaz de operar en dos modos sin cambios
 - Serilog
 
 ### Frontend
-- Blazor Web App
-- MudBlazor (componentes base, estilados con MeridianUI)
-- MeridianUI (design system visual oficial de Keorsoft)
-- Material Symbols Rounded (iconografía)
+- React + TypeScript
+- Next.js (App Router)
+- AegisUI — sistema de diseño propio de AegiFinance, inspirado en MeridianUI (misma filosofía enterprise-soft) pero con paleta, tipografía e iconografía propias, sin copiar sus valores
+- Radix UI (primitivas accesibles) + Tailwind CSS (estilos)
+- TanStack Query (estado de servidor) + React Hook Form/Zod (formularios) + TanStack Table (tablas)
+- lucide-react (iconografía)
+
+> Detalle completo del stack frontend, arquitectura de carpetas, tokens AegisUI y reglas de teclado/mobile en `Plan1.2-Extension.md`.
 
 ### Base de Datos
 - SQL Server 2022
@@ -59,7 +63,7 @@ Construir una plataforma financiera web capaz de operar en dos modos sin cambios
 ### Reportes
 - **Motor principal de PDF:** QuestPDF (generación nativa de PDF en .NET, API fluent, alto rendimiento).
 - **Otros formatos:** ClosedXML para Excel (.xlsx) y generación de HTML para vista previa/impresión.
-- Estilo visual MeridianUI aplicado en todos los formatos.
+- Estilo visual AegisUI aplicado en todos los formatos.
 - AegiReports (integración futura; por ahora se reserva el contrato de datos).
 
 ## 5. Clean Architecture
@@ -69,8 +73,10 @@ src/
 ├── AegiFinance.Domain       # Entidades, value objects, interfaces de dominio
 ├── AegiFinance.Application  # Casos de uso, DTOs, validaciones, handlers MediatR
 ├── AegiFinance.Infrastructure # EF Core, repositorios, servicios externos, email, jobs
-├── AegiFinance.Web          # Blazor Web App + API controllers / minimal APIs
+├── AegiFinance.Web          # ASP.NET Core Web API (API-only; sin Razor Components)
 └── AegiFinance.Worker       # Background services, generación de cargos, automatizaciones
+
+web/                         # Next.js — React + TypeScript (frontend, proyecto hermano de src/)
 ```
 
 ### Reglas de dependencia
@@ -78,6 +84,9 @@ src/
 - `Application` solo depende de `Domain`.
 - `Infrastructure` depende de `Application` y `Domain`.
 - `Web` y `Worker` dependen de `Application` e `Infrastructure`.
+- `web/` (Next.js) consume `AegiFinance.Web` exclusivamente vía HTTP/JSON; no referencia ni compila contra los proyectos .NET.
+
+> `AegiFinance.Web` deja de hospedar Blazor Server. Pasa a ser API-only (controladores existentes + CORS para el origen de Next.js). Ver ajustes detallados en `Plan1.2-Extension.md`.
 
 ## 6. Resumen de Fases
 
@@ -180,16 +189,16 @@ Enum:
 ## 9. Arquitectura de UI — Single View Architecture (SVA)
 
 ### Regla obligatoria
-- Cada módulo tendrá **una única vista** compartida entre administradores y clientes.
-- Está prohibido crear componentes duplicados como `DashboardAdmin.razor` / `DashboardClient.razor`.
-- El contenido se adapta mediante permisos (`Permissions.CanViewRevenue`, `Permissions.CanManageUsers`, etc.).
+- Cada módulo tendrá **una única vista** (una sola ruta de Next.js) compartida entre administradores y clientes.
+- Está prohibido crear componentes/rutas duplicadas como `dashboard/admin/page.tsx` / `dashboard/client/page.tsx`.
+- El contenido se adapta mediante permisos: `{can('ViewRevenue') && ...}`, `{can('ManageUsers') && ...}`, usando el hook `usePermissions()` (ver sección 15).
 
-### Ejemplos de vistas únicas
-- Dashboard.razor
-- Clients.razor
-- Subscriptions.razor
-- AccountStatement.razor
-- Reports.razor
+### Ejemplos de vistas únicas (rutas Next.js)
+- `app/(app)/dashboard/page.tsx`
+- `app/(app)/clients/page.tsx`
+- `app/(app)/subscriptions/page.tsx`
+- `app/(app)/account-statement/page.tsx`
+- `app/(app)/reports/page.tsx`
 
 ### Beneficios
 - Un solo mantenimiento.
@@ -275,24 +284,51 @@ Permission → Role → User → Client → Subscription
 | Asignaciones de pagos complejas | Alto | Fase 7 con casos de uso explícitos y pruebas unitarias |
 | Cálculo de cargos recurrentes con zonas horarias | Medio | Usar UTC para fechas de ciclo y conversión solo en UI |
 | Escalabilidad prematura | Medio | Mantener queries proyectadas; no almacenar saldos calculados |
-| Reportes estáticos PDF fuera de estilo MeridianUI | Medio | Definir plantilla base MeridianUI antes de implementar fase 11 |
+| Reportes estáticos PDF fuera de estilo AegisUI | Medio | Definir plantilla base AegisUI antes de implementar fase 11 |
+| Frontend React termina pareciéndose visualmente a MeridianUI | Medio | Usar exclusivamente los tokens propios de AegisUI (`Plan1.2-Extension.md`); prohibido reutilizar hex/tipografía de MeridianUI |
 | Filtrado por cliente mal implementado (fuga de datos) | Alto | Centralizar filtro `ClientId` en repositorios y validar en cada query |
 | Conversión de moneda mal calculada | Medio | Centralizar servicio `ICurrencyConverter` con traza de tasa usada |
 | Dependencia de servicio externo de tipo de cambio | Bajo | Soportar fallback a tasa manual y cache local
 | Permisos y roles acoplados a UserType | Medio | Mantener `Role` independiente de `UserType`; validar en seed |
 | Licenciamiento fuera de alcance inicial | Bajo | Postergar a fase 13; no modelar tablas antes de tiempo |
 
-## 14. Handoff para Ryou Orchestrator
+## 14. Sistema de Diseño — AegisUI
+
+AegiFinance usa **AegisUI**, sistema de diseño propio inspirado en la filosofía de MeridianUI (densidad controlada, color semántico, elevación sutil, interacción silenciosa, más una quinta regla propia: **teclado primero**), pero con valores visuales independientes para no percibirse como una copia de otro producto Keorsoft.
+
+| Elemento | MeridianUI (SHEndevour) | AegisUI (AegiFinance) |
+|----------|--------------------------|------------------------|
+| Primario | Material Blue `#1976D2` | Azul-petróleo `#0F5C6B` |
+| Semánticos | Emerald / Amber / Indigo / Violet / Orange | Jade / Saffron / Periwinkle / Plum / Terracotta |
+| Tipografía UI | Segoe UI (→ Inter en web) | Manrope |
+| Tipografía display | Montserrat | Sora |
+| Iconografía | Material Symbols Rounded | lucide-react |
+| Radios | 6 / 10 / 14 / 20 px | 7 / 9 / 12 / 18 px |
+| Layout desktop | Titlebar 48 + Sidebar 220 + Statusbar 28 | Topbar 56 + Sidebar 248 (76 colapsado) + Status strip 32 |
+
+Especificación completa de tokens (paleta de 5 niveles, tipografía, espaciado, elevación, layout mobile) en `Plan1.2-Extension.md`. Ningún valor hexadecimal ni proporción de MeridianUI se reutiliza literalmente en AegisUI.
+
+## 15. Arquitectura Frontend (React + Next.js)
+
+- Proyecto `web/` hermano de `src/`, consumiendo `AegiFinance.Web` solo vía HTTP/JSON.
+- Next.js App Router, TypeScript estricto, Radix UI + Tailwind CSS, TanStack Query/Table, React Hook Form + Zod, cmdk (paleta de comandos).
+- SVA aplicada como una ruta por módulo (`app/(app)/<modulo>/page.tsx`); contenido condicionado por `usePermissions()` / `<Can permission="..." />`.
+- Autenticación: access token JWT en memoria (nunca `localStorage`); refresh token en cookie `HttpOnly`/`Secure`; `GET /api/auth/me` como fuente de permisos efectivos y menú dinámico.
+- Reglas obligatorias de teclado (paleta de comandos, navegación de tablas, atajos de alta/edición) y de eficiencia de captura en desktop/mobile (alta inline, optimistic UI, autosave de borradores, inputs nativos en mobile).
+- Detalle completo en `Plan1.2-Extension.md`.
+
+## 16. Handoff para Ryou Orchestrator
 
 **Próximo trabajo a ejecutar:**
-1. Implementar la Fase 1 (Foundation) completa: autenticación JWT, refresh tokens, `UserType`, `ClientUser`, `ClientPinCredential`, `Role`, `Permission`, `SubscriptionPermission`, seed de permisos y auditoría.
-2. Configurar la solución como `AegiFinance.*` (renombrar desde `SHE.Finance.*`).
-3. Validar que el proyecto compila, las migraciones iniciales se ejecutan y los endpoints de login/logout funcionan.
-4. No avanzar a Fase 2 sin superar el gate de verificación de Fase 1.
+1. Implementar la Fase 1 (Foundation) completa: autenticación JWT, refresh tokens, `UserType`, `ClientUser`, `ClientPinCredential`, `Role`, `Permission`, `SubscriptionPermission`, seed de permisos y auditoría. *(Backend de Fase 1 ya implementado — ver `progress.md`; pendiente exponer `GET /api/auth/me` y mover refresh token a cookie `HttpOnly`.)*
+2. Configurar la solución como `AegiFinance.*` (renombrar desde `SHE.Finance.*`). *(Completado.)*
+3. Ejecutar Sprint F0 de `Plan1.2-Extension.md`: crear proyecto `web/` (Next.js), tokens AegisUI, primitivas base, capa de autenticación y ajustes de CORS/cookies en `AegiFinance.Web`.
+4. Migrar el frontend módulo por módulo siguiendo el orden de Sprints F1-F8 (MVP) y F9-F15 (post-MVP) de `Plan1.2-Extension.md`, retirando cada vista Razor equivalente al completar su réplica en React.
+5. No avanzar a una fase nueva de backend sin superar su gate de verificación; no retirar una vista Razor sin que su equivalente en Next.js cumpla los gates de UX/UI y teclado de `verification.md`.
 
 **Lo que este blueprint NO incluye (queda fuera del alcance):**
 - Código fuente de implementación.
 - Configuración de CI/CD.
-- Diseño detallado de UX/UI (salvo referencias a MeridianUI cuando aplique).
+- Diseño detallado de UX/UI más allá de los tokens AegisUI definidos en `Plan1.2-Extension.md`.
 - Contratos comerciales con terceros.
 - Despliegue en producción.

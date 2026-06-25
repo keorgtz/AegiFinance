@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Common.Models;
 using AegiFinance.Application.Dtos;
@@ -9,14 +10,23 @@ namespace AegiFinance.Application.Features.BankAccounts.Queries.GetBankAccounts;
 public class GetBankAccountsQueryHandler : IRequestHandler<GetBankAccountsQuery, PaginatedList<BankAccountListDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
+    private readonly IAccountNumberProtector _accountNumberProtector;
 
-    public GetBankAccountsQueryHandler(IApplicationDbContext context)
+    public GetBankAccountsQueryHandler(IApplicationDbContext context, ICurrentUserService currentUserService, IAccountNumberProtector accountNumberProtector)
     {
         _context = context;
+        _currentUserService = currentUserService;
+        _accountNumberProtector = accountNumberProtector;
     }
 
     public async Task<PaginatedList<BankAccountListDto>> Handle(GetBankAccountsQuery request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No tiene permiso para consultar cuentas bancarias.");
+        }
+
         var query = _context.BankAccounts
             .AsNoTracking()
             .AsQueryable();
@@ -41,11 +51,19 @@ public class GetBankAccountsQueryHandler : IRequestHandler<GetBankAccountsQuery,
             Id = ba.Id,
             Name = ba.Name,
             BankName = ba.BankName,
+            MaskedAccountNumber = ba.AccountNumber,
             Currency = ba.Currency,
             OpeningBalance = ba.OpeningBalance,
             IsActive = ba.IsActive
         });
 
-        return await projected.ToPaginatedListAsync(request.PageNumber, request.PageSize, cancellationToken);
+        var result = await projected.ToPaginatedListAsync(request.PageNumber, request.PageSize, cancellationToken);
+
+        foreach (var item in result.Items)
+        {
+            item.MaskedAccountNumber = _accountNumberProtector.MaskFromProtected(item.MaskedAccountNumber);
+        }
+
+        return result;
     }
 }

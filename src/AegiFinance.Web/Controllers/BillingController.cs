@@ -27,18 +27,21 @@ public class BillingController : ControllerBase
     }
 
     [HttpPost("generate")]
+    [Authorize(Policy = "ManageBilling")]
     public async Task<ActionResult<BillingGenerationResult>> Generate(GenerateBillingCommand command, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(command, cancellationToken));
     }
 
     [HttpPost("generate-for-subscription")]
+    [Authorize(Policy = "ManageBilling")]
     public async Task<ActionResult<BillingGenerationResult>> GenerateForSubscription(GenerateBillingForSubscriptionCommand command, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(command, cancellationToken));
     }
 
     [HttpPost("reprocess/{cycleId:guid}")]
+    [Authorize(Policy = "ManageBilling")]
     public async Task<ActionResult<BillingGenerationResult>> Reprocess(Guid cycleId, [FromQuery] bool onlyPending = true, CancellationToken cancellationToken = default)
     {
         var command = new ReprocessBillingCycleCommand
@@ -51,13 +54,16 @@ public class BillingController : ControllerBase
     }
 
     [HttpPost("cancel-item/{itemId:guid}")]
-    public async Task<IActionResult> CancelItem(Guid itemId, CancellationToken cancellationToken)
+    [Authorize(Policy = "ManageBilling")]
+    public async Task<IActionResult> CancelItem(Guid itemId, CancelBillingItemCommand command, CancellationToken cancellationToken)
     {
-        await _mediator.Send(new CancelBillingItemCommand { BillingItemId = itemId }, cancellationToken);
+        command.BillingItemId = itemId;
+        await _mediator.Send(command, cancellationToken);
         return NoContent();
     }
 
     [HttpPost("close-cycle/{cycleId:guid}")]
+    [Authorize(Policy = "ManageBilling")]
     public async Task<IActionResult> CloseCycle(Guid cycleId, CancellationToken cancellationToken)
     {
         await _mediator.Send(new CloseBillingCycleCommand { BillingCycleId = cycleId }, cancellationToken);
@@ -65,24 +71,28 @@ public class BillingController : ControllerBase
     }
 
     [HttpGet("cycles")]
+    [Authorize(Policy = "ViewPayments")]
     public async Task<ActionResult<List<BillingCycleDto>>> GetCycles([FromQuery] GetBillingCyclesQuery query, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(query, cancellationToken));
     }
 
     [HttpGet("cycles/{id:guid}/items")]
+    [Authorize(Policy = "ViewPayments")]
     public async Task<ActionResult<List<BillingItemListDto>>> GetItemsByCycle(Guid id, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(new GetBillingItemsQuery { BillingCycleId = id }, cancellationToken));
     }
 
     [HttpGet("items")]
+    [Authorize(Policy = "ViewPayments")]
     public async Task<ActionResult<PaginatedList<BillingItemListDto>>> GetItems([FromQuery] GetBillingItemsQuery query, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(query, cancellationToken));
     }
 
     [HttpGet("generation-logs")]
+    [Authorize(Policy = "ViewPayments")]
     public async Task<ActionResult<List<BillingGenerationLogDto>>> GetLogs([FromQuery] GetBillingGenerationLogsQuery query, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(query, cancellationToken));

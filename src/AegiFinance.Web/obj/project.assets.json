@@ -2047,7 +2047,10 @@
         },
         "runtime": {
           "bin/placeholder/AegiFinance.Infrastructure.dll": {}
-        }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
       }
     }
   },

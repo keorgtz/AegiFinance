@@ -162,6 +162,7 @@ Enum:
 - `POST /api/auth/logout`
 - `POST /api/auth/refresh`
 - `POST /api/auth/change-password`
+- `GET /api/auth/me` — usuario actual, `UserType`, `ClientId`, roles y permisos efectivos. Fuente de `usePermissions()` y del menú dinámico en el frontend (React/Next.js).
 - `GET/POST/PUT/DELETE /api/users`
 - `GET/POST/PUT/DELETE /api/roles`
 - `GET/POST/PUT/DELETE /api/permissions`
@@ -173,8 +174,8 @@ Enum:
 - `POST /api/exchange-rates/sync`
 - `GET /api/audit-logs`
 
-### UI (Blazor + MudBlazor + MeridianUI)
-- Pantalla de login.
+### UI (React + TypeScript + Next.js + AegisUI)
+- Pantalla de login (`app/(auth)/login/page.tsx`).
 - Pantalla de gestión de usuarios.
 - Pantalla de gestión de roles.
 - Pantalla de permisos (solo lectura con asignación a roles).
@@ -182,7 +183,7 @@ Enum:
 - Pantalla de auditoría con tabla y detalle de cambios.
 - Pantalla de configuración de monedas.
 - Pantalla de tipos de cambio (manual y sincronización automática).
-- Menú dinámico construido por permisos.
+- Menú dinámico construido por permisos (`usePermissions()` contra `GET /api/auth/me`).
 
 ## Reglas de Negocio
 
@@ -219,6 +220,8 @@ Enum:
 
 - Usar `Microsoft.AspNetCore.Authentication.JwtBearer` para JWT.
 - Almacenar refresh tokens hasheados en base de datos.
+- Entregar el refresh token como cookie `HttpOnly`/`Secure`/`SameSite=Lax` (no en el body de la respuesta), para que el frontend React lo consuma sin exponerlo a JavaScript. El access token JWT sí va en el body y el frontend lo mantiene solo en memoria.
+- Configurar `AddCors()` con política nombrada para el origen de Next.js (desarrollo y producción), con `AllowCredentials()` habilitado.
 - Implementar `IAuthorizationHandler` para evaluar permisos como claims.
 - Configurar `SaveChangesInterceptor` de EF Core para generar auditoría automáticamente.
 - Seed de permisos iniciales mediante migración o `IHostedService`.

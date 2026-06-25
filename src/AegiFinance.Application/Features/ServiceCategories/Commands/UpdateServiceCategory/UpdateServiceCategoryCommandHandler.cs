@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
 using MediatR;
@@ -8,14 +9,21 @@ namespace AegiFinance.Application.Features.ServiceCategories.Commands.UpdateServ
 public class UpdateServiceCategoryCommandHandler : IRequestHandler<UpdateServiceCategoryCommand, ServiceCategoryDto>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public UpdateServiceCategoryCommandHandler(IApplicationDbContext context)
+    public UpdateServiceCategoryCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task<ServiceCategoryDto> Handle(UpdateServiceCategoryCommand request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No tiene permiso para modificar categorías de servicio.");
+        }
+
         var category = await _context.ServiceCategories
             .FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
 

@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
 using MediatR;
@@ -8,14 +9,21 @@ namespace AegiFinance.Application.Features.ClientTags.Commands.UpdateClientTag;
 public class UpdateClientTagCommandHandler : IRequestHandler<UpdateClientTagCommand, ClientTagDto>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public UpdateClientTagCommandHandler(IApplicationDbContext context)
+    public UpdateClientTagCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task<ClientTagDto> Handle(UpdateClientTagCommand request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No tiene permiso para modificar etiquetas.");
+        }
+
         var tag = await _context.ClientTags
             .FirstOrDefaultAsync(t => t.Id == request.Id, cancellationToken);
 

@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -7,14 +8,21 @@ namespace AegiFinance.Application.Features.Clients.Commands.AssignTagsToClient;
 public class AssignTagsToClientCommandHandler : IRequestHandler<AssignTagsToClientCommand>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public AssignTagsToClientCommandHandler(IApplicationDbContext context)
+    public AssignTagsToClientCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task Handle(AssignTagsToClientCommand request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No tiene permiso para asignar etiquetas.");
+        }
+
         var client = await _context.Clients
             .Include(c => c.Tags)
             .FirstOrDefaultAsync(c => c.Id == request.ClientId, cancellationToken);

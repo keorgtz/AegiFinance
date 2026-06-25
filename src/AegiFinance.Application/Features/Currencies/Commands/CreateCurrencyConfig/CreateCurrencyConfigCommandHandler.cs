@@ -26,6 +26,13 @@ public class CreateCurrencyConfigCommandHandler : IRequestHandler<CreateCurrency
             throw new InvalidOperationException($"Ya existe una moneda configurada con el código '{request.Code}'.");
         }
 
+        if (request.IsDefault)
+        {
+            await _context.CurrencyConfigs
+                .Where(c => c.IsDefault)
+                .ExecuteUpdateAsync(s => s.SetProperty(c => c.IsDefault, false), cancellationToken);
+        }
+
         var config = new CurrencyConfig
         {
             Id = Guid.NewGuid(),

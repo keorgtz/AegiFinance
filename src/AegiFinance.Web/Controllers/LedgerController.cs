@@ -26,36 +26,42 @@ public class LedgerController : ControllerBase
     }
 
     [HttpPost("income")]
+    [Authorize(Policy = "ManageBilling")]
     public async Task<ActionResult<LedgerEntryDto>> RegisterIncome(RegisterIncomeCommand command, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(command, cancellationToken));
     }
 
     [HttpPost("expense")]
+    [Authorize(Policy = "ManageBilling")]
     public async Task<ActionResult<LedgerEntryDto>> RegisterExpense(RegisterExpenseCommand command, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(command, cancellationToken));
     }
 
     [HttpPost("transfer")]
+    [Authorize(Policy = "ManageBilling")]
     public async Task<ActionResult<TransferGroupDto>> RegisterTransfer(RegisterTransferCommand command, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(command, cancellationToken));
     }
 
     [HttpPost("adjustment")]
+    [Authorize(Policy = "ManageBilling")]
     public async Task<ActionResult<LedgerEntryDto>> RegisterAdjustment(RegisterAdjustmentCommand command, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(command, cancellationToken));
     }
 
     [HttpGet]
+    [Authorize(Policy = "ViewPayments")]
     public async Task<ActionResult<PaginatedList<LedgerEntryListDto>>> GetEntries([FromQuery] GetLedgerEntriesQuery query, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(query, cancellationToken));
     }
 
     [HttpPost("{id:guid}/reconcile")]
+    [Authorize(Policy = "ManageReconciliation")]
     public async Task<IActionResult> Reconcile(Guid id, CancellationToken cancellationToken)
     {
         await _mediator.Send(new ReconcileLedgerEntryCommand(id), cancellationToken);
@@ -63,6 +69,7 @@ public class LedgerController : ControllerBase
     }
 
     [HttpPost("{id:guid}/unreconcile")]
+    [Authorize(Policy = "ManageReconciliation")]
     public async Task<IActionResult> Unreconcile(Guid id, CancellationToken cancellationToken)
     {
         await _mediator.Send(new UnreconcileLedgerEntryCommand(id), cancellationToken);

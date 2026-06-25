@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Common.Models;
 using MediatR;
@@ -17,6 +18,11 @@ public class ReprocessBillingCycleCommandHandler : IRequestHandler<ReprocessBill
 
     public async Task<BillingGenerationResult> Handle(ReprocessBillingCycleCommand request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No tiene permiso para reprocesar la facturación.");
+        }
+
         return await _billingGenerationService.ReprocessCycleAsync(
             request.BillingCycleId,
             request.OnlyPending,

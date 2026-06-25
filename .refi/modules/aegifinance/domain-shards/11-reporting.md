@@ -1,7 +1,7 @@
 # Fase 11 — Reporting
 
 ## Objetivo
-Proveer reportes empresariales listos para impresión y análisis. Por ahora los reportes serán **estáticos en PDF generados automáticamente con estilo MeridianUI**. La integración con AegiReports queda reservada para el futuro, pero el contrato de datos se define desde esta fase.
+Proveer reportes empresariales listos para impresión y análisis. Por ahora los reportes serán **estáticos en PDF generados automáticamente con estilo AegisUI**. La integración con AegiReports queda reservada para el futuro, pero el contrato de datos se define desde esta fase.
 
 ## Reportes Requeridos
 
@@ -17,8 +17,8 @@ Proveer reportes empresariales listos para impresión y análisis. Por ahora los
 
 - **Motor principal de PDF:** QuestPDF (generación nativa de PDF en .NET 9, API fluent, alto rendimiento).
 - **Excel:** ClosedXML para exportación a `.xlsx`.
-- **Vista previa / impresión:** HTML generado dinámicamente con estilo MeridianUI.
-- **Estilo visual:** MeridianUI (tipografía Inter, colores semánticos, Material Symbols Rounded, layout de tarjetas y tablas).
+- **Vista previa / impresión:** HTML generado dinámicamente con estilo AegisUI.
+- **Estilo visual:** AegisUI (tipografía Manrope/Sora, colores semánticos propios — Jade/Saffron/Periwinkle/Plum/Terracotta —, iconografía lucide, layout de tarjetas y tablas).
 - **Extensibilidad:** el motor de reportes se diseñará para permitir agregar nuevos formatos (Word, CSV, etc.) sin reescribir la fuente de datos.
 - **Futuro:** AegiReports se integrará cuando esté listo; por ahora se mantiene el mismo contrato de datos.
 
@@ -82,7 +82,8 @@ No hay entidades nuevas. Los reportes consumen datos existentes.
 - Botón "Exportar Excel".
 - Botón "Vista previa HTML".
 - Selector de moneda de visualización (conversiones desde MXN).
-- Estilo visual MeridianUI en encabezados, tablas, KPIs y chips de estado.
+- Estilo visual AegisUI en encabezados, tablas, KPIs y chips de estado.
+- Centro de reportes accesible desde la paleta de comandos (`Ctrl/Cmd+K`).
 
 ## Reglas de Negocio
 
@@ -91,7 +92,7 @@ No hay entidades nuevas. Los reportes consumen datos existentes.
 3. Los usuarios `Client` solo ven datos de su cliente en los reportes.
 4. Los filtros de fecha son obligatorios para reportes de ingresos/gastos.
 5. Los reportes de morosidad calculan días desde la fecha de vencimiento.
-6. Los PDFs, Excel y HTML deben usar tipografía Inter, colores semánticos MeridianUI y tabular nums para importes.
+6. Los PDFs, Excel y HTML deben usar tipografía Manrope/Sora, colores semánticos AegisUI y tabular nums para importes.
 7. La moneda de visualización en reportes se convierte desde MXN usando la tasa automática o manual configurada.
 8. No se usan emojis ni imágenes decorativas en reportes.
 
@@ -111,7 +112,7 @@ No hay entidades nuevas. Los reportes consumen datos existentes.
 - [ ] Se pueden exportar los reportes a Excel (.xlsx).
 - [ ] Se puede generar vista previa HTML.
 - [ ] Los datos coinciden con el ledger y suscripciones.
-- [ ] Los PDFs/Excel/HTML usan estilo MeridianUI (colores, tipografía, tablas).
+- [ ] Los PDFs/Excel/HTML usan estilo AegisUI (colores, tipografía, tablas).
 - [ ] Los filtros aplican correctamente.
 - [ ] Un usuario `Client` solo ve su información en reportes.
 - [ ] La conversión de moneda funciona desde MXN con tasa automática o manual.
@@ -119,7 +120,7 @@ No hay entidades nuevas. Los reportes consumen datos existentes.
 
 ## Notas Técnicas
 
-- Usar QuestPDF para PDF; ClosedXML para Excel; Razor/CSHTML o generador manual para HTML.
+- Usar QuestPDF para PDF; ClosedXML para Excel; generador de HTML del lado del servidor (plantillas .NET, no Razor Components) para la vista previa — independiente del frontend Next.js.
 - Definir contrato de datos con AegiReports (JSON o DTOs) desde el inicio.
 - Considerar generación asíncrona para reportes pesados.
 - Almacenar archivos generados temporalmente si son muy grandes.

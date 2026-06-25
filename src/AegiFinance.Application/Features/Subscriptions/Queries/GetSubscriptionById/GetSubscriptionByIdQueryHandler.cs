@@ -1,6 +1,6 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
-using AegiFinance.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,12 +32,31 @@ public class GetSubscriptionByIdQueryHandler : IRequestHandler<GetSubscriptionBy
             throw new InvalidOperationException("La suscripción no existe.");
         }
 
-        var isClientUser = Enum.TryParse<UserType>(_currentUserService.UserType, out var userType)
-            && userType == UserType.Client;
-
-        if (isClientUser && (!_currentUserService.ClientId.HasValue || _currentUserService.ClientId.Value != subscription.ClientId))
+        if (_currentUserService.IsClientUser())
         {
-            throw new InvalidOperationException("No tiene permiso para consultar esta suscripción.");
+            if (!_currentUserService.ClientId.HasValue || _currentUserService.ClientId.Value != subscription.ClientId)
+            {
+                throw new InvalidOperationException("No tiene permiso para consultar esta suscripción.");
+            }
+
+            if (_currentUserService.UserId.HasValue)
+            {
+                var hasRestrictions = await _context.SubscriptionPermissions
+                    .AsNoTracking()
+                    .AnyAsync(sp => sp.UserId == _currentUserService.UserId.Value, cancellationToken);
+
+                if (hasRestrictions)
+                {
+                    var isAllowed = await _context.SubscriptionPermissions
+                        .AsNoTracking()
+                        .AnyAsync(sp => sp.UserId == _currentUserService.UserId.Value && sp.SubscriptionId == subscription.Id, cancellationToken);
+
+                    if (!isAllowed)
+                    {
+                        throw new InvalidOperationException("No tiene permiso para consultar esta suscripción.");
+                    }
+                }
+            }
         }
 
         return new SubscriptionDetailDto

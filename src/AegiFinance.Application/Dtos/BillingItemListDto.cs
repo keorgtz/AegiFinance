@@ -12,4 +12,5 @@ public class BillingItemListDto
     public string Status { get; set; } = string.Empty;
     public decimal PaidAmount { get; set; }
     public decimal Balance => Amount - PaidAmount;
+    public string? CancellationReason { get; set; }
 }

@@ -60,6 +60,11 @@ public class AuthService : IAuthService
             throw new UnauthorizedAccessException("Credenciales inválidas.");
         }
 
+        if (!user.IsActive)
+        {
+            throw new UnauthorizedAccessException("La cuenta está desactivada.");
+        }
+
         var pinCredential = await _context.ClientPinCredentials
             .AsNoTracking()
             .FirstOrDefaultAsync(c => c.UserId == user.Id, cancellationToken);
@@ -67,6 +72,15 @@ public class AuthService : IAuthService
         if (pinCredential is null || !_pinHasher.VerifyPin(pin, pinCredential.PinHash))
         {
             throw new UnauthorizedAccessException("Credenciales inválidas.");
+        }
+
+        var clientUser = await _context.ClientUsers
+            .AsNoTracking()
+            .FirstOrDefaultAsync(cu => cu.UserId == user.Id, cancellationToken);
+
+        if (clientUser is not null && !clientUser.IsActive)
+        {
+            throw new UnauthorizedAccessException("El subusuario está desactivado.");
         }
 
         return await BuildAuthResultAsync(user, cancellationToken);
@@ -90,7 +104,7 @@ public class AuthService : IAuthService
     {
         var users = await _context.Users
             .AsNoTracking()
-            .Where(u => u.RefreshToken != null && u.RefreshTokenExpiry > DateTime.UtcNow)
+            .Where(u => u.IsActive && u.RefreshToken != null && u.RefreshTokenExpiry > DateTime.UtcNow)
             .Include(u => u.Roles)
             .ToListAsync(cancellationToken);
 

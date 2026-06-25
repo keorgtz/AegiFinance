@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Domain.Entities;
 using AegiFinance.Domain.Enums;
@@ -19,6 +20,11 @@ public class SuspendSubscriptionCommandHandler : IRequestHandler<SuspendSubscrip
 
     public async Task Handle(SuspendSubscriptionCommand request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No se permite suspender suscripciones desde el portal.");
+        }
+
         var subscription = await _context.Subscriptions
             .FirstOrDefaultAsync(s => s.Id == request.Id, cancellationToken);
 
@@ -26,8 +32,6 @@ public class SuspendSubscriptionCommandHandler : IRequestHandler<SuspendSubscrip
         {
             throw new InvalidOperationException("La suscripción no existe.");
         }
-
-        EnsureClientAccess(subscription.ClientId);
 
         if (subscription.Status == SubscriptionStatus.Cancelled || subscription.Status == SubscriptionStatus.Expired)
         {
@@ -48,16 +52,5 @@ public class SuspendSubscriptionCommandHandler : IRequestHandler<SuspendSubscrip
         });
 
         await _context.SaveChangesAsync(cancellationToken);
-    }
-
-    private void EnsureClientAccess(Guid clientId)
-    {
-        var isClientUser = Enum.TryParse<UserType>(_currentUserService.UserType, out var userType)
-            && userType == UserType.Client;
-
-        if (isClientUser && (!_currentUserService.ClientId.HasValue || _currentUserService.ClientId.Value != clientId))
-        {
-            throw new InvalidOperationException("No tiene permiso para modificar esta suscripción.");
-        }
     }
 }

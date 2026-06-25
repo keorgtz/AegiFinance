@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
 using AegiFinance.Domain.Entities;
@@ -10,15 +11,22 @@ public class CreateClientCommandHandler : IRequestHandler<CreateClientCommand, C
 {
     private readonly IApplicationDbContext _context;
     private readonly IClientCodeGenerator _codeGenerator;
+    private readonly ICurrentUserService _currentUserService;
 
-    public CreateClientCommandHandler(IApplicationDbContext context, IClientCodeGenerator codeGenerator)
+    public CreateClientCommandHandler(IApplicationDbContext context, IClientCodeGenerator codeGenerator, ICurrentUserService currentUserService)
     {
         _context = context;
         _codeGenerator = codeGenerator;
+        _currentUserService = currentUserService;
     }
 
     public async Task<ClientDto> Handle(CreateClientCommand request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No tiene permiso para crear clientes.");
+        }
+
         ClientCategory? category = null;
         if (request.CategoryId.HasValue)
         {

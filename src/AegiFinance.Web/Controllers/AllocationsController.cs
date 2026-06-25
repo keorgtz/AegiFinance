@@ -24,18 +24,21 @@ public class AllocationsController : ControllerBase
     }
 
     [HttpPost("auto-allocate/{ledgerEntryId:guid}")]
+    [Authorize(Policy = "ManageBilling")]
     public async Task<ActionResult<AllocationResult>> AutoAllocate(Guid ledgerEntryId, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(new AutoAllocateCommand(ledgerEntryId), cancellationToken));
     }
 
     [HttpPost("manual")]
+    [Authorize(Policy = "ManageBilling")]
     public async Task<ActionResult<AllocationResult>> ManualAllocate(ManualAllocateCommand command, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(command, cancellationToken));
     }
 
     [HttpPost("{id:guid}/unallocate")]
+    [Authorize(Policy = "ManageBilling")]
     public async Task<IActionResult> Unallocate(Guid id, CancellationToken cancellationToken)
     {
         await _mediator.Send(new UnallocateCommand(id), cancellationToken);
@@ -43,12 +46,16 @@ public class AllocationsController : ControllerBase
     }
 
     [HttpGet("client/{clientId:guid}")]
+    [HttpGet("/api/clients/{clientId:guid}/allocations")]
+    [Authorize(Policy = "ViewPayments")]
     public async Task<ActionResult<List<SubscriptionAllocationDto>>> GetClientAllocations(Guid clientId, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(new GetClientAllocationsQuery(clientId), cancellationToken));
     }
 
     [HttpGet("billing-item/{billingItemId:guid}")]
+    [HttpGet("/api/billing-items/{billingItemId:guid}/allocations")]
+    [Authorize(Policy = "ViewPayments")]
     public async Task<ActionResult<List<SubscriptionAllocationDto>>> GetBillingItemAllocations(Guid billingItemId, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(new GetBillingItemAllocationsQuery(billingItemId), cancellationToken));

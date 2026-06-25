@@ -5,27 +5,24 @@ Habilitar el acceso de clientes y sus subusuarios dentro de la misma aplicación
 
 ## Regla Arquitectónica Obligatoria: Single View Architecture (SVA)
 
-- Cada módulo tendrá **una única vista**.
-- Está prohibido crear vistas duplicadas como `DashboardAdmin.razor` / `DashboardClient.razor`.
-- El contenido se adapta evaluando permisos en cada componente.
+- Cada módulo tendrá **una única vista** (una sola ruta de Next.js).
+- Está prohibido crear vistas/rutas duplicadas como `dashboard/admin/page.tsx` / `dashboard/client/page.tsx`.
+- El contenido se adapta evaluando permisos en cada componente con `usePermissions()`.
 
 ### Ejemplos correctos
 
-```csharp
-@if(Permissions.CanViewRevenue)
-{
-    ...
-}
+```tsx
+{can('ViewRevenue') && (
+  ...
+)}
 
-@if(Permissions.CanManageUsers)
-{
-    ...
-}
+{can('ManageUsers') && (
+  ...
+)}
 
-@if(Permissions.CanViewReports)
-{
-    ...
-}
+{can('ViewReports') && (
+  ...
+)}
 ```
 
 ### Beneficios
@@ -113,7 +110,7 @@ Permission → Role → User → Client → Subscription
 
 ## Dashboard Adaptativo
 
-Misma vista (`Dashboard.razor`), diferente contenido:
+Misma vista (`app/(app)/dashboard/page.tsx` → `<Dashboard />`), diferente contenido:
 
 | Usuario | Ve |
 |---------|-----|
@@ -172,7 +169,7 @@ Suscripciones
 3. Dashboard adaptativo según permisos.
 4. Ver detalle de suscripción.
 5. Ver estado de cuenta.
-6. Descargar comprobante de pago (PDF estático MeridianUI).
+6. Descargar comprobante de pago (PDF estático con estilo AegisUI).
 7. Ver pagos y estado de cuenta en moneda seleccionada (conversión visual desde MXN).
 8. Crear ticket de soporte.
 9. Ver respuestas de tickets.
@@ -183,6 +180,7 @@ Suscripciones
 Los endpoints son los mismos que usa la UI interna; la autorización filtra por permisos y `ClientId`:
 - `POST /api/auth/login`
 - `POST /api/auth/login-pin`
+- `GET /api/auth/me`
 - `GET /api/dashboard/summary`
 - `GET /api/subscriptions` (filtrado por cliente)
 - `GET /api/ledger/income` (filtrado por cliente)
@@ -190,15 +188,16 @@ Los endpoints son los mismos que usa la UI interna; la autorización filtra por 
 - `GET /api/licenses` (filtrado por cliente)
 - `GET/POST /api/tickets`
 
-### UI
-- Login único compartido (detecta `UserType` y redirige).
-- Dashboard adaptativo (`Dashboard.razor`).
-- Pantalla de suscripciones (`Subscriptions.razor`).
-- Pantalla de pagos (`Ledger.razor` filtrado).
-- Pantalla de estado de cuenta (`AccountStatement.razor`).
+### UI (React + TypeScript + Next.js + AegisUI)
+- Login único compartido (`app/(auth)/login/page.tsx`, detecta `UserType` y redirige).
+- Dashboard adaptativo (`app/(app)/dashboard/page.tsx`).
+- Pantalla de suscripciones (`app/(app)/subscriptions/page.tsx`).
+- Pantalla de pagos (`app/(app)/ledger/page.tsx` filtrado).
+- Pantalla de estado de cuenta (`app/(app)/account-statement/page.tsx`).
 - Selector de moneda de visualización en pantallas financieras.
-- Pantalla de licencias (`Licenses.razor`).
-- Mesa de ayuda del cliente (`Tickets.razor`).
+- Pantalla de licencias (`app/(app)/licenses/page.tsx`).
+- Mesa de ayuda del cliente (`app/(app)/tickets/page.tsx`).
+- En mobile, el portal usa bottom tab bar y formularios de alta/edición a pantalla completa (ver `Plan1.2-Extension.md`).
 
 ## Reglas de Negocio
 

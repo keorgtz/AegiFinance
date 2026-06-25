@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Domain.Enums;
 using MediatR;
@@ -18,6 +19,11 @@ public class DeleteSubscriptionCommandHandler : IRequestHandler<DeleteSubscripti
 
     public async Task Handle(DeleteSubscriptionCommand request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No se permite eliminar suscripciones desde el portal.");
+        }
+
         var subscription = await _context.Subscriptions
             .Include(s => s.PriceHistory)
             .Include(s => s.ChangeLogs)
@@ -27,8 +33,6 @@ public class DeleteSubscriptionCommandHandler : IRequestHandler<DeleteSubscripti
         {
             throw new InvalidOperationException("La suscripción no existe.");
         }
-
-        EnsureClientAccess(subscription.ClientId);
 
         if (subscription.PriceHistory.Count > 0 || subscription.ChangeLogs.Count > 0)
         {
@@ -42,16 +46,5 @@ public class DeleteSubscriptionCommandHandler : IRequestHandler<DeleteSubscripti
         }
 
         await _context.SaveChangesAsync(cancellationToken);
-    }
-
-    private void EnsureClientAccess(Guid clientId)
-    {
-        var isClientUser = Enum.TryParse<UserType>(_currentUserService.UserType, out var userType)
-            && userType == UserType.Client;
-
-        if (isClientUser && (!_currentUserService.ClientId.HasValue || _currentUserService.ClientId.Value != clientId))
-        {
-            throw new InvalidOperationException("No tiene permiso para modificar esta suscripción.");
-        }
     }
 }

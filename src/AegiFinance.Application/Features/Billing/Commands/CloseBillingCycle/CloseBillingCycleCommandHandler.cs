@@ -1,3 +1,4 @@
+using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Domain.Enums;
 using MediatR;
@@ -18,6 +19,11 @@ public class CloseBillingCycleCommandHandler : IRequestHandler<CloseBillingCycle
 
     public async Task Handle(CloseBillingCycleCommand request, CancellationToken cancellationToken)
     {
+        if (_currentUserService.IsClientUser())
+        {
+            throw new UnauthorizedAccessException("No tiene permiso para cerrar ciclos de facturación.");
+        }
+
         var cycle = await _context.BillingCycles
             .FirstOrDefaultAsync(c => c.Id == request.BillingCycleId, cancellationToken);
 

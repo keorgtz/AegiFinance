@@ -50,7 +50,7 @@ public class AuditInterceptor : SaveChangesInterceptor
                     entry.Entity.UpdatedAt = now;
                     entry.Entity.CreatedBy = currentUserId;
                     entry.Entity.UpdatedBy = currentUserId;
-                    auditLogs.Add(CreateAuditLog(entry, "Created", null));
+                    auditLogs.Add(CreateAuditLog(entry, "Created", null, currentUserId));
                     break;
 
                 case EntityState.Modified:
@@ -59,7 +59,7 @@ public class AuditInterceptor : SaveChangesInterceptor
                     var changes = GetChanges(entry);
                     if (changes.Any())
                     {
-                        auditLogs.Add(CreateAuditLog(entry, "Updated", changes));
+                        auditLogs.Add(CreateAuditLog(entry, "Updated", changes, currentUserId));
                     }
                     break;
 
@@ -70,7 +70,7 @@ public class AuditInterceptor : SaveChangesInterceptor
                     entry.Entity.DeletedBy = currentUserId;
                     entry.Entity.UpdatedAt = now;
                     entry.Entity.UpdatedBy = currentUserId;
-                    auditLogs.Add(CreateAuditLog(entry, "Deleted", GetChanges(entry)));
+                    auditLogs.Add(CreateAuditLog(entry, "Deleted", GetChanges(entry), currentUserId));
                     break;
             }
         }
@@ -83,7 +83,7 @@ public class AuditInterceptor : SaveChangesInterceptor
         await Task.CompletedTask;
     }
 
-    private static AuditLog CreateAuditLog(EntityEntry<BaseEntity> entry, string action, Dictionary<string, object?>? changes)
+    private static AuditLog CreateAuditLog(EntityEntry<BaseEntity> entry, string action, Dictionary<string, object?>? changes, Guid? userId)
     {
         return new AuditLog
         {
@@ -92,6 +92,7 @@ public class AuditInterceptor : SaveChangesInterceptor
             EntityId = entry.Entity.Id.ToString(),
             Action = action,
             Changes = changes is not null ? JsonSerializer.Serialize(changes) : "{}",
+            UserId = userId,
             Timestamp = DateTime.UtcNow
         };
     }
