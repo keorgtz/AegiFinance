@@ -53,11 +53,10 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure pipeline
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.MapGet("/", () => Results.Redirect("/swagger")).AllowAnonymous();
 
 app.UseExceptionHandler();
 

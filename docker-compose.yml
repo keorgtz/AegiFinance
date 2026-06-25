@@ -70,6 +70,9 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ConnectionStrings__DefaultConnection: Server=sqlserver,1433;Database=AegiFinanceDb;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True;Encrypt=False;
+      JwtSettings__Secret: ${JWT_SECRET}
+      JwtSettings__Issuer: AegiFinance
+      JwtSettings__Audience: AegiFinance
       ExchangeRateApi__BaseUrl: ${EXCHANGE_RATE_BASE_URL:-https://api.exchangerate-api.com/v4/latest/}
       ExchangeRateApi__ApiKey: ${EXCHANGE_RATE_API_KEY:-}
       ExchangeRateApi__Enabled: ${EXCHANGE_RATE_ENABLED:-false}
