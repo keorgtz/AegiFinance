@@ -5,9 +5,11 @@
 **/.git/
 **/.refi/
 **/node_modules/
+**/.next/
 *.user
 *.suo
 *.cache
 *.pdb
 *.log
+web/.env.local
 README.md

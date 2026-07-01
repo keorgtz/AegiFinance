@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AegiFinance — Tablero de Pendientes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary:       #0F5C6B;
+      --primary-mid:   #16798C;
+      --primary-light: #5BAEBC;
+      --primary-pale:  #C9E8ED;
+
+      --jade-strong:  #0E9F6E;
+      --jade-mid:     #34C295;
+      --jade-light:   #8FE3C4;
+      --jade-pale:    #DFFBEF;
+      --jade-bg:      #F3FFFA;
+
+      --saffron-strong: #B7791F;
+      --saffron-mid:    #D99A2B;
+      --saffron-light:  #F0C36D;
+      --saffron-pale:   #FBEACB;
+      --saffron-bg:     #FFF8EC;
+
+      --periwinkle-strong: #5469D4;
+      --periwinkle-mid:    #7B8FE8;
+      --periwinkle-pale:   #E4E9FC;
+      --periwinkle-bg:     #F5F7FF;
+
+      --plum-strong:  #A1336B;
+      --plum-mid:     #C2528A;
+      --plum-pale:    #F8E1EE;
+      --plum-bg:      #FDF3F8;
+
+      --terracotta-strong: #B6452C;
+      --terracotta-mid:    #D06A4A;
+      --terracotta-pale:   #FBE6DC;
+      --terracotta-bg:     #FFF6F1;
+
+      --ink:        #16181D;
+      --slate-700:  #3A3F4B;
+      --slate-muted:#5B6472;
+      --line:       #E3E6EC;
+      --foot:       #F7F8FA;
+      --page-bg:    #EFF1F7;
+      --surface:    #FFFFFF;
+      --surface-dark:#12141A;
+
+      --font-ui:      'Manrope', system-ui, sans-serif;
+      --font-display: 'Sora', 'Manrope', sans-serif;
+
+      --r-card:   18px;
+      --r-badge:  9px;
+      --r-pill:   100px;
+
+      --dp1: 0 1px 2px rgba(15,23,42,.06), 0 1px 1px rgba(15,23,42,.04);
+      --dp2: 0 4px 10px rgba(15,23,42,.10);
+      --dp3: 0 12px 28px rgba(15,23,42,.16);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      color: var(--ink);
+      background: var(--page-bg);
+      line-height: 1.5;
+    }
+
+    /* ── TOPBAR ─────────────────────────────── */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      height: 56px;
+      padding: 0 28px;
+      background: var(--surface-dark);
+      box-shadow: var(--dp2);
+    }
+    .topbar-logo {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.3px;
+    }
+    .topbar-logo span { color: var(--primary-light); }
+    .topbar-sep { flex: 1; }
+    .topbar-date {
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255,255,255,.45);
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    /* ── MAIN LAYOUT ────────────────────────── */
+    .page {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 28px 24px 64px;
+    }
+
+    /* ── PAGE HEADER ────────────────────────── */
+    .page-header {
+      margin-bottom: 28px;
+    }
+    .page-header h1 {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .page-header p {
+      margin-top: 4px;
+      font-size: 13px;
+      color: var(--slate-muted);
+    }
+
+    /* ── KPI ROW ───────────────────────────── */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .kpi-card {
+      background: var(--surface);
+      border-radius: var(--r-card);
+      box-shadow: var(--dp1);
+      padding: 16px 20px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .kpi-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: var(--slate-muted);
+    }
+    .kpi-value {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+    .kpi-sub {
+      font-size: 11px;
+      color: var(--slate-muted);
+      font-weight: 500;
+    }
+    .kpi-jade     .kpi-value { color: var(--jade-strong); }
+    .kpi-saffron  .kpi-value { color: var(--saffron-strong); }
+    .kpi-periwinkle .kpi-value { color: var(--periwinkle-strong); }
+    .kpi-plum     .kpi-value { color: var(--plum-strong); }
+    .kpi-terracotta .kpi-value { color: var(--terracotta-strong); }
+    .kpi-primary  .kpi-value { color: var(--primary); }
+
+    /* ── PROGRESS BARS ──────────────────────── */
+    .progress-section {
+      background: var(--surface);
+      border-radius: var(--r-card);
+      box-shadow: var(--dp1);
+      padding: 20px 24px 24px;
+      margin-bottom: 28px;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 16px;
+    }
+    .progress-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .progress-item { }
+    .progress-item-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    .progress-item-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--slate-700);
+    }
+    .progress-item-pct {
+      font-size: 11px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    .progress-track {
+      height: 6px;
+      background: var(--line);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 100px;
+      transition: width .4s ease;
+    }
+    .fill-jade    { background: var(--jade-mid); }
+    .fill-saffron { background: var(--saffron-mid); }
+    .fill-primary { background: var(--primary-mid); }
+    .fill-plum    { background: var(--plum-mid); }
+    .pct-jade     { color: var(--jade-strong); }
+    .pct-saffron  { color: var(--saffron-strong); }
+    .pct-plum     { color: var(--plum-strong); }
+    .pct-primary  { color: var(--primary); }
+
+    /* ── PHASE TABLE ───────────────────────── */
+    .phase-section {
+      background: var(--surface);
+      border-radius: var(--r-card);
+      box-shadow: var(--dp1);
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .phase-section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--line);
+    }
+    .phase-section-title {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 10px;
+      border-radius: var(--r-pill);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .badge-jade        { background: var(--jade-pale);        color: var(--jade-strong); }
+    .badge-saffron     { background: var(--saffron-pale);     color: var(--saffron-strong); }
+    .badge-terracotta  { background: var(--terracotta-pale);  color: var(--terracotta-strong); }
+    .badge-periwinkle  { background: var(--periwinkle-pale);  color: var(--periwinkle-strong); }
+    .badge-plum        { background: var(--plum-pale);        color: var(--plum-strong); }
+    .badge-muted       { background: var(--line);             color: var(--slate-muted); }
+
+    .phase-body { padding: 0 24px 16px; }
+
+    /* ── PHASE ROW ─────────────────────────── */
+    .phase-row {
+      display: grid;
+      grid-template-columns: 52px 1fr 110px 110px;
+      gap: 0;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--foot);
+    }
+    .phase-row:last-child { border-bottom: none; }
+    .phase-num {
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--slate-muted);
+      letter-spacing: 0.4px;
+    }
+    .phase-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .phase-name-sub {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--slate-muted);
+      margin-top: 1px;
+    }
+    .phase-col {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .phase-col-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--slate-muted);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    /* ── PENDING ITEMS LIST ─────────────────── */
+    .pending-card {
+      background: var(--surface);
+      border-radius: var(--r-card);
+      box-shadow: var(--dp1);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .pending-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 20px;
+      background: var(--foot);
+      border-bottom: 1px solid var(--line);
+    }
+    .pending-card-title {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink);
+      flex: 1;
+    }
+    .pending-list {
+      list-style: none;
+      padding: 8px 20px 12px;
+    }
+    .pending-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--foot);
+      font-size: 13px;
+      color: var(--slate-700);
+      line-height: 1.5;
+    }
+    .pending-list li:last-child { border-bottom: none; }
+    .pending-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 5px;
+    }
+    .dot-saffron     { background: var(--saffron-mid); }
+    .dot-terracotta  { background: var(--terracotta-mid); }
+    .dot-periwinkle  { background: var(--periwinkle-mid); }
+    .dot-plum        { background: var(--plum-mid); }
+    .dot-primary     { background: var(--primary-mid); }
+
+    .pending-list li strong {
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 1px 7px;
+      border-radius: var(--r-pill);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      margin-left: 4px;
+    }
+    .tag-be   { background: var(--periwinkle-pale); color: var(--periwinkle-strong); }
+    .tag-fe   { background: var(--saffron-pale);    color: var(--saffron-strong); }
+    .tag-both { background: var(--plum-pale);       color: var(--plum-strong); }
+
+    /* ── SECTION SEPARATOR ──────────────────── */
+    .section-sep {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--slate-muted);
+      margin: 32px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-sep::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--line);
+    }
+
+    /* ── FOOTER NOTE ───────────────────────── */
+    .footer-note {
+      background: var(--periwinkle-bg);
+      border: 1px solid var(--periwinkle-pale);
+      border-radius: 12px;
+      padding: 14px 20px;
+      margin-top: 32px;
+      font-size: 12px;
+      color: var(--periwinkle-strong);
+      line-height: 1.6;
+    }
+    .footer-note strong { font-weight: 700; }
+
+    @media (max-width: 680px) {
+      .progress-grid { grid-template-columns: 1fr; }
+      .phase-row { grid-template-columns: 42px 1fr; }
+      .phase-col { display: none; }
+      .kpi-value { font-size: 26px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <span class="topbar-logo">Aegi<span>Finance</span></span>
+  <span class="topbar-sep"></span>
+  <span class="topbar-date">Estado al 30/Jun/2026</span>
+</header>
+
+<main class="page">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <h1>Tablero de Pendientes</h1>
+    <p>Revisión exhaustiva contra el código fuente real — no contra el progreso documentado.</p>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi-card kpi-jade">
+      <span class="kpi-label">Backend MVP</span>
+      <span class="kpi-value">8/8</span>
+      <span class="kpi-sub">Fases 1–8 completas y compilando</span>
+    </div>
+    <div class="kpi-card kpi-saffron">
+      <span class="kpi-label">Backend Parcial</span>
+      <span class="kpi-value">2</span>
+      <span class="kpi-sub">Fases 9 y 10 incompletas</span>
+    </div>
+    <div class="kpi-card kpi-terracotta">
+      <span class="kpi-label">Backend Pendiente</span>
+      <span class="kpi-value">5</span>
+      <span class="kpi-sub">Fases 11–15 no iniciadas</span>
+    </div>
+    <div class="kpi-card kpi-plum">
+      <span class="kpi-label">Frontend</span>
+      <span class="kpi-value">0%</span>
+      <span class="kpi-sub">web/ no existe aún</span>
+    </div>
+    <div class="kpi-card kpi-primary">
+      <span class="kpi-label">Avance Global</span>
+      <span class="kpi-value">37%</span>
+      <span class="kpi-sub">Backend ~53% · Frontend 0%</span>
+    </div>
+  </div>
+
+  <!-- PROGRESS BARS -->
+  <div class="progress-section">
+    <h2 class="section-title">Avance por capa</h2>
+    <div class="progress-grid">
+      <div class="progress-item">
+        <div class="progress-item-label">
+          <span class="progress-item-name">Backend — MVP (Fases 1–8)</span>
+          <span class="progress-item-pct pct-jade">100 %</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill fill-jade" style="width:100%"></div></div>
+      </div>
+      <div class="progress-item">
+        <div class="progress-item-label">
+          <span class="progress-item-name">Backend — Post-MVP (Fases 9–15)</span>
+          <span class="progress-item-pct pct-saffron">10 %</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill fill-saffron" style="width:10%"></div></div>
+      </div>
+      <div class="progress-item">
+        <div class="progress-item-label">
+          <span class="progress-item-name">Frontend — Sprint F0 Cimientos</span>
+          <span class="progress-item-pct pct-plum">0 %</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill fill-plum" style="width:0%"></div></div>
+      </div>
+      <div class="progress-item">
+        <div class="progress-item-label">
+          <span class="progress-item-name">Frontend — Sprints F1–F8 (Paridad MVP)</span>
+          <span class="progress-item-pct pct-plum">0 %</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill fill-plum" style="width:0%"></div></div>
+      </div>
+      <div class="progress-item">
+        <div class="progress-item-label">
+          <span class="progress-item-name">Pruebas automatizadas</span>
+          <span class="progress-item-pct pct-saffron">0 %</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill fill-saffron" style="width:0%"></div></div>
+      </div>
+      <div class="progress-item">
+        <div class="progress-item-label">
+          <span class="progress-item-name">Avance Total del Proyecto</span>
+          <span class="progress-item-pct pct-primary">~37 %</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill fill-primary" style="width:37%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ BACKEND ══════════════════════════════════════ -->
+  <div class="section-sep">Backend · .NET 9 / Clean Architecture</div>
+
+  <!-- FASES 1-8 COMPLETADAS -->
+  <div class="phase-section">
+    <div class="phase-section-header">
+      <h2 class="phase-section-title">Fases 1–8 — MVP Backend</h2>
+      <span class="badge badge-jade">Completado</span>
+    </div>
+    <div class="phase-body">
+      <div class="phase-row">
+        <span class="phase-num">F-1</span>
+        <div>
+          <div class="phase-name">Foundation</div>
+          <div class="phase-name-sub">Auth JWT · Refresh Token HttpOnly · Roles · Permisos · AuditLog · Moneda · Usuarios · SubUsuarios · PIN</div>
+        </div>
+        <div><span class="badge badge-jade">Backend ✓</span></div>
+        <div><span class="badge badge-muted">FE Pendiente</span></div>
+      </div>
+      <div class="phase-row">
+        <span class="phase-num">F-2</span>
+        <div>
+          <div class="phase-name">Client Management</div>
+          <div class="phase-name-sub">CRUD Clientes · Etiquetas · Categorías · Notas · Contactos · Historial</div>
+        </div>
+        <div><span class="badge badge-jade">Backend ✓</span></div>
+        <div><span class="badge badge-muted">FE Pendiente</span></div>
+      </div>
+      <div class="phase-row">
+        <span class="phase-num">F-3</span>
+        <div>
+          <div class="phase-name">Service Catalog</div>
+          <div class="phase-name-sub">Servicios · Categorías · Historial de precios · Tipos de facturación</div>
+        </div>
+        <div><span class="badge badge-jade">Backend ✓</span></div>
+        <div><span class="badge badge-muted">FE Pendiente</span></div>
+      </div>
+      <div class="phase-row">
+        <span class="phase-num">F-4</span>
+        <div>
+          <div class="phase-name">Subscriptions</div>
+          <div class="phase-name-sub">CRUD · Estados · Suspensión/Reactivación · Cancelación con fecha efectiva · Permisos por suscripción</div>
+        </div>
+        <div><span class="badge badge-jade">Backend ✓</span></div>
+        <div><span class="badge badge-muted">FE Pendiente</span></div>
+      </div>
+      <div class="phase-row">
+        <span class="phase-num">F-5</span>
+        <div>
+          <div class="phase-name">Billing Engine</div>
+          <div class="phase-name-sub">Ciclos · Items · Generación · Reprocesamiento · Cancelación con razón · Worker diario</div>
+        </div>
+        <div><span class="badge badge-jade">Backend ✓</span></div>
+        <div><span class="badge badge-muted">FE Pendiente</span></div>
+      </div>
+      <div class="phase-row">
+        <span class="phase-num">F-6</span>
+        <div>
+          <div class="phase-name">Financial Ledger</div>
+          <div class="phase-name-sub">Cuentas bancarias (cifradas) · LedgerEntries · Transferencias · Conciliación · Saldos calculados</div>
+        </div>
+        <div><span class="badge badge-jade">Backend ✓</span></div>
+        <div><span class="badge badge-muted">FE Pendiente</span></div>
+      </div>
+      <div class="phase-row">
+        <span class="phase-num">F-7</span>
+        <div>
+          <div class="phase-name">Subscription Allocations</div>
+          <div class="phase-name-sub">Asignación automática FIFO · Manual · Desasignación · Actualización de estados de billing items</div>
+        </div>
+        <div><span class="badge badge-jade">Backend ✓</span></div>
+        <div><span class="badge badge-muted">FE Pendiente</span></div>
+      </div>
+      <div class="phase-row">
+        <span class="phase-num">F-8</span>
+        <div>
+          <div class="phase-name">Customer Account Statements</div>
+          <div class="phase-name-sub">Estado de cuenta · Movimientos · Resumen financiero · Conversión visual de moneda (1 sola tasa)</div>
+        </div>
+        <div><span class="badge badge-jade">Backend ✓</span></div>
+        <div><span class="badge badge-muted">FE Pendiente</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FASE 9 PARCIAL -->
+  <div class="pending-card">
+    <div class="pending-card-header">
+      <span class="badge badge-saffron">Parcial</span>
+      <span class="pending-card-title">F-9 — Bank Reconciliation</span>
+      <span class="tag tag-be">Backend</span>
+    </div>
+    <ul class="pending-list">
+      <li>
+        <span class="pending-dot dot-primary"></span>
+        <span><strong>Hecho:</strong> <code>UploadStatementCommand</code> + handler: parseo CSV, creación de <code>BankStatement</code>, <code>BankStatementLine</code> y borradores de <code>LedgerEntry</code>.</span>
+      </li>
+      <li>
+        <span class="pending-dot dot-saffron"></span>
+        <span><strong>Falta — Controlador HTTP:</strong> No existe <code>BankReconciliationController</code>. El comando está implementado pero sin endpoint expuesto — nadie puede llamarlo.</span>
+      </li>
+      <li>
+        <span class="pending-dot dot-saffron"></span>
+        <span><strong>Falta — Queries de lectura:</strong> <code>GetBankStatementsQuery</code>, <code>GetBankStatementByIdQuery</code>, <code>GetBankStatementLinesQuery</code> — no existen. No hay forma de listar ni ver estados de cuenta bancarios.</span>
+      </li>
+      <li>
+        <span class="pending-dot dot-saffron"></span>
+        <span><strong>Falta — Comando de conciliación línea a línea:</strong> <code>ReconcileStatementLineCommand</code> (marcar una línea como conciliada y vincularla a un <code>LedgerEntry</code> existente) y su inverso <code>UnreconcileStatementLineCommand</code>.</span>
+      </li>
+      <li>
+        <span class="pending-dot dot-saffron"></span>
+        <span><strong>Falta — Reporte de conciliación:</strong> <code>GetReconciliationReportQuery</code> — diferencias entre banco y ledger, partidas no conciliadas, balance comparado.</span>
+      </li>
+      <li>
+        <span class="pending-dot dot-saffron"></span>
+        <span><strong>Falta — Balances de apertura/cierre:</strong> <code>UploadStatementCommand</code> deja <code>OpeningBalance = 0</code> y <code>ClosingBalance = 0</code> hardcodeados (comentario "Se asume que el usuario actualizará esto"). Falta lógica de actualización o cálculo desde el estado de cuenta CSV.</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- FASE 10 PARCIAL -->
+  <div class="pending-card">
+    <div class="pending-card-header">
+      <span class="badge badge-saffron">Parcial</span>
+      <span class="pending-card-title">F-10 — Dashboard</span>
+      <span class="tag tag-be">Backend</span>
+    </div>
+    <ul class="pending-list">
+      <li>
+        <span class="pending-dot dot-primary"></span>
+        <span><strong>Hecho:</strong> <code>GetMonthlyTrackerQuery</code> existe en Application.</span>
+      </li>
+      <li>
+        <span class="pending-dot dot-saffron"></span>
+        <span><strong>Falta — Controlador HTTP:</strong> No existe <code>DashboardController</code>. Ni el <code>GetMonthlyTrackerQuery</code> ni ningún KPI tiene endpoint.</span>
+      </li>
+      <li>
+        <span class="pending-dot dot-saffron"></span>
+        <span><strong>Falta — KPIs ejecutivos:</strong> Queries para MRR (ingresos recurrentes mensuales), ARR, Clientes Activos, Clientes Morosos (con cargos vencidos sin pagar), Pendiente de Cobro.</span>
+      </li>
+      <li>
+        <span class="pending-dot dot-saffron"></span>
+        <span><strong>Falta — KPIs financieros:</strong> Ingresos del mes, Ingresos del año (acumulado), Egresos del mes, Balance de cuentas bancarias agregado.</span>
+      </li>
+      <li>
+        <span class="pending-dot dot-saffron"></span>
+        <span><strong>Falta — Vista adaptativa (SVA):</strong> El dashboard para <code>UserType.Administrator</code> muestra todos los KPIs; el de <code>UserType.Client</code> solo planes/pagos/adeudos. Hoy no existe ninguno de los dos paths.</span>
+      </li>
+      <li>
+        <span class="pending-dot dot-saffron"></span>
+        <span><strong>Falta — Endpoint resumen del portal:</strong> <code>GET /api/dashboard/summary</code> documentado en <code>14-customer-portal.md</code> — no existe.</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- FASE 11 -->
+  <div class="pending-card">
+    <div class="pending-card-header">
+      <span class="badge badge-terracotta">No iniciado</span>
+      <span class="pending-card-title">F-11 — Reporting</span>
+      <span class="tag tag-both">Backend + Frontend</span>
+    </div>
+    <ul class="pending-list">
+      <li><span class="pending-dot dot-terracotta"></span><span><strong>Motor de reportes:</strong> QuestPDF (PDF) + ClosedXML (Excel) + HTML preview — nada implementado.</span></li>
+      <li><span class="pending-dot dot-terracotta"></span><span><strong>Reporte de Clientes:</strong> listado con estado, saldo y categoría.</span></li>
+      <li><span class="pending-dot dot-terracotta"></span><span><strong>Reporte de Servicios:</strong> catálogo con precios vigentes e histórico.</span></li>
+      <li><span class="pending-dot dot-terracotta"></span><span><strong>Reporte de Suscripciones:</strong> activas, suspendidas, próximas a vencer.</span></li>
+      <li><span class="pending-dot dot-terracotta"></span><span><strong>Reporte de Ingresos:</strong> por cliente, por servicio, por período.</span></li>
+      <li><span class="pending-dot dot-terracotta"></span><span><strong>Reporte de Gastos:</strong> por cuenta bancaria y categoría.</span></li>
+      <li><span class="pending-dot dot-terracotta"></span><span><strong>Reporte de Morosidad:</strong> clientes con cargos vencidos, antigüedad, monto total adeudado.</span></li>
+      <li><span class="pending-dot dot-terracotta"></span><span><strong>Reporte de Conciliación:</strong> partidas conciliadas vs. no conciliadas por período y banco.</span></li>
+    </ul>
+  </div>
+
+  <!-- FASE 12 -->
+  <div class="pending-card">
+    <div class="pending-card-header">
+      <span class="badge badge-terracotta">No iniciado</span>
+      <span class="pending-card-title">F-12 — Support Tickets</span>
+      <span class="tag tag-both">Backend + Frontend</span>
+    </div>
+    <ul class="pending-list">
+      <li><span class="pending-dot dot-terracotta"></span><span><strong>Entidades:</strong> <code>Ticket</code>, <code>TicketComment</code>, <code>TicketAttachment</code> — no existen en Domain.</span></li>
+      <li><span class="pending-dot dot-terracotta"></span><span><strong>CRUD de Tickets:</strong> crear, responder, cerrar, reabrir, asignar agente.</span></li>
+      <li><span class="pending-dot dot-terracotta"></span><span><strong>Portal cliente:</strong> <code>GET/POST /api/tickets</code> documentado en <code>14-customer-portal.md</code>.</span></li>
+      <li><span class="pending-dot dot-terracotta"></span><span><strong>Historial y seguimiento:</strong> log de cambios de estado, notificaciones (canal a definir).</span></li>
+    </ul>
+  </div>
+
+  <!-- FASE 13 -->
+  <div class="pending-card">
+    <div class="pending-card-header">
+      <span class="badge badge-terracotta">No iniciado</span>
+      <span class="pending-card-title">F-13 — License Management</span>
+      <span class="tag tag-both">Backend + Frontend</span>
+    </div>
+    <ul class="pending-list">
+      <li><span class="pending-dot dot-terracotta"></span><span><strong>Entidades:</strong> <code>License</code>, <code>Installation</code>, <code>Activation</code>, <code>LicenseValidationLog</code> — nada en Domain.</span></li>
+      <li><span class="pending-dot dot-terracotta"></span><span><strong>Productos compatibles:</strong> SHEndevour, AegiDocs y futuros.</span></li>
+      <li><span class="pending-dot dot-terracotta"></span><span><strong>Portal cliente:</strong> <code>GET /api/licenses</code> documentado en <code>14-customer-portal.md</code>.</span></li>
+      <li><span class="pending-dot dot-terracotta"></span><span><strong>Validación de licencias:</strong> endpoint de validación para que los productos consulten su estado.</span></li>
+    </ul>
+  </div>
+
+  <!-- FASE 14 -->
+  <div class="pending-card">
+    <div class="pending-card-header">
+      <span class="badge badge-terracotta">No iniciado</span>
+      <span class="pending-card-title">F-14 — Customer Portal (módulo frontend)</span>
+      <span class="tag tag-fe">Frontend</span>
+    </div>
+    <ul class="pending-list">
+      <li><span class="pending-dot dot-primary"></span><span><strong>Infraestructura backend ya existe:</strong> <code>UserType.Client</code>, <code>ClientUser</code>, <code>ClientPinCredential</code>, <code>SubscriptionPermission</code>, permisos por suscripción, endpoints gateados para portal — todo en Fases 1–8.</span></li>
+      <li><span class="pending-dot dot-terracotta"></span><span><strong>Falta — Módulo de UI:</strong> La experiencia del portal cliente (menú dinámico, dashboard adaptativo, mis servicios, estado de cuenta, pagos, tickets, licencias) no tiene ninguna página Next.js.</span></li>
+      <li><span class="pending-dot dot-terracotta"></span><span><strong>Falta — Login con PIN:</strong> <code>POST /api/auth/login-pin</code> existe en backend; la página de login con flujo PIN no existe en frontend.</span></li>
+      <li><span class="pending-dot dot-terracotta"></span><span><strong>Falta — Menú dinámico por permisos:</strong> Sidebar/bottom-tabs construido desde <code>GET /api/auth/me</code> con visibilidad condicional por <code>usePermissions()</code>.</span></li>
+    </ul>
+  </div>
+
+  <!-- FASE 15 -->
+  <div class="pending-card">
+    <div class="pending-card-header">
+      <span class="badge badge-terracotta">No iniciado</span>
+      <span class="pending-card-title">F-15 — Automations</span>
+      <span class="tag tag-both">Backend + Frontend</span>
+    </div>
+    <ul class="pending-list">
+      <li><span class="pending-dot dot-terracotta"></span><span><strong>Recordatorios de pago:</strong> notificación N días antes de vencimiento de cargo.</span></li>
+      <li><span class="pending-dot dot-terracotta"></span><span><strong>Detección de morosidad:</strong> marcar automáticamente cuentas con cargos vencidos X días sin pago.</span></li>
+      <li><span class="pending-dot dot-terracotta"></span><span><strong>Renovaciones automáticas:</strong> generar siguiente ciclo cuando la suscripción llega a <code>NextBillingDate</code> (el worker diario ya existe; necesita la lógica de renovación).</span></li>
+      <li><span class="pending-dot dot-terracotta"></span><span><strong>Suspensiones automáticas:</strong> suspender suscripción tras N días de mora configurable.</span></li>
+      <li><span class="pending-dot dot-terracotta"></span><span><strong>Canal de notificación:</strong> decisión pendiente — email / WhatsApp / SMS (aún no elegido).</span></li>
+    </ul>
+  </div>
+
+  <!-- ══ FRONTEND ══════════════════════════════════════ -->
+  <div class="section-sep">Frontend · React + TypeScript + Next.js + AegisUI</div>
+
+  <!-- SPRINT F0 -->
+  <div class="pending-card">
+    <div class="pending-card-header">
+      <span class="badge badge-terracotta">No iniciado</span>
+      <span class="pending-card-title">Sprint F0 — Cimientos del Frontend</span>
+      <span class="tag tag-fe">Frontend</span>
+    </div>
+    <ul class="pending-list">
+      <li><span class="pending-dot dot-plum"></span><span><strong>Proyecto <code>web/</code>:</strong> El directorio no existe. Crear <code>web/</code> con Next.js 14+ (App Router) + TypeScript strict + Tailwind CSS.</span></li>
+      <li><span class="pending-dot dot-plum"></span><span><strong>Tokens AegisUI (<code>styles/tokens.css</code>):</strong> Variables CSS de paleta, tipografía Manrope + Sora, radios, elevaciones, espaciado base 4 px.</span></li>
+      <li><span class="pending-dot dot-plum"></span><span><strong>Primitivas <code>components/ui/</code>:</strong> Button, Input, Select, Dialog, Drawer, Table, Command (cmdk), KpiCard, Toast — cero piezas implementadas.</span></li>
+      <li><span class="pending-dot dot-plum"></span><span><strong>Capa de autenticación (<code>lib/auth/</code>):</strong> Contexto de sesión, JWT solo en memoria (nunca localStorage), <code>usePermissions()</code>, <code>&lt;Can permission="…" /&gt;</code>.</span></li>
+      <li><span class="pending-dot dot-plum"></span><span><strong>Layout principal:</strong> Topbar (56 px) + Sidebar (248 px / 76 px colapsado) + StatusStrip (32 px) — versión desktop. Bottom tab bar para mobile (&lt; 768 px).</span></li>
+      <li><span class="pending-dot dot-plum"></span><span><strong>Paleta de comandos:</strong> <code>Ctrl/Cmd + K</code> global con <code>cmdk</code>.</span></li>
+      <li><span class="pending-dot dot-plum"></span><span><strong>Ajustes de backend requeridos para el frontend:</strong>
+        <ul style="margin-top:6px; padding-left:18px; list-style:disc; color:var(--slate-muted); font-size:12px; line-height:1.7;">
+          <li>CORS con credenciales para <code>http://localhost:3000</code> (origen Next.js dev).</li>
+          <li>Refresh token en cookie <code>HttpOnly / Secure / SameSite=Lax</code>. <em>(Implementado en Fase 1, verificar que <code>Program.cs</code> expone la configuración correcta.)</em></li>
+          <li><code>GET /api/auth/me</code> devolviendo usuario, <code>UserType</code>, <code>ClientId</code>, roles y permisos efectivos.</li>
+        </ul>
+      </span></li>
+      <li><span class="pending-dot dot-plum"></span><span><strong>Cliente HTTP tipado:</strong> Generación desde Swagger/OpenAPI del backend con <code>openapi-typescript</code> u <code>orval</code> para evitar drift de tipos.</span></li>
+    </ul>
+  </div>
+
+  <!-- SPRINTS F1-F8 -->
+  <div class="pending-card">
+    <div class="pending-card-header">
+      <span class="badge badge-terracotta">No iniciado</span>
+      <span class="pending-card-title">Sprints F1–F8 — Paridad MVP en Next.js</span>
+      <span class="tag tag-fe">Frontend</span>
+    </div>
+    <ul class="pending-list">
+      <li><span class="pending-dot dot-plum"></span><span><strong>F1 — Login + Usuarios/Roles/Permisos:</strong> Página de login (<code>/login</code>), flujo PIN, gestión de usuarios, roles y permisos. Retirar <code>Login.razor</code> al completar.</span></li>
+      <li><span class="pending-dot dot-plum"></span><span><strong>F2 — Clientes:</strong> Listado paginado (<code>N</code> para nuevo, <code>/</code> para buscar, <code>↑↓</code> para navegar), drawer de alta rápida inline, detalle con notas/contactos/historial. SVA: misma vista para Admin y portal cliente.</span></li>
+      <li><span class="pending-dot dot-plum"></span><span><strong>F3 — Catálogo de Servicios:</strong> CRUD de servicios y categorías, historial de precios con fecha efectiva.</span></li>
+      <li><span class="pending-dot dot-plum"></span><span><strong>F4 — Suscripciones:</strong> Listado con estados (colores semánticos AegisUI), acciones de suspender/reactivar/cancelar, historial de cambios, permisos por suscripción.</span></li>
+      <li><span class="pending-dot dot-plum"></span><span><strong>F5 — Facturación:</strong> Vista de ciclos y cargos esperados, cargos pendientes/parciales/pagados, cancelación con razón, reprocesamiento.</span></li>
+      <li><span class="pending-dot dot-plum"></span><span><strong>F6 — Ledger:</strong> Registro de ingresos/egresos/transferencias/ajustes, vista de cuentas bancarias (número enmascarado), balance calculado en tiempo real.</span></li>
+      <li><span class="pending-dot dot-plum"></span><span><strong>F7 — Asignaciones:</strong> Asignación automática FIFO y manual de pagos a cargos, vista de estado por billing item.</span></li>
+      <li><span class="pending-dot dot-plum"></span><span><strong>F8 — Estado de Cuenta:</strong> Por cliente, rango de fechas, selector de moneda (conversión visual), exportación futura.</span></li>
+    </ul>
+  </div>
+
+  <!-- ATAJOS DE TECLADO -->
+  <div class="pending-card">
+    <div class="pending-card-header">
+      <span class="badge badge-terracotta">No iniciado</span>
+      <span class="pending-card-title">Reglas de Teclado — Obligatorias en Todo Formulario/Listado</span>
+      <span class="tag tag-fe">Frontend</span>
+    </div>
+    <ul class="pending-list">
+      <li><span class="pending-dot dot-plum"></span><span><code>Ctrl/Cmd + K</code> — paleta de comandos global (navegación + acciones rápidas).</span></li>
+      <li><span class="pending-dot dot-plum"></span><span><code>N</code> — nuevo registro en cualquier listado con foco (sin input activo).</span></li>
+      <li><span class="pending-dot dot-plum"></span><span><code>/</code> — enfocar buscador/filtro en listados.</span></li>
+      <li><span class="pending-dot dot-plum"></span><span><code>↑ / ↓</code> — navegar filas de tabla.</span></li>
+      <li><span class="pending-dot dot-plum"></span><span><code>Enter</code> — abrir/editar fila seleccionada · enviar formulario.</span></li>
+      <li><span class="pending-dot dot-plum"></span><span><code>Esc</code> — cerrar modal/drawer (con confirmación si hay cambios sin guardar).</span></li>
+      <li><span class="pending-dot dot-plum"></span><span><code>Delete</code> — eliminar registro seleccionado (con confirmación, si tiene permiso).</span></li>
+      <li><span class="pending-dot dot-plum"></span><span><code>?</code> — mostrar hoja de atajos.</span></li>
+      <li><span class="pending-dot dot-plum"></span><span>Focus trap en todos los modales y drawers. Primer campo autofocado al abrir.</span></li>
+    </ul>
+  </div>
+
+  <!-- DECISIONES PENDIENTES -->
+  <div class="section-sep">Decisiones de Diseño Pendientes</div>
+
+  <div class="pending-card">
+    <div class="pending-card-header">
+      <span class="badge badge-periwinkle">Decisión</span>
+      <span class="pending-card-title">Puntos sin resolver que bloquean avance</span>
+    </div>
+    <ul class="pending-list">
+      <li><span class="pending-dot dot-periwinkle"></span><span><strong>Servicio externo de tipo de cambio:</strong> ExchangeRate-API, Open Exchange Rates u otro. Bloquea <code>IExchangeRateProvider</code> en producción.</span></li>
+      <li><span class="pending-dot dot-periwinkle"></span><span><strong>Canal de notificaciones (F-15):</strong> Email / WhatsApp / SMS — sin definir. Bloquea el diseño de la entidad de notificación.</span></li>
+      <li><span class="pending-dot dot-periwinkle"></span><span><strong>Estrategia de caché de tasas de cambio:</strong> Redis, memoria distribuida u otro. Afecta a estados de cuenta y reportes con conversión.</span></li>
+      <li><span class="pending-dot dot-periwinkle"></span><span><strong>Renombre <code>AegiFinance.Web</code> → <code>AegiFinance.Api</code>:</strong> Documentado como pendiente en progress.md. Conviene hacerlo antes de comenzar el frontend para alinear nomenclatura.</span></li>
+    </ul>
+  </div>
+
+  <!-- NOTA FINAL -->
+  <div class="footer-note">
+    <strong>Nota de verificación:</strong> Este tablero se generó inspeccionando el código fuente real del repositorio — no el estado documentado en <code>progress.md</code>, que en sesiones anteriores ya demostró estar desincronizado con la implementación. Las Fases 1–8 de Backend se verificaron contra sus controladores, handlers, comandos y queries. La Fase 9 se verificó leyendo el archivo fuente del único comando existente. El directorio <code>web/</code> se confirmó inexistente (glob retornó 0 resultados). El 100% del frontend es trabajo nuevo.
+  </div>
+
+</main>
+</body>
+</html>

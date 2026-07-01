@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* AegisUI — Acción primaria (petróleo) */
+  --primary:       #0F5C6B;
+  --primary-mid:   #16798C;
+  --primary-light: #5BAEBC;
+  --primary-pale:  #C9E8ED;
+
+  /* Jade — Éxito / Ingreso */
+  --jade-strong:  #0E9F6E;
+  --jade-mid:     #34C295;
+  --jade-light:   #8FE3C4;
+  --jade-pale:    #DFFBEF;
+  --jade-bg:      #F3FFFA;
+
+  /* Saffron — Alerta / Pendiente */
+  --saffron-strong: #B7791F;
+  --saffron-mid:    #D99A2B;
+  --saffron-light:  #F0C36D;
+  --saffron-pale:   #FBEACB;
+  --saffron-bg:     #FFF8EC;
+
+  /* Periwinkle — Referencia / Cargos */
+  --periwinkle-strong: #5469D4;
+  --periwinkle-mid:    #7B8FE8;
+  --periwinkle-pale:   #E4E9FC;
+  --periwinkle-bg:     #F5F7FF;
+
+  /* Plum — Total / Resumen */
+  --plum-strong:  #A1336B;
+  --plum-mid:     #C2528A;
+  --plum-pale:    #F8E1EE;
+  --plum-bg:      #FDF3F8;
+
+  /* Terracotta — Gasto / Salida */
+  --terracotta-strong: #B6452C;
+  --terracotta-mid:    #D06A4A;
+  --terracotta-pale:   #FBE6DC;
+  --terracotta-bg:     #FFF6F1;
+
+  /* Neutros */
+  --ink:          #16181D;
+  --slate-700:    #3A3F4B;
+  --slate-muted:  #5B6472;
+  --line:         #E3E6EC;
+  --foot:         #F7F8FA;
+  --page-bg:      #EFF1F7;
+  --surface:      #FFFFFF;
+  --surface-dark: #12141A;
+
+  /* Tipografía */
+  --font-ui:      var(--font-manrope), system-ui, sans-serif;
+  --font-display: var(--font-sora), var(--font-manrope), sans-serif;
+
+  /* Espaciado */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 20px;
+  --s6: 24px;
+
+  /* Radios */
+  --r-input:  7px;
+  --r-button: 9px;
+  --r-table:  12px;
+  --r-card:   18px;
+
+  /* Elevaciones */
+  --dp1: 0 1px 2px rgba(15,23,42,.06), 0 1px 1px rgba(15,23,42,.04);
+  --dp2: 0 4px 10px rgba(15,23,42,.10);
+  --dp3: 0 12px 28px rgba(15,23,42,.16);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--ink);
+  background-color: var(--page-bg);
+  line-height: 1.5;
+}
+
+/* Scroll personalizado */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #c8cbd4;
+}
+
+/* Focus visible accesible */
+:focus-visible {
+  outline: 2px solid var(--primary-light);
+  outline-offset: 2px;
+}
+
+/* Números tabulares en importes */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Transiciones suaves (≤ 200ms, sin bounce) */
+.transition-ui {
+  transition-property: background-color, border-color, color, opacity, box-shadow, transform;
+  transition-duration: 150ms;
+  transition-timing-function: ease;
+}
