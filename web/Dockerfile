@@ -33,9 +33,10 @@ RUN addgroup --system --gid 1001 nodejs \
  && adduser  --system --uid 1001 nextjs
 
 # standalone output: servidor autocontenido sin node_modules completo
-COPY --from=builder /app/public                   ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone  ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static      ./.next/static
+RUN mkdir -p ./public ./.next/static
+COPY --from=builder /app/public/                          ./public/
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone/ ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static/     ./.next/static/
 
 USER nextjs
 EXPOSE 3000
