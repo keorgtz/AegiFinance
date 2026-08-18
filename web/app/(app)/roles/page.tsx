@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { RoleForm } from "@/components/modules/roles/role-form";
+import { UiPermissionManager } from "@/components/modules/roles/ui-permission-manager";
 import { AssignPermissionsDialog } from "@/components/modules/roles/assign-permissions-dialog";
 import { Can } from "@/lib/auth/can";
 import type { PermissionDto, RoleDto } from "@/types/api";
@@ -22,6 +23,11 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useQuery } from "@tanstack/react-query";
+import { RoleComparisonDialog } from "@/components/modules/roles/role-comparison-dialog";
+import { auditLogsApi } from "@/lib/api/audit-logs";
+import { formatDateTime } from "@/lib/utils/format";
+import { GitCompareArrows, History } from "lucide-react";
 
 export default function RolesPage() {
   const { data: roles = [], isLoading: rolesLoading } = useRoles();
@@ -34,6 +40,8 @@ export default function RolesPage() {
   const [permDialogOpen, setPermDialogOpen] = useState(false);
   const [permissionsDialogOpen, setPermissionsDialogOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<RoleDto | null>(null);
+  const [compareOpen, setCompareOpen] = useState(false);
+  const roleHistory = useQuery({ queryKey: ["audit-logs", "roles"], queryFn: () => auditLogsApi.list({ entityType: "RolePermission", pageSize: 12 }) });
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -55,14 +63,14 @@ export default function RolesPage() {
       accessorKey: "name",
       header: "Nombre",
       cell: ({ getValue }) => (
-        <span className="font-600 text-[#16181D]">{getValue() as string}</span>
+        <span className="font-semibold text-foreground">{getValue() as string}</span>
       ),
     },
     {
       accessorKey: "description",
       header: "Descripción",
       cell: ({ getValue }) => (
-        <span className="text-[#5B6472]">{(getValue() as string) || "—"}</span>
+        <span className="text-muted">{(getValue() as string) || "—"}</span>
       ),
     },
     {
@@ -84,23 +92,23 @@ export default function RolesPage() {
           <Can permission="ManageRoles">
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Más acciones" onClick={(e) => e.stopPropagation()}>
+                <Button controlKey="ui.app.app.roles.page.button.1" variant="ghost" size="icon" aria-label="Más acciones" onClick={(e) => e.stopPropagation()}>
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenu.Trigger>
               <DropdownMenu.Portal>
-                <DropdownMenu.Content className="z-50 min-w-[160px] overflow-hidden rounded-table border border-[#E3E6EC] bg-white shadow-dp2" align="end" sideOffset={4}>
-                  <DropdownMenu.Item onSelect={() => { setEditingRole(role); setRoleFormOpen(true); }} className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-[#3A3F4B] hover:bg-[#F7F8FA] cursor-pointer focus:outline-none">
+                <DropdownMenu.Content className="z-50 min-w-[160px] overflow-hidden rounded-table border border-border bg-surface shadow-dp2" align="end" sideOffset={4}>
+                  <DropdownMenu.Item onSelect={() => { setEditingRole(role); setRoleFormOpen(true); }} className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle cursor-pointer focus:outline-none">
                     Editar
                   </DropdownMenu.Item>
-                  <DropdownMenu.Item onSelect={() => { setSelectedRole(role); setPermissionsDialogOpen(true); }} className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-[#3A3F4B] hover:bg-[#F7F8FA] cursor-pointer focus:outline-none">
+                  <DropdownMenu.Item onSelect={() => { setSelectedRole(role); setPermissionsDialogOpen(true); }} className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle cursor-pointer focus:outline-none">
                     <Shield className="h-3.5 w-3.5" />
                     Permisos
                   </DropdownMenu.Item>
-                  <DropdownMenu.Separator className="my-1 h-px bg-[#F7F8FA]" />
+                  <DropdownMenu.Separator className="my-1 h-px bg-surface-subtle" />
                   <DropdownMenu.Item
                     onSelect={() => { if (confirm(`¿Eliminar el rol "${role.name}"?`)) deleteRole.mutate(role.id); }}
-                    className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-[#B6452C] hover:bg-[#FFF6F1] cursor-pointer focus:outline-none"
+                    className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-danger hover:bg-danger-soft cursor-pointer focus:outline-none"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                     Eliminar
@@ -119,7 +127,7 @@ export default function RolesPage() {
       accessorKey: "code",
       header: "Código",
       cell: ({ getValue }) => (
-        <code className="rounded bg-[#F7F8FA] px-1.5 py-0.5 text-[11px] text-[#0F5C6B]">
+        <code className="rounded bg-surface-subtle px-1.5 py-0.5 text-[11px] text-action">
           {getValue() as string}
         </code>
       ),
@@ -127,13 +135,13 @@ export default function RolesPage() {
     {
       accessorKey: "name",
       header: "Nombre",
-      cell: ({ getValue }) => <span className="font-500 text-[#16181D]">{getValue() as string}</span>,
+      cell: ({ getValue }) => <span className="font-medium text-foreground">{getValue() as string}</span>,
     },
     {
       accessorKey: "description",
       header: "Descripción",
       cell: ({ getValue }) => (
-        <span className="text-[#5B6472]">{(getValue() as string) || "—"}</span>
+        <span className="text-muted">{(getValue() as string) || "—"}</span>
       ),
     },
     {
@@ -143,7 +151,7 @@ export default function RolesPage() {
         const perm = row.original;
         return (
           <Can permission="ManageRoles">
-            <Button
+            <Button controlKey="ui.app.app.roles.page.button.2"
               variant="ghost"
               size="icon"
               aria-label="Eliminar permiso"
@@ -154,7 +162,7 @@ export default function RolesPage() {
                 }
               }}
             >
-              <Trash2 className="h-3.5 w-3.5 text-[#B6452C]" />
+              <Trash2 className="h-3.5 w-3.5 text-danger" />
             </Button>
           </Can>
         );
@@ -165,20 +173,19 @@ export default function RolesPage() {
   return (
     <div className="space-y-8">
       {/* ROLES */}
-      <section>
-        <div className="mb-5 flex items-center justify-between">
+      <section className="rounded-hero border border-border bg-gradient-to-br from-action-soft via-surface to-accent-soft p-5 sm:p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="font-display text-[22px] font-700 text-[#16181D]">Roles y Permisos</h1>
-            <p className="mt-0.5 text-[13px] text-[#5B6472]">Gestión de roles del sistema</p>
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-action">Modelo de acceso</p>
+            <h1 className="mt-2 font-display text-[24px] font-bold text-foreground">Roles y permisos</h1>
+            <p className="mt-0.5 text-[13px] text-muted">Gestión de roles del sistema</p>
           </div>
           <Can permission="ManageRoles">
-            <Button onClick={() => { setEditingRole(null); setRoleFormOpen(true); }}>
-              <Plus className="h-4 w-4" />
-              Nuevo rol
-              <kbd className="ml-1 rounded bg-white/20 px-1 text-[10px]">N</kbd>
-            </Button>
+            <div className="flex flex-wrap gap-2"><Button controlKey="roles.compare.open" permission="ManageRoles" variant="outline" onClick={() => setCompareOpen(true)}><GitCompareArrows className="h-4 w-4" />Comparar</Button><Button controlKey="ui.app.app.roles.page.button.4" onClick={() => { setEditingRole(null); setRoleFormOpen(true); }}><Plus className="h-4 w-4" />Nuevo rol<kbd className="ml-1 rounded bg-surface/20 px-1 text-[10px]">N</kbd></Button></div>
           </Can>
         </div>
+      </section>
+      <section>
         <DataTable
           columns={roleColumns}
           data={roles}
@@ -191,11 +198,11 @@ export default function RolesPage() {
       <section>
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <h2 className="font-display text-[16px] font-700 text-[#16181D]">Permisos</h2>
-            <p className="mt-0.5 text-[12px] text-[#5B6472]">Catálogo de permisos del sistema</p>
+            <h2 className="font-display text-[16px] font-bold text-foreground">Permisos</h2>
+            <p className="mt-0.5 text-[12px] text-muted">Catálogo de permisos del sistema</p>
           </div>
           <Can permission="ManageRoles">
-            <Button
+            <Button controlKey="ui.app.app.roles.page.button.5"
               variant="outline"
               size="sm"
               onClick={() => setPermDialogOpen(true)}
@@ -213,10 +220,18 @@ export default function RolesPage() {
         />
       </section>
 
+      <UiPermissionManager />
+
+      <section className="rounded-panel border border-border bg-surface p-5 shadow-dp1" aria-labelledby="access-history-title">
+        <div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-input bg-action-soft text-action"><History className="h-4 w-4" /></span><div><h2 id="access-history-title" className="font-display text-base font-bold text-foreground">Historial de permisos</h2><p className="text-xs text-muted">Últimas concesiones, denegaciones y revocaciones registradas.</p></div></div>
+        <div className="mt-4 space-y-2">{roleHistory.isLoading ? <p className="text-sm text-muted">Cargando historial…</p> : roleHistory.isError ? <p className="text-sm text-danger">No se pudo cargar el historial.</p> : roleHistory.data?.items.length ? roleHistory.data.items.map((item) => <div key={item.id} className="flex min-h-12 items-center justify-between gap-3 rounded-input bg-surface-subtle px-3 py-2"><div><p className="text-sm font-semibold text-foreground">{item.action}</p><p className="text-xs text-muted">{item.userName || "Sistema"}</p></div><time className="text-xs text-muted">{formatDateTime(item.timestamp)}</time></div>) : <p className="rounded-input bg-surface-subtle p-4 text-sm text-muted">Todavía no hay cambios registrados.</p>}</div>
+      </section>
+
       {/* Dialogs */}
       <RoleForm open={roleFormOpen} onOpenChange={setRoleFormOpen} editingRole={editingRole} />
       <AssignPermissionsDialog open={permissionsDialogOpen} onOpenChange={setPermissionsDialogOpen} role={selectedRole} />
       <NewPermissionDialog open={permDialogOpen} onOpenChange={setPermDialogOpen} />
+      <RoleComparisonDialog open={compareOpen} onOpenChange={setCompareOpen} roles={roles} />
     </div>
   );
 }
@@ -244,6 +259,8 @@ function NewPermissionDialog({ open, onOpenChange }: { open: boolean; onOpenChan
       code: values.code,
       name: values.name,
       description: values.description || null,
+      module: values.code.replace(/^(View|Create|Update|Delete|Manage)/, "") || "System",
+      action: values.code.match(/^(View|Create|Update|Delete|Manage)/)?.[0] || "Execute",
     });
     onOpenChange(false);
   };
@@ -252,7 +269,7 @@ function NewPermissionDialog({ open, onOpenChange }: { open: boolean; onOpenChan
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent title="Nuevo permiso" size="sm">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <Input
+          <Input controlKey="ui.app.app.roles.page.input.1"
             {...register("code")}
             label="Código"
             placeholder="Ej. ManageClients"
@@ -260,22 +277,22 @@ function NewPermissionDialog({ open, onOpenChange }: { open: boolean; onOpenChan
             error={errors.code?.message}
             hint="CamelCase sin espacios. Ej: ViewClients, ManageBilling"
           />
-          <Input
+          <Input controlKey="ui.app.app.roles.page.input.2"
             {...register("name")}
             label="Nombre"
             placeholder="Ej. Gestionar clientes"
             error={errors.name?.message}
           />
-          <Input
+          <Input controlKey="ui.app.app.roles.page.input.3"
             {...register("description")}
             label="Descripción (opcional)"
             placeholder="Descripción breve del permiso"
           />
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="secondary">Cancelar</Button>
+              <Button controlKey="ui.app.app.roles.page.button.6" type="button" variant="secondary">Cancelar</Button>
             </DialogClose>
-            <Button type="submit" loading={isSubmitting}>Crear permiso</Button>
+            <Button controlKey="ui.app.app.roles.page.button.7" type="submit" loading={isSubmitting}>Crear permiso</Button>
           </DialogFooter>
         </form>
       </DialogContent>

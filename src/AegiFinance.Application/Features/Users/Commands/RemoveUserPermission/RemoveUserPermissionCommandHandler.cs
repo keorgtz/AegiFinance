@@ -15,15 +15,18 @@ public class RemoveUserPermissionCommandHandler : IRequestHandler<RemoveUserPerm
 
     public async Task Handle(RemoveUserPermissionCommand request, CancellationToken cancellationToken)
     {
-        var userPermission = await _context.UserPermissions
-            .FirstOrDefaultAsync(up => up.UserId == request.UserId && up.PermissionId == request.PermissionId, cancellationToken);
+        var userPermission = await _context.UserPermissionOverrides
+            .FirstOrDefaultAsync(up => up.UserId == request.UserId &&
+                up.PermissionId == request.PermissionId &&
+                up.ClientId == request.ClientId &&
+                up.SubscriptionId == request.SubscriptionId, cancellationToken);
 
         if (userPermission is null)
         {
             throw new InvalidOperationException("El override de permiso no existe.");
         }
 
-        _context.UserPermissions.Remove(userPermission);
+        _context.UserPermissionOverrides.Remove(userPermission);
         await _context.SaveChangesAsync(cancellationToken);
     }
 }

@@ -26,28 +26,28 @@ public class LedgerController : ControllerBase
     }
 
     [HttpPost("income")]
-    [Authorize(Policy = "ManageBilling")]
+    [Authorize(Policy = "CreateLedgerIncome")]
     public async Task<ActionResult<LedgerEntryDto>> RegisterIncome(RegisterIncomeCommand command, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(command, cancellationToken));
     }
 
     [HttpPost("expense")]
-    [Authorize(Policy = "ManageBilling")]
+    [Authorize(Policy = "CreateLedgerExpense")]
     public async Task<ActionResult<LedgerEntryDto>> RegisterExpense(RegisterExpenseCommand command, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(command, cancellationToken));
     }
 
     [HttpPost("transfer")]
-    [Authorize(Policy = "ManageBilling")]
+    [Authorize(Policy = "CreateLedgerTransfers")]
     public async Task<ActionResult<TransferGroupDto>> RegisterTransfer(RegisterTransferCommand command, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(command, cancellationToken));
     }
 
     [HttpPost("adjustment")]
-    [Authorize(Policy = "ManageBilling")]
+    [Authorize(Policy = "CreateLedgerAdjustments")]
     public async Task<ActionResult<LedgerEntryDto>> RegisterAdjustment(RegisterAdjustmentCommand command, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(command, cancellationToken));

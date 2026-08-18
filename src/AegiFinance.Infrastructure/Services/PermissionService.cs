@@ -1,66 +1,70 @@
 using AegiFinance.Application.Common.Interfaces;
-using AegiFinance.Infrastructure.Data;
+using AegiFinance.Domain.Enums;
+using AegiFinance.Domain.Security;
 using Microsoft.EntityFrameworkCore;
 
 namespace AegiFinance.Infrastructure.Services;
 
-public class PermissionService : IPermissionService
+public sealed class PermissionService : IPermissionService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IApplicationDbContext _context;
 
-    public PermissionService(ApplicationDbContext context)
+    public PermissionService(IApplicationDbContext context)
     {
         _context = context;
     }
 
-    public async Task<IReadOnlyList<string>> GetEffectivePermissionsAsync(Guid userId, CancellationToken cancellationToken = default)
+    public Task<IReadOnlyList<string>> GetEffectivePermissionsAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default) =>
+        GetEffectivePermissionsAsync(userId, null, null, cancellationToken);
+
+    public async Task<IReadOnlyList<string>> GetEffectivePermissionsAsync(
+        Guid userId,
+        Guid? clientId,
+        Guid? subscriptionId,
+        CancellationToken cancellationToken = default)
     {
-        var rolePermissions = await _context.Roles
+        var roleGrants = await _context.RolePermissions
             .AsNoTracking()
-            .Where(r => r.Users.Any(u => u.Id == userId))
-            .SelectMany(r => r.Permissions)
-            .Select(p => p.Code)
-            .Distinct()
+            .Where(rolePermission =>
+                rolePermission.IsGranted &&
+                rolePermission.Permission.IsActive &&
+                rolePermission.Permission.Kind == PermissionKind.Business &&
+                rolePermission.Role.Users.Any(user => user.Id == userId))
+            .Select(rolePermission => rolePermission.Permission.Code)
             .ToListAsync(cancellationToken);
 
-        var directPermissions = await _context.UserPermissions
+        var overrides = await _context.UserPermissionOverrides
             .AsNoTracking()
-            .Where(up => up.UserId == userId)
-            .Select(up => new { up.PermissionId, up.IsGranted })
+            .Where(permissionOverride =>
+                permissionOverride.UserId == userId &&
+                permissionOverride.Permission.IsActive &&
+                permissionOverride.Permission.Kind == PermissionKind.Business)
+            .Select(permissionOverride => new PermissionOverrideDecision(
+                permissionOverride.Permission.Code,
+                permissionOverride.IsGranted,
+                permissionOverride.ClientId,
+                permissionOverride.SubscriptionId,
+                permissionOverride.ExpiresAt))
             .ToListAsync(cancellationToken);
-
-        var permissionIds = directPermissions.Select(up => up.PermissionId).ToList();
-        var permissionCodes = await _context.Permissions
-            .AsNoTracking()
-            .Where(p => permissionIds.Contains(p.Id))
-            .Select(p => new { p.Id, p.Code })
-            .ToDictionaryAsync(p => p.Id, p => p.Code, cancellationToken);
-
-        var effective = new HashSet<string>(rolePermissions);
-
-        foreach (var direct in directPermissions)
-        {
-            if (!permissionCodes.TryGetValue(direct.PermissionId, out var code))
-            {
-                continue;
-            }
-
-            if (direct.IsGranted)
-            {
-                effective.Add(code);
-            }
-            else
-            {
-                effective.Remove(code);
-            }
-        }
-
-        return effective.ToList().AsReadOnly();
+        return PermissionDecisionEngine.Resolve(roleGrants, overrides, clientId, subscriptionId, DateTime.UtcNow);
     }
 
-    public async Task<bool> HasPermissionAsync(Guid userId, string permissionCode, CancellationToken cancellationToken = default)
+    public async Task<bool> HasPermissionAsync(
+        Guid userId,
+        string permissionCode,
+        CancellationToken cancellationToken = default) =>
+        await HasPermissionAsync(userId, permissionCode, null, null, cancellationToken);
+
+    public async Task<bool> HasPermissionAsync(
+        Guid userId,
+        string permissionCode,
+        Guid? clientId,
+        Guid? subscriptionId,
+        CancellationToken cancellationToken = default)
     {
-        var effective = await GetEffectivePermissionsAsync(userId, cancellationToken);
-        return effective.Contains(permissionCode);
+        var permissions = await GetEffectivePermissionsAsync(userId, clientId, subscriptionId, cancellationToken);
+        return permissions.Contains(permissionCode, StringComparer.OrdinalIgnoreCase);
     }
 }

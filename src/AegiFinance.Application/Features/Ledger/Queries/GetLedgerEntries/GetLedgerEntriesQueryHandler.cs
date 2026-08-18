@@ -2,6 +2,7 @@ using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Common.Models;
 using AegiFinance.Application.Dtos;
+using AegiFinance.Application.Features.Dashboard;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +27,7 @@ public class GetLedgerEntriesQueryHandler : IRequestHandler<GetLedgerEntriesQuer
             .Include(le => le.Client)
             .AsQueryable();
 
+        Guid? clientId = request.ClientId;
         if (_currentUserService.IsClientUser())
         {
             if (!_currentUserService.ClientId.HasValue)
@@ -33,31 +35,22 @@ public class GetLedgerEntriesQueryHandler : IRequestHandler<GetLedgerEntriesQuer
                 return new PaginatedList<LedgerEntryListDto>(new List<LedgerEntryListDto>(), 0, request.PageNumber, request.PageSize);
             }
 
-            query = query.Where(le => le.ClientId == _currentUserService.ClientId.Value);
-        }
-        else if (request.ClientId.HasValue)
-        {
-            query = query.Where(le => le.ClientId == request.ClientId.Value);
+            clientId = _currentUserService.ClientId.Value;
         }
 
-        if (request.BankAccountId.HasValue)
-        {
-            query = query.Where(le => le.BankAccountId == request.BankAccountId.Value);
-        }
+        query = query.ApplyOperationalScope(clientId, request.BankAccountId, request.DateFrom, request.DateTo, request.Currency?.ToUpperInvariant());
 
         if (request.EntryType.HasValue)
         {
             query = query.Where(le => le.EntryType == request.EntryType.Value);
         }
 
-        if (request.DateFrom.HasValue)
+        if (request.IsReconciled.HasValue) query = query.Where(item => item.IsReconciled == request.IsReconciled.Value);
+        if (request.HasUnappliedBalance == true)
         {
-            query = query.Where(le => le.Date >= request.DateFrom.Value);
-        }
-
-        if (request.DateTo.HasValue)
-        {
-            query = query.Where(le => le.Date <= request.DateTo.Value);
+            query = query.Where(item => item.EntryType == AegiFinance.Domain.Enums.LedgerEntryType.Income &&
+                (_context.SubscriptionAllocations.Where(allocation => allocation.LedgerEntryId == item.Id)
+                    .Sum(allocation => (decimal?)allocation.Amount) ?? 0) < item.Amount);
         }
 
         query = query.OrderByDescending(le => le.Date).ThenByDescending(le => le.CreatedAt);

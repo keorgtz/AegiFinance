@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils/cn";
 import { createContext, useContext, useState } from "react";
+import { useUiControl, type UiControlPermissionProps } from "@/lib/auth/ui-control";
 
 interface TabsContextValue {
   active: string;
@@ -35,7 +36,7 @@ export function TabList({ children, className }: TabListProps) {
     <div
       role="tablist"
       className={cn(
-        "flex gap-0 border-b border-[#E3E6EC] overflow-x-auto",
+        "flex gap-1 overflow-x-auto rounded-button bg-surface-subtle p-1",
         className
       )}
     >
@@ -44,27 +45,33 @@ export function TabList({ children, className }: TabListProps) {
   );
 }
 
-interface TabProps {
+interface TabProps extends UiControlPermissionProps {
   id: string;
   children: React.ReactNode;
 }
 
-export function Tab({ id, children }: TabProps) {
+export function Tab({ id, children, controlKey, permission, systemRequired }: TabProps) {
   const ctx = useContext(TabsContext);
   if (!ctx) throw new Error("Tab must be inside Tabs");
   const active = ctx.active === id;
+  const access = useUiControl({ controlKey, permission, systemRequired });
+  if (access.hidden) return null;
 
   return (
     <button
+      {...access.dataAttributes}
+      disabled={access.disabled || access.readOnly}
       role="tab"
+      id={`tab-${id}`}
       aria-selected={active}
+      aria-controls={`panel-${id}`}
       onClick={() => ctx.setActive(id)}
       className={cn(
-        "whitespace-nowrap px-4 py-2.5 text-[13px] font-600 transition-colors duration-100",
-        "border-b-2 -mb-px focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5BAEBC]",
+        "min-h-11 whitespace-nowrap rounded-input px-4 py-2.5 text-sm font-semibold transition-ui",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-action",
         active
-          ? "border-[#0F5C6B] text-[#0F5C6B]"
-          : "border-transparent text-[#5B6472] hover:text-[#16181D] hover:border-[#E3E6EC]"
+          ? "bg-surface text-action shadow-dp1"
+          : "text-muted hover:bg-surface/60 hover:text-foreground"
       )}
     >
       {children}
@@ -83,7 +90,7 @@ export function TabPanel({ id, children, className }: TabPanelProps) {
   if (!ctx) throw new Error("TabPanel must be inside Tabs");
   if (ctx.active !== id) return null;
   return (
-    <div role="tabpanel" className={cn("pt-5", className)}>
+    <div id={`panel-${id}`} role="tabpanel" aria-labelledby={`tab-${id}`} className={cn("pt-5", className)}>
       {children}
     </div>
   );

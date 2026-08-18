@@ -12,6 +12,9 @@ public class GetLedgerEntriesQuery : IRequest<PaginatedList<LedgerEntryListDto>>
     public DateTime? DateFrom { get; set; }
     public DateTime? DateTo { get; set; }
     public Guid? ClientId { get; set; }
+    public string? Currency { get; set; }
+    public bool? IsReconciled { get; set; }
+    public bool? HasUnappliedBalance { get; set; }
     public int PageNumber { get; set; } = 1;
     public int PageSize { get; set; } = 10;
 }

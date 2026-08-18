@@ -24,8 +24,12 @@ public class DeactivateUserCommandHandler : IRequestHandler<DeactivateUserComman
         }
 
         user.IsActive = false;
-        user.RefreshToken = null;
-        user.RefreshTokenExpiry = null;
+        var sessions = await _context.UserSessions.Where(item => item.UserId == user.Id && item.RevokedAt == null).ToListAsync(cancellationToken);
+        foreach (var session in sessions)
+        {
+            session.RevokedAt = DateTime.UtcNow;
+            session.RevokedReason = "User deactivated";
+        }
         await _context.SaveChangesAsync(cancellationToken);
     }
 }

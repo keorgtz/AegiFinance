@@ -3,12 +3,15 @@ using AegiFinance.Domain.Entities;
 using AegiFinance.Domain.Enums;
 using AegiFinance.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 
 namespace AegiFinance.Web.Seed;
 
 public static class SeedData
 {
-    public static async Task InitializeAsync(IServiceProvider serviceProvider)
+    public static async Task InitializeAsync(
+        IServiceProvider serviceProvider,
+        IEnumerable<string>? discoveredPermissionCodes = null)
     {
         var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
         var passwordHasher = serviceProvider.GetRequiredService<IPasswordHasher>();
@@ -32,25 +35,45 @@ public static class SeedData
         }
 
         // Seed Permissions
-        var permissionCodes = new[]
+        var permissionCodes = new HashSet<string>(StringComparer.Ordinal)
         {
             "ViewDashboard", "ViewReports", "ViewRevenue", "ViewPayments",
             "ViewSubscriptions", "ViewLicenses", "ViewTickets", "ViewClients",
+            "ViewServices", "ManageClients", "ManageServices", "ManageSubscriptions",
             "ManageUsers", "ManageBilling", "ManageReconciliation", "ManageRoles"
         };
 
+        if (discoveredPermissionCodes is not null)
+        {
+            permissionCodes.UnionWith(discoveredPermissionCodes.Where(code => !string.IsNullOrWhiteSpace(code)));
+        }
+
         foreach (var code in permissionCodes)
         {
-            if (!await context.Permissions.AnyAsync(p => p.Code == code))
+            var (module, action) = DescribePermission(code);
+            var permission = await context.Permissions.FirstOrDefaultAsync(p => p.Code == code);
+            if (permission is null)
             {
-                context.Permissions.Add(new Permission
+                context.Permissions.Add(new PermissionDefinition
                 {
                     Id = Guid.NewGuid(),
                     Code = code,
-                    Name = code,
+                    Name = Regex.Replace(code, "([a-z0-9])([A-Z])", "$1 $2"),
+                    Module = module,
+                    Action = action,
+                    Kind = PermissionKind.Business,
+                    IsSystemGenerated = discoveredPermissionCodes?.Contains(code) == true,
+                    IsActive = true,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
                 });
+            }
+            else
+            {
+                permission.Module = module;
+                permission.Action = action;
+                permission.Kind = PermissionKind.Business;
+                permission.IsActive = true;
             }
         }
 
@@ -58,7 +81,7 @@ public static class SeedData
 
         // Seed Admin Role
         var adminRole = await context.Roles
-            .Include(r => r.Permissions)
+            .Include(r => r.RolePermissions)
             .FirstOrDefaultAsync(r => r.Name == "Admin");
         if (adminRole == null)
         {
@@ -79,9 +102,14 @@ public static class SeedData
         var allPermissions = await context.Permissions.ToListAsync();
         foreach (var perm in allPermissions)
         {
-            if (!adminRole.Permissions.Any(p => p.Id == perm.Id))
+            if (!adminRole.RolePermissions.Any(rolePermission => rolePermission.PermissionId == perm.Id))
             {
-                adminRole.Permissions.Add(perm);
+                adminRole.RolePermissions.Add(new RolePermission
+                {
+                    RoleId = adminRole.Id,
+                    PermissionId = perm.Id,
+                    IsGranted = true
+                });
             }
         }
 
@@ -106,5 +134,17 @@ public static class SeedData
         }
 
         await context.SaveChangesAsync();
+    }
+
+    private static (string Module, string Action) DescribePermission(string code)
+    {
+        var action = Regex.Match(code, "^(View|Create|Update|Delete|Manage|Generate|Cancel|Close|Reconcile|Reprocess|Allocate|Unallocate|Sync)").Value;
+        if (string.IsNullOrWhiteSpace(action))
+        {
+            action = "Execute";
+        }
+
+        var module = code[action.Length..];
+        return (string.IsNullOrWhiteSpace(module) ? "System" : module, action);
     }
 }

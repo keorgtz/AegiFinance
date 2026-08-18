@@ -3,8 +3,9 @@
 import * as RadixSelect from "@radix-ui/react-select";
 import { Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { useUiControl, type UiControlPermissionProps } from "@/lib/auth/ui-control";
 
-interface SelectProps {
+interface SelectProps extends UiControlPermissionProps {
   value?: string;
   onValueChange?: (value: string) => void;
   placeholder?: string;
@@ -22,34 +23,39 @@ export function Select({
   label,
   error,
   children,
+  controlKey,
+  permission,
+  systemRequired,
 }: SelectProps) {
+  const access = useUiControl({ controlKey, permission, systemRequired });
+  if (access.hidden) return null;
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-2" {...access.dataAttributes}>
       {label && (
-        <label className="text-[11px] font-600 uppercase tracking-wider text-[#5B6472]">
+        <label className="text-xs font-semibold text-muted">
           {label}
         </label>
       )}
-      <RadixSelect.Root value={value} onValueChange={onValueChange} disabled={disabled}>
+      <RadixSelect.Root value={value} onValueChange={onValueChange} disabled={disabled || access.disabled || access.readOnly}>
         <RadixSelect.Trigger
           className={cn(
-            "inline-flex h-8 w-full items-center justify-between gap-2 rounded-input",
-            "border border-[#E3E6EC] bg-white px-3 text-[13px] text-[#16181D]",
-            "transition-colors duration-150",
-            "focus:outline-none focus:border-[#5BAEBC] focus:ring-1 focus:ring-[#5BAEBC]",
-            "disabled:bg-[#F7F8FA] disabled:cursor-not-allowed disabled:opacity-70",
-            "data-[placeholder]:text-[#5B6472]",
-            error && "border-[#B6452C]"
+            "inline-flex min-h-11 w-full items-center justify-between gap-2 rounded-input",
+            "border border-border-strong bg-field px-3.5 text-sm text-foreground",
+            "transition-ui",
+            "focus:outline-none focus:border-action focus:ring-[3px] focus:ring-action/15",
+            "disabled:bg-surface-subtle disabled:cursor-not-allowed disabled:opacity-70",
+            "data-[placeholder]:text-muted",
+            error && "border-danger"
           )}
         >
           <RadixSelect.Value placeholder={placeholder} />
           <RadixSelect.Icon>
-            <ChevronDown className="h-3.5 w-3.5 text-[#5B6472]" />
+            <ChevronDown className="h-3.5 w-3.5 text-muted" />
           </RadixSelect.Icon>
         </RadixSelect.Trigger>
         <RadixSelect.Portal>
           <RadixSelect.Content
-            className="z-50 min-w-[8rem] overflow-hidden rounded-table border border-[#E3E6EC] bg-white shadow-dp2"
+            className="z-50 min-w-[8rem] overflow-hidden rounded-table border border-border bg-surface shadow-dp2"
             position="popper"
             sideOffset={4}
           >
@@ -60,7 +66,7 @@ export function Select({
         </RadixSelect.Portal>
       </RadixSelect.Root>
       {error && (
-        <p className="text-[11px] text-[#B6452C] font-500">{error}</p>
+        <p className="text-xs font-medium text-danger">{error}</p>
       )}
     </div>
   );
@@ -76,14 +82,14 @@ export function SelectItem({ value, children }: SelectItemProps) {
     <RadixSelect.Item
       value={value}
       className={cn(
-        "relative flex cursor-default select-none items-center rounded-[6px] px-6 py-1.5",
-        "text-[13px] text-[#16181D]",
-        "focus:bg-[#EFF1F7] focus:outline-none",
+        "relative flex min-h-11 cursor-default select-none items-center rounded-input px-9 py-2",
+        "text-sm text-foreground",
+        "focus:bg-action-soft focus:text-action focus:outline-none",
         "data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
       )}
     >
       <RadixSelect.ItemIndicator className="absolute left-1.5 inline-flex items-center">
-        <Check className="h-3 w-3 text-[#0F5C6B]" />
+        <Check className="h-3 w-3 text-action" />
       </RadixSelect.ItemIndicator>
       <RadixSelect.ItemText>{children}</RadixSelect.ItemText>
     </RadixSelect.Item>

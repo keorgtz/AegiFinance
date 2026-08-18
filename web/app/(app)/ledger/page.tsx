@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
+import { useQuery } from "@tanstack/react-query";
 import {
   useLedgerEntries,
   useReconcileLedgerEntry,
@@ -24,6 +25,7 @@ import { ExpenseForm } from "@/components/modules/ledger/expense-form";
 import { TransferForm } from "@/components/modules/ledger/transfer-form";
 import { AdjustmentForm } from "@/components/modules/ledger/adjustment-form";
 import { Can } from "@/lib/auth/can";
+import { dashboardApi } from "@/lib/api/dashboard";
 import { formatAmount, formatDate, formatDateTime } from "@/lib/utils/format";
 import type {
   BankAccountDto,
@@ -44,6 +46,7 @@ import {
   TrendingDown,
   TrendingUp,
   Wallet,
+  FileWarning,
 } from "lucide-react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { cn } from "@/lib/utils/cn";
@@ -67,6 +70,12 @@ export default function LedgerPage() {
   const [accountFilter, setAccountFilter] = useState("");
   const [dateFromFilter, setDateFromFilter] = useState("");
   const [dateToFilter, setDateToFilter] = useState("");
+  const [clientIdFilter, setClientIdFilter] = useState("");
+  const [currencyFilter, setCurrencyFilter] = useState("");
+  const [reconciledFilter, setReconciledFilter] = useState<"" | "true" | "false">("");
+  const [hasUnappliedBalance, setHasUnappliedBalance] = useState(false);
+  const [showImportAttempts, setShowImportAttempts] = useState(false);
+  const [showReconciliationLines, setShowReconciliationLines] = useState(false);
 
   // ── Bank accounts state ────────────────────────────────────────────────────
   const [accountsPage, setAccountsPage] = useState(1);
@@ -91,12 +100,31 @@ export default function LedgerPage() {
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setAccountFilter(params.get("bankAccountId") ?? "");
+    setDateFromFilter(params.get("dateFrom") ?? "");
+    setDateToFilter(params.get("dateTo") ?? "");
+    setClientIdFilter(params.get("clientId") ?? "");
+    setCurrencyFilter(params.get("currency") ?? "");
+    const reconciled = params.get("isReconciled") ?? params.get("reconciled") ?? "";
+    setReconciledFilter(reconciled === "true" || reconciled === "false" ? reconciled : "");
+    setEntryTypeFilter((params.get("entryType") as LedgerEntryType | null) ?? "");
+    setHasUnappliedBalance(params.get("hasUnappliedBalance") === "true");
+    setShowImportAttempts(params.get("view") === "imports");
+    setShowReconciliationLines(params.get("view") === "reconciliation");
+  }, []);
+
   // ── Data ───────────────────────────────────────────────────────────────────
   const { data: entriesData, isLoading: entriesLoading } = useLedgerEntries({
     entryType: entryTypeFilter || undefined,
     bankAccountId: accountFilter || undefined,
     dateFrom: dateFromFilter || undefined,
     dateTo: dateToFilter || undefined,
+    clientId: clientIdFilter || undefined,
+    currency: currencyFilter || undefined,
+    isReconciled: reconciledFilter === "" ? undefined : reconciledFilter === "true",
+    hasUnappliedBalance: hasUnappliedBalance || undefined,
     pageNumber: entriesPage,
     pageSize: PAGE_SIZE,
   });
@@ -107,6 +135,29 @@ export default function LedgerPage() {
     pageSize: 15,
   });
 
+  const importAttempts = useQuery({
+    queryKey: ["dashboard", "import-attempts", dateFromFilter, dateToFilter, accountFilter],
+    queryFn: () => dashboardApi.importAttempts({
+      from: dateFromFilter || undefined,
+      to: dateToFilter || undefined,
+      bankAccountId: accountFilter || undefined,
+      currency: currencyFilter || "MXN",
+      status: "Failed",
+    }),
+    enabled: showImportAttempts,
+  });
+
+  const reconciliationLines = useQuery({
+    queryKey: ["dashboard", "unreconciled-lines", dateFromFilter, dateToFilter, accountFilter],
+    queryFn: () => dashboardApi.unreconciledLines({
+      from: dateFromFilter || undefined,
+      to: dateToFilter || undefined,
+      bankAccountId: accountFilter || undefined,
+      currency: currencyFilter || "MXN",
+    }),
+    enabled: showReconciliationLines,
+  });
+
   // Also load all active accounts for filter dropdowns + form defaults
   const { data: allAccountsPage } = useBankAccounts({ isActive: true, pageSize: 100 });
   const allAccounts: BankAccountListDto[] = allAccountsPage?.items ?? [];
@@ -115,7 +166,7 @@ export default function LedgerPage() {
   const unreconcile = useUnreconcileLedgerEntry();
   const deleteAccount = useDeleteBankAccount();
 
-  const hasEntryFilters = !!entryTypeFilter || !!accountFilter || !!dateFromFilter || !!dateToFilter;
+  const hasEntryFilters = !!entryTypeFilter || !!accountFilter || !!dateFromFilter || !!dateToFilter || !!clientIdFilter || !!currencyFilter || !!reconciledFilter || hasUnappliedBalance;
 
   const openActionDialog = useCallback((action: EntryAction, accountId = "") => {
     setDefaultAccountId(accountId);
@@ -129,7 +180,7 @@ export default function LedgerPage() {
       header: "Fecha",
       size: 105,
       cell: ({ getValue }) => (
-        <span className="text-[12px] text-[#5B6472]">{formatDate(getValue() as string)}</span>
+        <span className="text-[12px] text-muted">{formatDate(getValue() as string)}</span>
       ),
     },
     {
@@ -145,8 +196,8 @@ export default function LedgerPage() {
         const e = row.original;
         return (
           <div className="min-w-0">
-            <p className="truncate font-500 text-[#16181D]">{e.description}</p>
-            <p className="text-[11px] text-[#5B6472]">
+            <p className="truncate font-medium text-foreground">{e.description}</p>
+            <p className="text-[11px] text-muted">
               {e.bankAccountName}
               {e.clientName ? ` · ${e.clientName}` : ""}
               {e.reference ? ` · Ref: ${e.reference}` : ""}
@@ -164,8 +215,8 @@ export default function LedgerPage() {
         const isOut = e.entryType === "Expense" || e.entryType === "TransferOut";
         const isIn = e.entryType === "Income" || e.entryType === "TransferIn";
         return (
-          <span className={cn("flex items-center gap-1 font-600 text-[13px]",
-            isIn ? "text-[#0E9F6E]" : isOut ? "text-[#B6452C]" : "text-[#16181D]"
+          <span className={cn("flex items-center gap-1 font-semibold text-[13px]",
+            isIn ? "text-success" : isOut ? "text-danger" : "text-foreground"
           )}>
             {isIn && <TrendingUp className="h-3.5 w-3.5" />}
             {isOut && <TrendingDown className="h-3.5 w-3.5" />}
@@ -181,12 +232,12 @@ export default function LedgerPage() {
       cell: ({ getValue, row }) => {
         const reconciled = getValue() as boolean;
         return reconciled ? (
-          <span className="flex items-center gap-1 text-[12px] font-600 text-[#0E9F6E]">
+          <span className="flex items-center gap-1 text-[12px] font-semibold text-success">
             <CheckCircle2 className="h-3.5 w-3.5" />
             Sí
           </span>
         ) : (
-          <span className="flex items-center gap-1 text-[12px] text-[#5B6472]">
+          <span className="flex items-center gap-1 text-[12px] text-muted">
             <Circle className="h-3.5 w-3.5" />
             No
           </span>
@@ -202,19 +253,19 @@ export default function LedgerPage() {
           <Can permission="ManageReconciliation">
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Opciones">
+                <Button controlKey="ui.app.app.ledger.page.button.1" variant="ghost" size="icon" aria-label="Opciones">
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenu.Trigger>
               <DropdownMenu.Portal>
                 <DropdownMenu.Content
-                  className="z-50 min-w-[160px] overflow-hidden rounded-table border border-[#E3E6EC] bg-white p-1 shadow-dp2"
+                  className="z-50 min-w-[160px] overflow-hidden rounded-table border border-border bg-surface p-1 shadow-dp2"
                   sideOffset={4}
                   align="end"
                 >
                   {e.isReconciled ? (
                     <DropdownMenu.Item
-                      className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-[#3A3F4B] hover:bg-[#F7F8FA] focus:outline-none"
+                      className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle focus:outline-none"
                       onSelect={() => unreconcile.mutate(e.id)}
                     >
                       <RefreshCw className="h-3.5 w-3.5" />
@@ -222,7 +273,7 @@ export default function LedgerPage() {
                     </DropdownMenu.Item>
                   ) : (
                     <DropdownMenu.Item
-                      className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-[#3A3F4B] hover:bg-[#F7F8FA] focus:outline-none"
+                      className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle focus:outline-none"
                       onSelect={() => reconcile.mutate(e.id)}
                     >
                       <CheckCircle2 className="h-3.5 w-3.5" />
@@ -247,8 +298,8 @@ export default function LedgerPage() {
         const a = row.original;
         return (
           <div className="min-w-0">
-            <p className="truncate font-500 text-[#16181D]">{a.name}</p>
-            <p className="text-[11px] text-[#5B6472]">
+            <p className="truncate font-medium text-foreground">{a.name}</p>
+            <p className="text-[11px] text-muted">
               {a.bankName ?? "—"}
               {a.maskedAccountNumber ? ` · ${a.maskedAccountNumber}` : ""}
             </p>
@@ -269,7 +320,7 @@ export default function LedgerPage() {
       header: "Saldo inicial",
       size: 130,
       cell: ({ row }) => (
-        <span className="font-600 text-[#16181D]">
+        <span className="font-semibold text-foreground">
           {formatAmount(row.original.openingBalance, row.original.currency)}
         </span>
       ),
@@ -293,40 +344,40 @@ export default function LedgerPage() {
           <Can permission="ManageBilling">
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Opciones">
+                <Button controlKey="ui.app.app.ledger.page.button.2" variant="ghost" size="icon" aria-label="Opciones">
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenu.Trigger>
               <DropdownMenu.Portal>
                 <DropdownMenu.Content
-                  className="z-50 min-w-[170px] overflow-hidden rounded-table border border-[#E3E6EC] bg-white p-1 shadow-dp2"
+                  className="z-50 min-w-[170px] overflow-hidden rounded-table border border-border bg-surface p-1 shadow-dp2"
                   sideOffset={4}
                   align="end"
                 >
                   <DropdownMenu.Item
-                    className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-[#3A3F4B] hover:bg-[#F7F8FA] focus:outline-none"
+                    className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle focus:outline-none"
                     onSelect={() => openActionDialog("income", a.id)}
                   >
-                    <ArrowDownLeft className="h-3.5 w-3.5 text-[#0E9F6E]" />
+                    <ArrowDownLeft className="h-3.5 w-3.5 text-success" />
                     Registrar ingreso
                   </DropdownMenu.Item>
                   <DropdownMenu.Item
-                    className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-[#3A3F4B] hover:bg-[#F7F8FA] focus:outline-none"
+                    className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle focus:outline-none"
                     onSelect={() => openActionDialog("expense", a.id)}
                   >
-                    <ArrowUpRight className="h-3.5 w-3.5 text-[#B6452C]" />
+                    <ArrowUpRight className="h-3.5 w-3.5 text-danger" />
                     Registrar egreso
                   </DropdownMenu.Item>
                   <DropdownMenu.Item
-                    className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-[#3A3F4B] hover:bg-[#F7F8FA] focus:outline-none"
+                    className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle focus:outline-none"
                     onSelect={() => openActionDialog("transfer", a.id)}
                   >
                     <RefreshCw className="h-3.5 w-3.5" />
                     Transferencia
                   </DropdownMenu.Item>
-                  <DropdownMenu.Separator className="my-1 h-px bg-[#E3E6EC]" />
+                  <DropdownMenu.Separator className="my-1 h-px bg-border" />
                   <DropdownMenu.Item
-                    className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-[#3A3F4B] hover:bg-[#F7F8FA] focus:outline-none"
+                    className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle focus:outline-none"
                     onSelect={() => {
                       setEditingAccount(a as BankAccountDto);
                       setAccountFormOpen(true);
@@ -336,7 +387,7 @@ export default function LedgerPage() {
                     Editar
                   </DropdownMenu.Item>
                   <DropdownMenu.Item
-                    className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-[#B6452C] hover:bg-[#FEF2F2] focus:outline-none"
+                    className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-danger hover:bg-danger-soft focus:outline-none"
                     onSelect={() => {
                       if (confirm(`¿Eliminar la cuenta "${a.name}"?`)) {
                         deleteAccount.mutate(a.id);
@@ -360,8 +411,8 @@ export default function LedgerPage() {
       {/* Header */}
       <div className="mb-5 flex items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-[22px] font-700 text-[#16181D]">Ledger</h1>
-          <p className="mt-0.5 text-[13px] text-[#5B6472]">
+          <h1 className="font-display text-[22px] font-bold text-foreground">Ledger</h1>
+          <p className="mt-0.5 text-[13px] text-muted">
             Movimientos y cuentas bancarias
           </p>
         </div>
@@ -369,41 +420,41 @@ export default function LedgerPage() {
           <div className="flex items-center gap-2">
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
-                <Button size="md">
+                <Button controlKey="ui.app.app.ledger.page.button.3" size="md">
                   <Plus className="h-4 w-4" />
                   Registrar movimiento
                 </Button>
               </DropdownMenu.Trigger>
               <DropdownMenu.Portal>
                 <DropdownMenu.Content
-                  className="z-50 min-w-[200px] overflow-hidden rounded-table border border-[#E3E6EC] bg-white p-1 shadow-dp2"
+                  className="z-50 min-w-[200px] overflow-hidden rounded-table border border-border bg-surface p-1 shadow-dp2"
                   sideOffset={6}
                   align="end"
                 >
                   <DropdownMenu.Item
-                    className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-[#3A3F4B] hover:bg-[#F7F8FA] focus:outline-none"
+                    className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle focus:outline-none"
                     onSelect={() => openActionDialog("income")}
                   >
-                    <ArrowDownLeft className="h-3.5 w-3.5 text-[#0E9F6E]" />
+                    <ArrowDownLeft className="h-3.5 w-3.5 text-success" />
                     Ingreso
                   </DropdownMenu.Item>
                   <DropdownMenu.Item
-                    className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-[#3A3F4B] hover:bg-[#F7F8FA] focus:outline-none"
+                    className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle focus:outline-none"
                     onSelect={() => openActionDialog("expense")}
                   >
-                    <ArrowUpRight className="h-3.5 w-3.5 text-[#B6452C]" />
+                    <ArrowUpRight className="h-3.5 w-3.5 text-danger" />
                     Egreso
                   </DropdownMenu.Item>
                   <DropdownMenu.Item
-                    className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-[#3A3F4B] hover:bg-[#F7F8FA] focus:outline-none"
+                    className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle focus:outline-none"
                     onSelect={() => openActionDialog("transfer")}
                   >
                     <RefreshCw className="h-3.5 w-3.5" />
                     Transferencia
                   </DropdownMenu.Item>
-                  <DropdownMenu.Separator className="my-1 h-px bg-[#E3E6EC]" />
+                  <DropdownMenu.Separator className="my-1 h-px bg-border" />
                   <DropdownMenu.Item
-                    className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-[#3A3F4B] hover:bg-[#F7F8FA] focus:outline-none"
+                    className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle focus:outline-none"
                     onSelect={() => openActionDialog("adjustment")}
                   >
                     <Wallet className="h-3.5 w-3.5" />
@@ -416,20 +467,93 @@ export default function LedgerPage() {
         </Can>
       </div>
 
+      {showImportAttempts && (
+        <Can permission="ManageReconciliation">
+          <section className="mb-5 rounded-card border border-danger/30 bg-danger-soft p-4" aria-labelledby="failed-imports-title">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex min-w-0 gap-3">
+                <FileWarning className="mt-0.5 h-5 w-5 shrink-0 text-danger" aria-hidden="true" />
+                <div>
+                  <h2 id="failed-imports-title" className="font-display text-base font-bold text-foreground">Importaciones bancarias fallidas</h2>
+                  <p className="mt-1 text-[13px] text-foreground-secondary">Evidencia conservada para corregir el archivo y volver a importarlo.</p>
+                </div>
+              </div>
+              <Button controlKey="dashboard.importFailures.close" variant="ghost" size="sm" onClick={() => setShowImportAttempts(false)}>
+                Cerrar
+              </Button>
+            </div>
+            {importAttempts.isLoading ? (
+              <p className="mt-4 text-[13px] text-muted">Cargando intentos…</p>
+            ) : importAttempts.isError ? (
+              <div className="mt-4 flex items-center justify-between gap-3 rounded-input bg-surface p-3">
+                <p className="text-[13px] text-danger">No se pudieron cargar los intentos.</p>
+                <Button controlKey="dashboard.importFailures.retry" variant="outline" size="sm" onClick={() => importAttempts.refetch()}>Reintentar</Button>
+              </div>
+            ) : importAttempts.data?.length ? (
+              <div className="mt-4 grid gap-2">
+                {importAttempts.data.map((attempt) => (
+                  <article key={attempt.id} className="rounded-input border border-border bg-surface p-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="font-semibold text-foreground">{attempt.fileName}</p>
+                      <time className="text-[11px] text-muted">{formatDateTime(attempt.attemptedAt)}</time>
+                    </div>
+                    <p className="mt-1 text-[12px] text-muted">{attempt.bankAccountName}</p>
+                    <p className="mt-2 text-[13px] text-danger">{attempt.error ?? "El archivo fue rechazado sin detalle adicional."}</p>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className="mt-4 text-[13px] font-semibold text-success">No hay importaciones fallidas en este periodo.</p>
+            )}
+          </section>
+        </Can>
+      )}
+
+      {showReconciliationLines && (
+        <Can permission="ManageReconciliation">
+          <section className="mb-5 rounded-card border border-warning/30 bg-warning-soft p-4" aria-labelledby="reconciliation-lines-title">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex min-w-0 gap-3">
+                <RefreshCw className="mt-0.5 h-5 w-5 shrink-0 text-warning" aria-hidden="true" />
+                <div>
+                  <h2 id="reconciliation-lines-title" className="font-display text-base font-bold text-foreground">Líneas bancarias por conciliar</h2>
+                  <p className="mt-1 text-[13px] text-foreground-secondary">Movimientos del estado bancario sin conciliación confirmada.</p>
+                </div>
+              </div>
+              <Button controlKey="dashboard.reconciliationLines.close" variant="ghost" size="sm" onClick={() => setShowReconciliationLines(false)}>Cerrar</Button>
+            </div>
+            {reconciliationLines.isLoading ? (
+              <p className="mt-4 text-[13px] text-muted">Cargando diferencias…</p>
+            ) : reconciliationLines.isError ? (
+              <div className="mt-4 flex items-center justify-between gap-3 rounded-input bg-surface p-3"><p className="text-[13px] text-danger">No se pudieron cargar las líneas.</p><Button controlKey="dashboard.reconciliationLines.retry" variant="outline" size="sm" onClick={() => reconciliationLines.refetch()}>Reintentar</Button></div>
+            ) : reconciliationLines.data?.length ? (
+              <div className="mt-4 grid gap-2">
+                {reconciliationLines.data.map((line) => (
+                  <article key={line.id} className="grid gap-2 rounded-input border border-border bg-surface p-3 sm:grid-cols-[1fr_auto] sm:items-center">
+                    <div className="min-w-0"><p className="truncate font-semibold text-foreground">{line.description}</p><p className="mt-1 text-[12px] text-muted">{line.bankAccountName}{line.reference ? ` · Ref: ${line.reference}` : ""} · {formatDate(line.transactionDate)}</p></div>
+                    <p className={cn("font-bold", line.amount < 0 ? "text-danger" : "text-success")}>{formatAmount(Math.abs(line.amount), line.currency)}</p>
+                  </article>
+                ))}
+              </div>
+            ) : <p className="mt-4 text-[13px] font-semibold text-success">No hay diferencias pendientes en este periodo.</p>}
+          </section>
+        </Can>
+      )}
+
       <Tabs defaultTab="entries">
         <TabList>
-          <Tab id="entries">
+          <Tab controlKey="ui.app.app.ledger.page.tab.1" id="entries">
             Movimientos
             {entriesData && entriesData.totalCount > 0 && (
-              <span className="ml-1.5 rounded-full bg-[#E3E6EC] px-1.5 py-0.5 text-[10px] font-700 text-[#5B6472]">
+              <span className="ml-1.5 rounded-full bg-border px-1.5 py-0.5 text-[10px] font-bold text-muted">
                 {entriesData.totalCount}
               </span>
             )}
           </Tab>
-          <Tab id="accounts">
+          <Tab controlKey="ui.app.app.ledger.page.tab.2" id="accounts">
             Cuentas bancarias
             {accountsPage_data && accountsPage_data.totalCount > 0 && (
-              <span className="ml-1.5 rounded-full bg-[#E3E6EC] px-1.5 py-0.5 text-[10px] font-700 text-[#5B6472]">
+              <span className="ml-1.5 rounded-full bg-border px-1.5 py-0.5 text-[10px] font-bold text-muted">
                 {accountsPage_data.totalCount}
               </span>
             )}
@@ -439,7 +563,7 @@ export default function LedgerPage() {
         {/* ── MOVIMIENTOS ── */}
         <TabPanel id="entries">
           <div className="mb-4 flex flex-wrap items-center gap-3">
-            <Select
+            <Select controlKey="ui.app.app.ledger.page.select.1"
               label=""
               value={entryTypeFilter}
               onValueChange={(v) => {
@@ -454,7 +578,7 @@ export default function LedgerPage() {
             </Select>
 
             {allAccounts.length > 0 && (
-              <Select
+              <Select controlKey="ui.app.app.ledger.page.select.2"
                 label=""
                 value={accountFilter}
                 onValueChange={(v) => { setAccountFilter(v); setEntriesPage(1); }}
@@ -467,33 +591,43 @@ export default function LedgerPage() {
             )}
 
             <div className="flex items-center gap-1.5">
-              <input
+              <input data-ui-control="ui.app.app.ledger.page.input.1"
                 type="date"
                 value={dateFromFilter}
                 onChange={(e) => { setDateFromFilter(e.target.value); setEntriesPage(1); }}
-                className="h-8 rounded-input border border-[#E3E6EC] bg-white px-2 text-[12px] text-[#16181D] focus:border-[#5BAEBC] focus:outline-none focus:ring-1 focus:ring-[#5BAEBC]"
+                className="h-8 rounded-input border border-border bg-surface px-2 text-[12px] text-foreground focus:border-action focus:outline-none focus:ring-1 focus:ring-action"
                 placeholder="Desde"
               />
-              <span className="text-[12px] text-[#5B6472]">—</span>
-              <input
+              <span className="text-[12px] text-muted">—</span>
+              <input data-ui-control="ui.app.app.ledger.page.input.2"
                 type="date"
                 value={dateToFilter}
                 onChange={(e) => { setDateToFilter(e.target.value); setEntriesPage(1); }}
-                className="h-8 rounded-input border border-[#E3E6EC] bg-white px-2 text-[12px] text-[#16181D] focus:border-[#5BAEBC] focus:outline-none focus:ring-1 focus:ring-[#5BAEBC]"
+                className="h-8 rounded-input border border-border bg-surface px-2 text-[12px] text-foreground focus:border-action focus:outline-none focus:ring-1 focus:ring-action"
                 placeholder="Hasta"
               />
             </div>
 
+            <Select controlKey="ledger.filters.reconciled" permission="ViewPayments" label="" value={reconciledFilter || "all"} onValueChange={(value) => { setReconciledFilter(value === "all" ? "" : value as "true" | "false"); setEntriesPage(1); }}>
+              <SelectItem value="all">Toda conciliación</SelectItem><SelectItem value="false">Pendientes</SelectItem><SelectItem value="true">Conciliados</SelectItem>
+            </Select>
+            {currencyFilter && <Badge variant="muted">Moneda: {currencyFilter}</Badge>}
+            {hasUnappliedBalance && <Badge variant="saffron">Saldo sin aplicar</Badge>}
+
             {hasEntryFilters && (
-              <button
+              <button data-ui-control="ui.app.app.ledger.page.button.8"
                 onClick={() => {
                   setEntryTypeFilter("");
                   setAccountFilter("");
                   setDateFromFilter("");
                   setDateToFilter("");
+                  setClientIdFilter("");
+                  setCurrencyFilter("");
+                  setReconciledFilter("");
+                  setHasUnappliedBalance(false);
                   setEntriesPage(1);
                 }}
-                className="text-[12px] text-[#5B6472] hover:text-[#0F5C6B] underline"
+                className="text-[12px] text-muted hover:text-action underline"
               >
                 Limpiar
               </button>
@@ -522,7 +656,7 @@ export default function LedgerPage() {
         {/* ── CUENTAS BANCARIAS ── */}
         <TabPanel id="accounts">
           <div className="mb-4 flex items-center justify-between gap-3">
-            <Select
+            <Select controlKey="ui.app.app.ledger.page.select.4"
               label=""
               value={accountStatusFilter}
               onValueChange={(v) => {
@@ -536,7 +670,7 @@ export default function LedgerPage() {
             </Select>
 
             <Can permission="ManageBilling">
-              <Button
+              <Button controlKey="ui.app.app.ledger.page.button.9"
                 size="sm"
                 onClick={() => {
                   setEditingAccount(null);

@@ -24,12 +24,14 @@ public class RolesController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "ManageRoles")]
     public async Task<ActionResult<List<RoleDto>>> GetAll(CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(new GetRolesQuery(), cancellationToken));
     }
 
     [HttpGet("{id:guid}")]
+    [Authorize(Policy = "ManageRoles")]
     public async Task<ActionResult<RoleDetailDto>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetRoleByIdQuery(id), cancellationToken);

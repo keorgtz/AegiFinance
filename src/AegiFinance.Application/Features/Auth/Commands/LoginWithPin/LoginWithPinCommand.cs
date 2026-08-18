@@ -7,4 +7,7 @@ public class LoginWithPinCommand : IRequest<AuthResult>
 {
     public string UserName { get; set; } = string.Empty;
     public string Pin { get; set; } = string.Empty;
+    public string? IpAddress { get; set; }
+    public string? UserAgent { get; set; }
+    public string? DeviceName { get; set; }
 }

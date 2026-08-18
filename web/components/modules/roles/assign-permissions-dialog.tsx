@@ -39,6 +39,17 @@ export function AssignPermissionsDialog({
       p.code.toLowerCase().includes(filter.toLowerCase()) ||
       p.name.toLowerCase().includes(filter.toLowerCase())
   );
+  const modules = Array.from(new Set(filtered.map((permission) => permission.module))).sort();
+
+  const toggleModule = (module: string) => {
+    const ids = filtered.filter((permission) => permission.module === module).map((permission) => permission.id);
+    setSelected((previous) => {
+      const next = new Set(previous);
+      const allSelected = ids.every((id) => next.has(id));
+      ids.forEach((id) => allSelected ? next.delete(id) : next.add(id));
+      return next;
+    });
+  };
 
   const toggle = (id: string) => {
     setSelected((prev) => {
@@ -65,7 +76,7 @@ export function AssignPermissionsDialog({
         description={role ? `Rol: ${role.name}` : undefined}
         size="md"
       >
-        <Input
+        <Input controlKey="ui.components.modules.roles.assign.permissions.dialog.input.1"
           autoFocus
           placeholder="Filtrar permisos…"
           value={filter}
@@ -73,14 +84,22 @@ export function AssignPermissionsDialog({
           leftIcon={<Search className="h-3.5 w-3.5" />}
         />
 
+        <div className="mt-3 flex gap-2 overflow-x-auto pb-1" aria-label="Selección masiva por módulo">
+          {modules.map((module) => (
+            <Button key={module} controlKey="roles.permissions.module-toggle" permission="ManageRoles" type="button" variant="ghost" size="sm" onClick={() => toggleModule(module)}>
+              {module}
+            </Button>
+          ))}
+        </div>
+
         <div className="mt-3 space-y-1 max-h-72 overflow-y-auto">
           {filtered.length === 0 && (
-            <p className="py-4 text-center text-[13px] text-[#5B6472]">
+            <p className="py-4 text-center text-[13px] text-muted">
               Sin resultados.
             </p>
           )}
           {filtered.map((perm) => (
-            <button
+            <button data-ui-control="ui.components.modules.roles.assign.permissions.dialog.button.2"
               key={perm.id}
               type="button"
               onClick={() => toggle(perm.id)}
@@ -88,29 +107,29 @@ export function AssignPermissionsDialog({
                 "flex w-full items-center justify-between rounded-input px-3 py-2 text-left",
                 "text-[13px] transition-colors duration-100",
                 selected.has(perm.id)
-                  ? "bg-[#C9E8ED] text-[#0F5C6B]"
-                  : "hover:bg-[#F7F8FA] text-[#3A3F4B]"
+                  ? "bg-action-soft text-action"
+                  : "hover:bg-surface-subtle text-foreground-secondary"
               )}
             >
               <div>
-                <p className="font-600 font-mono text-[12px]">{perm.code}</p>
-                <p className="text-[11px] text-[#5B6472]">{perm.name}</p>
+                <p className="font-semibold font-mono text-[12px]">{perm.code}</p>
+                <p className="text-[11px] text-muted">{perm.module} · {perm.action} · {perm.name}</p>
               </div>
               {selected.has(perm.id) && (
-                <Check className="h-4 w-4 text-[#0F5C6B] flex-shrink-0" />
+                <Check className="h-4 w-4 text-action flex-shrink-0" />
               )}
             </button>
           ))}
         </div>
 
         <DialogFooter>
-          <span className="mr-auto text-[11px] text-[#5B6472]">
+          <span className="mr-auto text-[11px] text-muted">
             {selected.size} permiso{selected.size !== 1 ? "s" : ""} seleccionado{selected.size !== 1 ? "s" : ""}
           </span>
           <DialogClose asChild>
-            <Button type="button" variant="secondary">Cancelar</Button>
+            <Button controlKey="ui.components.modules.roles.assign.permissions.dialog.button.3" type="button" variant="secondary">Cancelar</Button>
           </DialogClose>
-          <Button onClick={handleSave} loading={assignPermissions.isPending}>
+          <Button controlKey="ui.components.modules.roles.assign.permissions.dialog.button.4" onClick={handleSave} loading={assignPermissions.isPending}>
             Guardar
           </Button>
         </DialogFooter>

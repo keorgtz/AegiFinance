@@ -42,15 +42,15 @@ interface KpiCardProps {
 
 function KpiCard({ label, amount, currency, color = "default" }: KpiCardProps) {
   return (
-    <div className="flex flex-col gap-1 rounded-card border border-[#E3E6EC] bg-white p-4">
-      <span className="text-[11px] font-600 uppercase tracking-wider text-[#5B6472]">{label}</span>
+    <div className="flex flex-col gap-1 rounded-card border border-border bg-surface p-4">
+      <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">{label}</span>
       <span
         className={cn(
-          "text-[20px] font-700 leading-tight",
-          color === "green" && "text-[#0E9F6E]",
-          color === "red" && "text-[#B6452C]",
-          color === "blue" && "text-[#1B4298]",
-          color === "default" && "text-[#16181D]"
+          "text-[20px] font-bold leading-tight",
+          color === "green" && "text-success",
+          color === "red" && "text-danger",
+          color === "blue" && "text-info",
+          color === "default" && "text-foreground"
         )}
       >
         {formatAmount(amount, currency)}
@@ -96,7 +96,7 @@ export default function AccountStatementPage() {
       header: "Fecha",
       size: 105,
       cell: ({ getValue }) => (
-        <span className="text-[12px] text-[#5B6472]">{formatDate(getValue() as string)}</span>
+        <span className="text-[12px] text-muted">{formatDate(getValue() as string)}</span>
       ),
     },
     {
@@ -109,7 +109,7 @@ export default function AccountStatementPage() {
       accessorKey: "description",
       header: "Descripción",
       cell: ({ getValue }) => (
-        <span className="text-[13px] text-[#16181D]">{getValue() as string}</span>
+        <span className="text-[13px] text-foreground">{getValue() as string}</span>
       ),
     },
     {
@@ -118,9 +118,9 @@ export default function AccountStatementPage() {
       size: 130,
       cell: ({ getValue, row }) => {
         const v = getValue() as number;
-        if (v === 0) return <span className="text-[#C9D0DE]">—</span>;
+        if (v === 0) return <span className="text-border-strong">—</span>;
         return (
-          <span className="flex items-center gap-1 font-600 text-[13px] text-[#B6452C]">
+          <span className="flex items-center gap-1 font-semibold text-[13px] text-danger">
             <ArrowUpRight className="h-3.5 w-3.5" />
             {formatAmount(v, row.original.exchangeRateUsed ? currency : "MXN")}
           </span>
@@ -133,9 +133,9 @@ export default function AccountStatementPage() {
       size: 130,
       cell: ({ getValue, row }) => {
         const v = getValue() as number;
-        if (v === 0) return <span className="text-[#C9D0DE]">—</span>;
+        if (v === 0) return <span className="text-border-strong">—</span>;
         return (
-          <span className="flex items-center gap-1 font-600 text-[13px] text-[#0E9F6E]">
+          <span className="flex items-center gap-1 font-semibold text-[13px] text-success">
             <ArrowDownLeft className="h-3.5 w-3.5" />
             {formatAmount(v, row.original.exchangeRateUsed ? currency : "MXN")}
           </span>
@@ -151,8 +151,8 @@ export default function AccountStatementPage() {
         return (
           <span
             className={cn(
-              "font-700 text-[13px]",
-              v > 0 ? "text-[#B6452C]" : v < 0 ? "text-[#0E9F6E]" : "text-[#5B6472]"
+              "font-bold text-[13px]",
+              v > 0 ? "text-danger" : v < 0 ? "text-success" : "text-muted"
             )}
           >
             {formatAmount(v, currency)}
@@ -167,13 +167,13 @@ export default function AccountStatementPage() {
       {/* Header */}
       <div className="mb-5 flex items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-[22px] font-700 text-[#16181D]">Estado de Cuenta</h1>
-          <p className="mt-0.5 text-[13px] text-[#5B6472]">
+          <h1 className="font-display text-[22px] font-bold text-foreground">Estado de Cuenta</h1>
+          <p className="mt-0.5 text-[13px] text-muted">
             Historial de cargos y pagos por cliente
           </p>
         </div>
         {hasData && (
-          <Button variant="secondary" size="md" onClick={() => window.print()}>
+          <Button controlKey="ui.app.app.account.statement.page.button.1" variant="secondary" size="md" onClick={() => window.print()}>
             <Printer className="h-4 w-4" />
             Imprimir
           </Button>
@@ -194,31 +194,31 @@ export default function AccountStatementPage() {
         </div>
 
         <div className="flex flex-col gap-1">
-          <span className="text-[11px] font-600 uppercase tracking-wider text-[#5B6472]">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
             Desde
           </span>
-          <input
+          <input data-ui-control="ui.app.app.account.statement.page.input.1"
             type="date"
             value={dateFrom}
             onChange={(e) => setDateFrom(e.target.value)}
-            className="h-8 rounded-input border border-[#E3E6EC] bg-white px-2 text-[12px] text-[#16181D] focus:border-[#5BAEBC] focus:outline-none focus:ring-1 focus:ring-[#5BAEBC]"
+            className="h-8 rounded-input border border-border bg-surface px-2 text-[12px] text-foreground focus:border-action focus:outline-none focus:ring-1 focus:ring-action"
           />
         </div>
 
         <div className="flex flex-col gap-1">
-          <span className="text-[11px] font-600 uppercase tracking-wider text-[#5B6472]">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
             Hasta
           </span>
-          <input
+          <input data-ui-control="ui.app.app.account.statement.page.input.2"
             type="date"
             value={dateTo}
             onChange={(e) => setDateTo(e.target.value)}
-            className="h-8 rounded-input border border-[#E3E6EC] bg-white px-2 text-[12px] text-[#16181D] focus:border-[#5BAEBC] focus:outline-none focus:ring-1 focus:ring-[#5BAEBC]"
+            className="h-8 rounded-input border border-border bg-surface px-2 text-[12px] text-foreground focus:border-action focus:outline-none focus:ring-1 focus:ring-action"
           />
         </div>
 
         <div className="w-28">
-          <Select
+          <Select controlKey="ui.app.app.account.statement.page.select.1"
             label="Moneda"
             value={currency}
             onValueChange={setCurrency}
@@ -230,9 +230,9 @@ export default function AccountStatementPage() {
         </div>
 
         {(dateFrom || dateTo || currency !== "MXN") && (
-          <button
+          <button data-ui-control="ui.app.app.account.statement.page.button.2"
             onClick={() => { setDateFrom(""); setDateTo(""); setCurrency("MXN"); }}
-            className="self-end pb-1 text-[12px] text-[#5B6472] underline hover:text-[#0F5C6B]"
+            className="self-end pb-1 text-[12px] text-muted underline hover:text-action"
           >
             Limpiar
           </button>
@@ -241,10 +241,10 @@ export default function AccountStatementPage() {
 
       {/* Empty state */}
       {!hasClient && (
-        <div className="flex flex-col items-center justify-center rounded-card border border-dashed border-[#E3E6EC] py-20 text-center">
-          <FileText className="mb-3 h-10 w-10 text-[#C9D0DE]" />
-          <p className="text-[14px] font-500 text-[#5B6472]">Selecciona un cliente</p>
-          <p className="mt-1 text-[13px] text-[#8A93A2]">
+        <div className="flex flex-col items-center justify-center rounded-card border border-dashed border-border py-20 text-center">
+          <FileText className="mb-3 h-10 w-10 text-border-strong" />
+          <p className="text-[14px] font-medium text-muted">Selecciona un cliente</p>
+          <p className="mt-1 text-[13px] text-muted">
             El estado de cuenta muestra todos los cargos y abonos en el período indicado.
           </p>
         </div>
@@ -261,21 +261,21 @@ export default function AccountStatementPage() {
       {hasData && !isLoading && (
         <div className={cn("space-y-5", isFetching && "opacity-60 pointer-events-none")}>
           {/* Client + period header */}
-          <div className="flex items-start justify-between gap-4 rounded-card border border-[#E3E6EC] bg-[#F7F8FA] p-4">
+          <div className="flex items-start justify-between gap-4 rounded-card border border-border bg-surface-subtle p-4">
             <div>
-              <p className="text-[15px] font-700 text-[#16181D]">{statement.clientName}</p>
-              <p className="mt-0.5 text-[12px] text-[#5B6472]">
+              <p className="text-[15px] font-bold text-foreground">{statement.clientName}</p>
+              <p className="mt-0.5 text-[12px] text-muted">
                 {statement.startDate
                   ? `${formatDate(statement.startDate)} — ${formatDate(statement.endDate ?? new Date().toISOString())}`
                   : "Todo el historial"}
               </p>
               {statement.exchangeRateUsed && (
-                <p className="mt-0.5 text-[11px] text-[#8A93A2]">
+                <p className="mt-0.5 text-[11px] text-muted">
                   Tipo de cambio aplicado: {statement.exchangeRateUsed.toFixed(4)} MXN/{statement.displayCurrency}
                 </p>
               )}
             </div>
-            <p className="text-[11px] text-[#8A93A2]">
+            <p className="text-[11px] text-muted">
               Generado: {formatDateTime(statement.statementDate)}
             </p>
           </div>
@@ -310,11 +310,11 @@ export default function AccountStatementPage() {
 
           {/* Adjustments note */}
           {statement.totalAdjustments !== 0 && (
-            <div className="flex items-center gap-2 rounded-input border border-[#D1D5DB] bg-[#F7F8FA] px-3 py-2">
-              <MinusCircle className="h-3.5 w-3.5 text-[#5B6472]" />
-              <span className="text-[12px] text-[#5B6472]">
+            <div className="flex items-center gap-2 rounded-input border border-border bg-surface-subtle px-3 py-2">
+              <MinusCircle className="h-3.5 w-3.5 text-muted" />
+              <span className="text-[12px] text-muted">
                 Incluye ajustes por{" "}
-                <span className="font-600">{formatAmount(statement.totalAdjustments, statement.displayCurrency)}</span>
+                <span className="font-semibold">{formatAmount(statement.totalAdjustments, statement.displayCurrency)}</span>
               </span>
             </div>
           )}
@@ -331,27 +331,27 @@ export default function AccountStatementPage() {
           {/* Footer summary */}
           {statement.items.length > 0 && (
             <div className="flex justify-end">
-              <div className="rounded-input border border-[#E3E6EC] bg-white px-5 py-3 text-right">
-                <p className="text-[11px] font-600 uppercase tracking-wider text-[#5B6472]">
+              <div className="rounded-input border border-border bg-surface px-5 py-3 text-right">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted">
                   Saldo al corte
                 </p>
                 <p
                   className={cn(
-                    "mt-0.5 text-[22px] font-700",
+                    "mt-0.5 text-[22px] font-bold",
                     statement.finalBalance > 0
-                      ? "text-[#B6452C]"
+                      ? "text-danger"
                       : statement.finalBalance < 0
-                      ? "text-[#0E9F6E]"
-                      : "text-[#16181D]"
+                      ? "text-success"
+                      : "text-foreground"
                   )}
                 >
                   {formatAmount(statement.finalBalance, statement.displayCurrency)}
                 </p>
                 {statement.finalBalance > 0 && (
-                  <p className="text-[11px] text-[#B6452C]">Saldo a favor de la empresa</p>
+                  <p className="text-[11px] text-danger">Saldo a favor de la empresa</p>
                 )}
                 {statement.finalBalance < 0 && (
-                  <p className="text-[11px] text-[#0E9F6E]">Saldo a favor del cliente</p>
+                  <p className="text-[11px] text-success">Saldo a favor del cliente</p>
                 )}
               </div>
             </div>

@@ -56,7 +56,7 @@ export function Combobox({
   return (
     <div className="flex flex-col gap-1">
       {label && (
-        <span className="text-[11px] font-600 uppercase tracking-wider text-[#5B6472]">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
           {label}
         </span>
       )}
@@ -74,56 +74,56 @@ export function Combobox({
             disabled={disabled}
             className={cn(
               "flex h-9 w-full items-center justify-between rounded-input border px-3 text-[13px] transition-colors",
-              "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5BAEBC]",
-              "disabled:cursor-not-allowed disabled:bg-[#F7F8FA]",
+              "focus:outline-none focus-visible:ring-2 focus-visible:ring-action",
+              "disabled:cursor-not-allowed disabled:bg-surface-subtle",
               error
-                ? "border-[#B6452C] bg-white text-[#16181D]"
-                : "border-[#E3E6EC] bg-white text-[#16181D] hover:border-[#5BAEBC]",
-              !selected && "text-[#5B6472]"
+                ? "border-danger bg-surface text-foreground"
+                : "border-border bg-surface text-foreground hover:border-action",
+              !selected && "text-muted"
             )}
           >
             <span className="truncate">{selected ? selected.label : placeholder}</span>
-            <ChevronDown className="h-3.5 w-3.5 shrink-0 text-[#5B6472]" />
+            <ChevronDown className="h-3.5 w-3.5 shrink-0 text-muted" />
           </button>
         </Popover.Trigger>
 
         <Popover.Portal>
           <Popover.Content
-            className="z-50 w-[var(--radix-popover-trigger-width)] overflow-hidden rounded-table border border-[#E3E6EC] bg-white shadow-dp2"
+            className="z-50 w-[var(--radix-popover-trigger-width)] overflow-hidden rounded-table border border-border bg-surface shadow-dp2"
             sideOffset={4}
             align="start"
           >
-            <div className="flex items-center gap-2 border-b border-[#E3E6EC] px-3 py-2">
-              <Search className="h-3.5 w-3.5 shrink-0 text-[#5B6472]" />
+            <div className="flex items-center gap-2 border-b border-border px-3 py-2">
+              <Search className="h-3.5 w-3.5 shrink-0 text-muted" />
               <input
                 ref={inputRef}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={searchPlaceholder}
-                className="flex-1 bg-transparent text-[13px] text-[#16181D] placeholder:text-[#5B6472] focus:outline-none"
+                className="flex-1 bg-transparent text-[13px] text-foreground placeholder:text-muted focus:outline-none"
               />
             </div>
             <div className="max-h-52 overflow-y-auto p-1">
               {filtered.length === 0 ? (
-                <p className="px-3 py-4 text-center text-[12px] text-[#5B6472]">Sin resultados.</p>
+                <p className="px-3 py-4 text-center text-[12px] text-muted">Sin resultados.</p>
               ) : (
                 filtered.map((opt) => (
                   <button
                     key={opt.value}
                     type="button"
                     onClick={() => handleSelect(opt.value)}
-                    className="flex w-full items-center justify-between gap-2 rounded px-3 py-1.5 text-left text-[13px] text-[#3A3F4B] hover:bg-[#F7F8FA] focus:bg-[#F7F8FA] focus:outline-none"
+                    className="flex w-full items-center justify-between gap-2 rounded px-3 py-1.5 text-left text-[13px] text-foreground-secondary hover:bg-surface-subtle focus:bg-surface-subtle focus:outline-none"
                   >
                     <span className="min-w-0">
                       <span className="block truncate">{opt.label}</span>
                       {opt.description && (
-                        <span className="block truncate text-[11px] text-[#5B6472]">
+                        <span className="block truncate text-[11px] text-muted">
                           {opt.description}
                         </span>
                       )}
                     </span>
                     {opt.value === value && (
-                      <Check className="h-3.5 w-3.5 shrink-0 text-[#0F5C6B]" />
+                      <Check className="h-3.5 w-3.5 shrink-0 text-action" />
                     )}
                   </button>
                 ))
@@ -132,7 +132,7 @@ export function Combobox({
           </Popover.Content>
         </Popover.Portal>
       </Popover.Root>
-      {error && <p className="text-[11px] font-500 text-[#B6452C]">{error}</p>}
+      {error && <p className="text-[11px] font-medium text-danger">{error}</p>}
     </div>
   );
 }

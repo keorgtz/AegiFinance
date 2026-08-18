@@ -24,21 +24,21 @@ public class AllocationsController : ControllerBase
     }
 
     [HttpPost("auto-allocate/{ledgerEntryId:guid}")]
-    [Authorize(Policy = "ManageBilling")]
+    [Authorize(Policy = "AllocatePayments")]
     public async Task<ActionResult<AllocationResult>> AutoAllocate(Guid ledgerEntryId, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(new AutoAllocateCommand(ledgerEntryId), cancellationToken));
     }
 
     [HttpPost("manual")]
-    [Authorize(Policy = "ManageBilling")]
+    [Authorize(Policy = "AllocatePayments")]
     public async Task<ActionResult<AllocationResult>> ManualAllocate(ManualAllocateCommand command, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(command, cancellationToken));
     }
 
     [HttpPost("{id:guid}/unallocate")]
-    [Authorize(Policy = "ManageBilling")]
+    [Authorize(Policy = "UnallocatePayments")]
     public async Task<IActionResult> Unallocate(Guid id, CancellationToken cancellationToken)
     {
         await _mediator.Send(new UnallocateCommand(id), cancellationToken);

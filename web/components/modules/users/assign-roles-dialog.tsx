@@ -57,7 +57,7 @@ export function AssignRolesDialog({ open, onOpenChange, user }: AssignRolesDialo
       >
         <div className="space-y-1 max-h-60 overflow-y-auto">
           {allRoles.map((role) => (
-            <button
+            <button data-ui-control="ui.components.modules.users.assign.roles.dialog.button.1"
               key={role.id}
               type="button"
               onClick={() => toggle(role.id)}
@@ -65,18 +65,18 @@ export function AssignRolesDialog({ open, onOpenChange, user }: AssignRolesDialo
                 "flex w-full items-center justify-between rounded-input px-3 py-2 text-[13px]",
                 "transition-colors duration-100 text-left",
                 selected.has(role.id)
-                  ? "bg-[#C9E8ED] text-[#0F5C6B]"
-                  : "hover:bg-[#F7F8FA] text-[#3A3F4B]"
+                  ? "bg-action-soft text-action"
+                  : "hover:bg-surface-subtle text-foreground-secondary"
               )}
             >
               <div>
-                <p className="font-600">{role.name}</p>
+                <p className="font-semibold">{role.name}</p>
                 {role.description && (
-                  <p className="text-[11px] text-[#5B6472]">{role.description}</p>
+                  <p className="text-[11px] text-muted">{role.description}</p>
                 )}
               </div>
               {selected.has(role.id) && (
-                <Check className="h-4 w-4 text-[#0F5C6B] flex-shrink-0" />
+                <Check className="h-4 w-4 text-action flex-shrink-0" />
               )}
             </button>
           ))}
@@ -84,9 +84,9 @@ export function AssignRolesDialog({ open, onOpenChange, user }: AssignRolesDialo
 
         <DialogFooter>
           <DialogClose asChild>
-            <Button type="button" variant="secondary">Cancelar</Button>
+            <Button controlKey="ui.components.modules.users.assign.roles.dialog.button.2" type="button" variant="secondary">Cancelar</Button>
           </DialogClose>
-          <Button onClick={handleSave} loading={assignRoles.isPending}>
+          <Button controlKey="ui.components.modules.users.assign.roles.dialog.button.3" onClick={handleSave} loading={assignRoles.isPending}>
             Guardar
           </Button>
         </DialogFooter>

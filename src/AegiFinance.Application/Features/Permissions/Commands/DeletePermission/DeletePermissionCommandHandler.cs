@@ -16,7 +16,7 @@ public class DeletePermissionCommandHandler : IRequestHandler<DeletePermissionCo
     public async Task Handle(DeletePermissionCommand request, CancellationToken cancellationToken)
     {
         var permission = await _context.Permissions
-            .Include(p => p.Roles)
+            .Include(p => p.RolePermissions)
             .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
 
         if (permission is null)
@@ -24,7 +24,7 @@ public class DeletePermissionCommandHandler : IRequestHandler<DeletePermissionCo
             throw new InvalidOperationException("El permiso no existe.");
         }
 
-        if (permission.Roles.Count > 0)
+        if (permission.RolePermissions.Count > 0)
         {
             throw new InvalidOperationException("No se puede eliminar un permiso asignado a uno o más roles.");
         }

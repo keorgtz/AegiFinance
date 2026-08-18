@@ -22,19 +22,19 @@ export function StatusStrip() {
   return (
     <div
       className={cn(
-        "flex h-8 items-center justify-between border-t px-4",
-        "text-[10px] font-600 uppercase tracking-wider transition-colors duration-300",
+        "hidden min-h-8 items-center justify-between border-t px-4 lg:flex",
+        "text-[10px] font-semibold uppercase tracking-wider transition-colors duration-300",
         online
-          ? "border-[#E3E6EC] bg-[#F7F8FA] text-[#5B6472]"
-          : "border-[#FBE6DC] bg-[#FFF6F1] text-[#B6452C]"
+          ? "border-border bg-surface-subtle text-muted"
+          : "border-danger-soft bg-danger-soft text-danger"
       )}
     >
-      <span>AegiFinance v0.1</span>
+      <span>Major Ledger · fuente de verdad financiera</span>
       <div className="flex items-center gap-1.5">
         {online ? (
           <>
-            <Wifi className="h-3 w-3 text-[#0E9F6E]" />
-            <span className="text-[#0E9F6E]">Conectado</span>
+            <Wifi className="h-3 w-3 text-success" />
+            <span className="text-success">Servicio disponible</span>
           </>
         ) : (
           <>

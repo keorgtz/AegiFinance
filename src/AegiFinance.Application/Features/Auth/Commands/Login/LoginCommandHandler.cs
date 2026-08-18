@@ -15,6 +15,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResult>
 
     public Task<AuthResult> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        return _authService.LoginAsync(request.UsernameOrEmail, request.Password, cancellationToken);
+        return _authService.LoginAsync(request.UsernameOrEmail, request.Password,
+            new AuthSessionContext(request.IpAddress, request.UserAgent, request.DeviceName), cancellationToken);
     }
 }

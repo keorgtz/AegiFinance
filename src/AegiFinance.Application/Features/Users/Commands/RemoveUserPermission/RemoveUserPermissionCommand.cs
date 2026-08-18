@@ -6,6 +6,8 @@ public class RemoveUserPermissionCommand : IRequest
 {
     public Guid UserId { get; set; }
     public Guid PermissionId { get; set; }
+    public Guid? ClientId { get; set; }
+    public Guid? SubscriptionId { get; set; }
 
     public RemoveUserPermissionCommand() { }
 

@@ -16,6 +16,16 @@ public class SetUserPermissionCommandHandler : IRequestHandler<SetUserPermission
 
     public async Task Handle(SetUserPermissionCommand request, CancellationToken cancellationToken)
     {
+        if (request.ExpiresAt.HasValue && request.ExpiresAt <= DateTime.UtcNow)
+            throw new InvalidOperationException("La fecha de expiración debe estar en el futuro.");
+        if (request.SubscriptionId.HasValue)
+        {
+            var subscription = await _context.Subscriptions.AsNoTracking()
+                .FirstOrDefaultAsync(item => item.Id == request.SubscriptionId.Value, cancellationToken)
+                ?? throw new InvalidOperationException("La suscripción no existe.");
+            if (request.ClientId.HasValue && subscription.ClientId != request.ClientId.Value)
+                throw new InvalidOperationException("La suscripción no pertenece al cliente indicado.");
+        }
         var userExists = await _context.Users.AsNoTracking().AnyAsync(u => u.Id == request.UserId, cancellationToken);
         if (!userExists)
         {
@@ -28,22 +38,29 @@ public class SetUserPermissionCommandHandler : IRequestHandler<SetUserPermission
             throw new InvalidOperationException("El permiso no existe.");
         }
 
-        var userPermission = await _context.UserPermissions
-            .FirstOrDefaultAsync(up => up.UserId == request.UserId && up.PermissionId == request.PermissionId, cancellationToken);
+        var userPermission = await _context.UserPermissionOverrides
+            .FirstOrDefaultAsync(up => up.UserId == request.UserId &&
+                up.PermissionId == request.PermissionId &&
+                up.ClientId == request.ClientId &&
+                up.SubscriptionId == request.SubscriptionId, cancellationToken);
 
         if (userPermission is null)
         {
-            _context.UserPermissions.Add(new UserPermission
+            _context.UserPermissionOverrides.Add(new UserPermissionOverride
             {
                 Id = Guid.NewGuid(),
                 UserId = request.UserId,
                 PermissionId = request.PermissionId,
-                IsGranted = request.IsGranted
+                IsGranted = request.IsGranted,
+                ClientId = request.ClientId,
+                SubscriptionId = request.SubscriptionId,
+                ExpiresAt = request.ExpiresAt
             });
         }
         else
         {
             userPermission.IsGranted = request.IsGranted;
+            userPermission.ExpiresAt = request.ExpiresAt;
         }
 
         await _context.SaveChangesAsync(cancellationToken);

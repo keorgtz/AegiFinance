@@ -40,6 +40,7 @@ public class ServicesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "CreateServices")]
     public async Task<ActionResult<ServiceDto>> Create(CreateServiceCommand command, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(command, cancellationToken);
@@ -47,6 +48,7 @@ public class ServicesController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [Authorize(Policy = "UpdateServices")]
     public async Task<ActionResult<ServiceDto>> Update(Guid id, UpdateServiceCommand command, CancellationToken cancellationToken)
     {
         command.Id = id;
@@ -54,6 +56,7 @@ public class ServicesController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Policy = "DeleteServices")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         await _mediator.Send(new DeleteServiceCommand(id), cancellationToken);
@@ -61,6 +64,7 @@ public class ServicesController : ControllerBase
     }
 
     [HttpPost("{id:guid}/activate")]
+    [Authorize(Policy = "UpdateServices")]
     public async Task<IActionResult> Activate(Guid id, CancellationToken cancellationToken)
     {
         await _mediator.Send(new ActivateServiceCommand(id), cancellationToken);
@@ -68,6 +72,7 @@ public class ServicesController : ControllerBase
     }
 
     [HttpPost("{id:guid}/deactivate")]
+    [Authorize(Policy = "UpdateServices")]
     public async Task<IActionResult> Deactivate(Guid id, CancellationToken cancellationToken)
     {
         await _mediator.Send(new DeactivateServiceCommand(id), cancellationToken);
@@ -81,6 +86,7 @@ public class ServicesController : ControllerBase
     }
 
     [HttpPost("{id:guid}/price-history")]
+    [Authorize(Policy = "UpdateServices")]
     public async Task<ActionResult<ServicePriceHistoryDto>> AddPriceHistory(Guid id, AddServicePriceHistoryCommand command, CancellationToken cancellationToken)
     {
         command.ServiceId = id;

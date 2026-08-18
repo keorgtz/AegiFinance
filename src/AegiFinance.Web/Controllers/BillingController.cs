@@ -27,21 +27,21 @@ public class BillingController : ControllerBase
     }
 
     [HttpPost("generate")]
-    [Authorize(Policy = "ManageBilling")]
+    [Authorize(Policy = "GenerateBilling")]
     public async Task<ActionResult<BillingGenerationResult>> Generate(GenerateBillingCommand command, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(command, cancellationToken));
     }
 
     [HttpPost("generate-for-subscription")]
-    [Authorize(Policy = "ManageBilling")]
+    [Authorize(Policy = "GenerateBilling")]
     public async Task<ActionResult<BillingGenerationResult>> GenerateForSubscription(GenerateBillingForSubscriptionCommand command, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(command, cancellationToken));
     }
 
     [HttpPost("reprocess/{cycleId:guid}")]
-    [Authorize(Policy = "ManageBilling")]
+    [Authorize(Policy = "ReprocessBilling")]
     public async Task<ActionResult<BillingGenerationResult>> Reprocess(Guid cycleId, [FromQuery] bool onlyPending = true, CancellationToken cancellationToken = default)
     {
         var command = new ReprocessBillingCycleCommand
@@ -54,7 +54,7 @@ public class BillingController : ControllerBase
     }
 
     [HttpPost("cancel-item/{itemId:guid}")]
-    [Authorize(Policy = "ManageBilling")]
+    [Authorize(Policy = "CancelBillingItems")]
     public async Task<IActionResult> CancelItem(Guid itemId, CancelBillingItemCommand command, CancellationToken cancellationToken)
     {
         command.BillingItemId = itemId;
@@ -63,7 +63,7 @@ public class BillingController : ControllerBase
     }
 
     [HttpPost("close-cycle/{cycleId:guid}")]
-    [Authorize(Policy = "ManageBilling")]
+    [Authorize(Policy = "CloseBillingCycles")]
     public async Task<IActionResult> CloseCycle(Guid cycleId, CancellationToken cancellationToken)
     {
         await _mediator.Send(new CloseBillingCycleCommand { BillingCycleId = cycleId }, cancellationToken);

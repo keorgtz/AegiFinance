@@ -1,19 +1,6 @@
 import type { Metadata } from "next";
-import { Manrope, Sora } from "next/font/google";
 import "@/styles/globals.css";
 import { Providers } from "./providers";
-
-const manrope = Manrope({
-  subsets: ["latin"],
-  variable: "--font-manrope",
-  display: "swap",
-});
-
-const sora = Sora({
-  subsets: ["latin"],
-  variable: "--font-sora",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "AegiFinance",
@@ -26,7 +13,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" className={`${manrope.variable} ${sora.variable}`}>
+    <html lang="es" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{const saved=localStorage.getItem("aegifinance-theme");const preferred=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=saved||preferred}catch{document.documentElement.dataset.theme="light"}`,
+          }}
+        />
+      </head>
       <body>
         <Providers>{children}</Providers>
       </body>

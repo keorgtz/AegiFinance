@@ -1,0 +1,2322 @@
+[
+  {
+    "controlKey": "ui.app.app.account.statement.page.button.1",
+    "label": "Button 1",
+    "module": "account",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.account.statement.page.input.1",
+    "label": "input 1",
+    "module": "account",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.account.statement.page.input.2",
+    "label": "input 2",
+    "module": "account",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.account.statement.page.select.1",
+    "label": "Moneda",
+    "module": "account",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.account.statement.page.button.2",
+    "label": "button 2",
+    "module": "account",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.allocations.page.button.1",
+    "label": "Revertir asignación",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.allocations.page.button.2",
+    "label": "Button 2",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.allocations.page.button.3",
+    "label": "Button 3",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.billing.page.button.1",
+    "label": "Cancelar cargo",
+    "module": "billing",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.billing.page.button.2",
+    "label": "Button 2",
+    "module": "billing",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.billing.page.button.3",
+    "label": "Button 3",
+    "module": "billing",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.billing.page.button.4",
+    "label": "Button 4",
+    "module": "billing",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.billing.page.button.5",
+    "label": "Button 5",
+    "module": "billing",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.billing.page.tab.1",
+    "label": "Tab 1",
+    "module": "billing",
+    "controlType": "tab",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.billing.page.tab.2",
+    "label": "Tab 2",
+    "module": "billing",
+    "controlType": "tab",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.billing.page.tab.3",
+    "label": "Tab 3",
+    "module": "billing",
+    "controlType": "tab",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.billing.page.select.1",
+    "label": "Select 1",
+    "module": "billing",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.billing.page.select.2",
+    "label": "Select 2",
+    "module": "billing",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.filters.due-from",
+    "label": "Vencimiento desde",
+    "module": "billing",
+    "controlType": "input",
+    "requiredPermissionCode": "ViewPayments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.filters.due-to",
+    "label": "Vencimiento hasta",
+    "module": "billing",
+    "controlType": "input",
+    "requiredPermissionCode": "ViewPayments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.billing.page.button.6",
+    "label": "button 6",
+    "module": "billing",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.billing.page.select.3",
+    "label": "Select 3",
+    "module": "billing",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.billing.page.select.4",
+    "label": "Select 4",
+    "module": "billing",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.clients.page.button.1",
+    "label": "Más acciones",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.clients.page.button.2",
+    "label": "Button 2",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.clients.page.input.1",
+    "label": "Input 1",
+    "module": "clients",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.clients.page.button.3",
+    "label": "button 3",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.clients.id.page.button.1",
+    "label": "Button 1",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.clients.id.page.button.2",
+    "label": "button 2",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.clients.id.page.button.3",
+    "label": "Button 3",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.clients.id.page.tab.1",
+    "label": "Tab 1",
+    "module": "clients",
+    "controlType": "tab",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.clients.id.page.tab.2",
+    "label": "Tab 2",
+    "module": "clients",
+    "controlType": "tab",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.clients.id.page.tab.3",
+    "label": "Tab 3",
+    "module": "clients",
+    "controlType": "tab",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.clients.id.page.tab.4",
+    "label": "Tab 4",
+    "module": "clients",
+    "controlType": "tab",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.clients.id.page.button.4",
+    "label": "Button 4",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.clients.id.page.button.5",
+    "label": "button 5",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.clients.id.page.button.6",
+    "label": "Editar contacto",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.clients.id.page.button.7",
+    "label": "Eliminar contacto",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.clients.id.page.button.8",
+    "label": "Button 8",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "dashboard.reconciliation.open",
+    "label": "Link 1",
+    "module": "dashboard",
+    "controlType": "link",
+    "requiredPermissionCode": "ManageReconciliation",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "dashboard.filters.from",
+    "label": "Desde",
+    "module": "dashboard",
+    "controlType": "input",
+    "requiredPermissionCode": "ViewDashboard",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "dashboard.filters.to",
+    "label": "Hasta",
+    "module": "dashboard",
+    "controlType": "input",
+    "requiredPermissionCode": "ViewDashboard",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "dashboard.filters.client",
+    "label": "Cliente",
+    "module": "dashboard",
+    "controlType": "select",
+    "requiredPermissionCode": "ViewClients",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "dashboard.filters.account",
+    "label": "Cuenta",
+    "module": "dashboard",
+    "controlType": "select",
+    "requiredPermissionCode": "ViewPayments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "dashboard.filters.currency",
+    "label": "Moneda",
+    "module": "dashboard",
+    "controlType": "select",
+    "requiredPermissionCode": "ViewDashboard",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "dashboard.movements.all",
+    "label": "Link 4",
+    "module": "dashboard",
+    "controlType": "link",
+    "requiredPermissionCode": "ViewPayments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "dashboard.error.retry",
+    "label": "Button 2",
+    "module": "dashboard",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewDashboard",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.ledger.page.button.1",
+    "label": "Opciones",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.ledger.page.button.2",
+    "label": "Opciones",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.ledger.page.button.3",
+    "label": "Button 3",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "dashboard.importFailures.close",
+    "label": "Button 4",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "dashboard.importFailures.retry",
+    "label": "Button 5",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "dashboard.reconciliationLines.close",
+    "label": "Button 6",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "dashboard.reconciliationLines.retry",
+    "label": "Button 7",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.ledger.page.tab.1",
+    "label": "Tab 1",
+    "module": "ledger",
+    "controlType": "tab",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.ledger.page.tab.2",
+    "label": "Tab 2",
+    "module": "ledger",
+    "controlType": "tab",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.ledger.page.select.1",
+    "label": "Select 1",
+    "module": "ledger",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.ledger.page.select.2",
+    "label": "Select 2",
+    "module": "ledger",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.ledger.page.input.1",
+    "label": "input 1",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.ledger.page.input.2",
+    "label": "input 2",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.filters.reconciled",
+    "label": "Select 3",
+    "module": "ledger",
+    "controlType": "select",
+    "requiredPermissionCode": "ViewPayments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.ledger.page.button.8",
+    "label": "button 8",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.ledger.page.select.4",
+    "label": "Select 4",
+    "module": "ledger",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.ledger.page.button.9",
+    "label": "Button 9",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.roles.page.button.1",
+    "label": "Más acciones",
+    "module": "roles",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.roles.page.button.2",
+    "label": "Eliminar permiso",
+    "module": "roles",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "roles.compare.open",
+    "label": "Button 3",
+    "module": "roles",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageRoles",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.roles.page.button.4",
+    "label": "Button 4",
+    "module": "roles",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.roles.page.button.5",
+    "label": "Button 5",
+    "module": "roles",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.roles.page.input.1",
+    "label": "Código",
+    "module": "roles",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.roles.page.input.2",
+    "label": "Nombre",
+    "module": "roles",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.roles.page.input.3",
+    "label": "Descripción (opcional)",
+    "module": "roles",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.roles.page.button.6",
+    "label": "Button 6",
+    "module": "roles",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.roles.page.button.7",
+    "label": "Button 7",
+    "module": "roles",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.services.page.button.1",
+    "label": "Más acciones",
+    "module": "services",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.services.page.button.2",
+    "label": "Button 2",
+    "module": "services",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.services.page.input.1",
+    "label": "Input 1",
+    "module": "services",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.services.page.button.3",
+    "label": "button 3",
+    "module": "services",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.services.id.page.button.1",
+    "label": "Button 1",
+    "module": "services",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.services.id.page.button.2",
+    "label": "button 2",
+    "module": "services",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.services.id.page.button.3",
+    "label": "Button 3",
+    "module": "services",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.services.id.page.button.4",
+    "label": "Button 4",
+    "module": "services",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.services.id.page.tab.1",
+    "label": "Tab 1",
+    "module": "services",
+    "controlType": "tab",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.services.id.page.tab.2",
+    "label": "Tab 2",
+    "module": "services",
+    "controlType": "tab",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.services.id.page.button.5",
+    "label": "Button 5",
+    "module": "services",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.subscriptions.page.button.1",
+    "label": "Más acciones",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.subscriptions.page.button.2",
+    "label": "Button 2",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.subscriptions.page.button.3",
+    "label": "button 3",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.subscriptions.id.page.button.1",
+    "label": "Button 1",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.subscriptions.id.page.button.2",
+    "label": "Button 2",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.subscriptions.id.page.button.3",
+    "label": "button 3",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.subscriptions.id.page.button.4",
+    "label": "Button 4",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.subscriptions.id.page.button.5",
+    "label": "Button 5",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.subscriptions.id.page.button.6",
+    "label": "Button 6",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.subscriptions.id.page.button.7",
+    "label": "Button 7",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.subscriptions.id.page.button.8",
+    "label": "Button 8",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.subscriptions.id.page.tab.1",
+    "label": "Tab 1",
+    "module": "subscriptions",
+    "controlType": "tab",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.subscriptions.id.page.tab.2",
+    "label": "Tab 2",
+    "module": "subscriptions",
+    "controlType": "tab",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.subscriptions.id.page.tab.3",
+    "label": "Tab 3",
+    "module": "subscriptions",
+    "controlType": "tab",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.subscriptions.id.page.tab.4",
+    "label": "Tab 4",
+    "module": "subscriptions",
+    "controlType": "tab",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.subscriptions.id.page.button.9",
+    "label": "Button 9",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.subscriptions.id.page.button.10",
+    "label": "Button 10",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.users.page.button.1",
+    "label": "Más acciones",
+    "module": "users",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.users.page.button.2",
+    "label": "Button 2",
+    "module": "users",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.users.page.input.1",
+    "label": "Input 1",
+    "module": "users",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "login.identity",
+    "label": "Usuario o correo",
+    "module": "auth",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "login.password",
+    "label": "Contraseña",
+    "module": "auth",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "login.password.toggle-visibility",
+    "label": "button 1",
+    "module": "auth",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "login.submit",
+    "label": "Button 2",
+    "module": "auth",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "navigation.command-palette.open",
+    "label": "Buscar secciones y acciones",
+    "module": "layout",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.layout.mobile.nav.button.1",
+    "label": "Cerrar menú",
+    "module": "layout",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.layout.mobile.nav.link.1",
+    "label": "Link 1",
+    "module": "layout",
+    "controlType": "link",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.layout.mobile.nav.link.2",
+    "label": "Link 2",
+    "module": "layout",
+    "controlType": "link",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "navigation.mobile.more",
+    "label": "button 2",
+    "module": "layout",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "security.access-denied.return",
+    "label": "Link 1",
+    "module": "layout",
+    "controlType": "link",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "navigation.sidebar.collapse",
+    "label": "button 1",
+    "module": "layout",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.layout.topbar.link.1",
+    "label": "Ir al resumen",
+    "module": "layout",
+    "controlType": "link",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.allocations.auto.allocate.dialog.button.1",
+    "label": "Button 1",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.allocations.auto.allocate.dialog.button.2",
+    "label": "Button 2",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.allocations.auto.allocate.dialog.button.3",
+    "label": "Button 3",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.allocations.auto.allocate.dialog.button.4",
+    "label": "Button 4",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.allocations.manual.allocate.form.button.1",
+    "label": "Button 1",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.allocations.manual.allocate.form.button.2",
+    "label": "Button 2",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.allocations.manual.allocate.form.input.1",
+    "label": "Input 1",
+    "module": "allocations",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.allocations.manual.allocate.form.button.3",
+    "label": "Eliminar fila",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.allocations.manual.allocate.form.button.4",
+    "label": "Button 4",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.allocations.manual.allocate.form.button.5",
+    "label": "Button 5",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.allocations.manual.allocate.form.button.6",
+    "label": "Button 6",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.billing.cancel.item.dialog.textarea.1",
+    "label": "Motivo *",
+    "module": "billing",
+    "controlType": "textarea",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.billing.cancel.item.dialog.button.1",
+    "label": "Button 1",
+    "module": "billing",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.billing.cancel.item.dialog.button.2",
+    "label": "Button 2",
+    "module": "billing",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.billing.generate.billing.dialog.select.1",
+    "label": "Año *",
+    "module": "billing",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.billing.generate.billing.dialog.select.2",
+    "label": "Mes (vacío = anual)",
+    "module": "billing",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.billing.generate.billing.dialog.button.1",
+    "label": "Button 1",
+    "module": "billing",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.billing.generate.billing.dialog.button.2",
+    "label": "Button 2",
+    "module": "billing",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.clients.client.form.button.1",
+    "label": "Button 1",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.clients.client.form.button.2",
+    "label": "Button 2",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.clients.client.form.input.1",
+    "label": "Nombre / Razón social *",
+    "module": "clients",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.clients.client.form.input.2",
+    "label": "Nombre comercial",
+    "module": "clients",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.clients.client.form.input.3",
+    "label": "RFC / ID Fiscal",
+    "module": "clients",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.clients.client.form.select.1",
+    "label": "Categoría",
+    "module": "clients",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.clients.client.form.select.2",
+    "label": "Estado",
+    "module": "clients",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.clients.client.form.button.3",
+    "label": "button 3",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.clients.client.form.button.4",
+    "label": "button 4",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.clients.client.form.input.4",
+    "label": "Correo de facturación",
+    "module": "clients",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.clients.client.form.input.5",
+    "label": "Teléfono",
+    "module": "clients",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.clients.client.form.input.6",
+    "label": "Dirección de facturación",
+    "module": "clients",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.clients.client.form.textarea.1",
+    "label": "Notas internas",
+    "module": "clients",
+    "controlType": "textarea",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.clients.contact.form.input.1",
+    "label": "Nombre *",
+    "module": "clients",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.clients.contact.form.input.2",
+    "label": "Cargo",
+    "module": "clients",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.clients.contact.form.input.3",
+    "label": "Correo",
+    "module": "clients",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.clients.contact.form.input.4",
+    "label": "Teléfono",
+    "module": "clients",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.clients.contact.form.button.1",
+    "label": "Button 1",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.clients.contact.form.button.2",
+    "label": "Button 2",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.clients.note.form.textarea.1",
+    "label": "Contenido *",
+    "module": "clients",
+    "controlType": "textarea",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.clients.note.form.button.1",
+    "label": "Button 1",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.clients.note.form.button.2",
+    "label": "Button 2",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.adjustment.form.select.1",
+    "label": "Cuenta bancaria *",
+    "module": "ledger",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.adjustment.form.input.1",
+    "label": "Importe *",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.adjustment.form.input.2",
+    "label": "Moneda *",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.adjustment.form.input.3",
+    "label": "Fecha *",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.adjustment.form.input.4",
+    "label": "Descripción *",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.adjustment.form.textarea.1",
+    "label": "Motivo *",
+    "module": "ledger",
+    "controlType": "textarea",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.adjustment.form.button.1",
+    "label": "Button 1",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.adjustment.form.button.2",
+    "label": "Button 2",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.bank.account.form.input.1",
+    "label": "Nombre *",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.bank.account.form.input.2",
+    "label": "Banco",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.bank.account.form.input.3",
+    "label": "Número de cuenta",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.bank.account.form.input.4",
+    "label": "Moneda *",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.bank.account.form.input.5",
+    "label": "Saldo inicial *",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.bank.account.form.input.6",
+    "label": "Fecha de apertura *",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.bank.account.form.button.1",
+    "label": "Button 1",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.bank.account.form.button.2",
+    "label": "Button 2",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.expense.form.select.1",
+    "label": "Cuenta bancaria *",
+    "module": "ledger",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.expense.form.input.1",
+    "label": "Importe *",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.expense.form.input.2",
+    "label": "Moneda *",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.expense.form.input.3",
+    "label": "Fecha *",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.expense.form.input.4",
+    "label": "Descripción *",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.expense.form.input.5",
+    "label": "Referencia",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.expense.form.button.1",
+    "label": "Button 1",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.expense.form.button.2",
+    "label": "Button 2",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.income.form.select.1",
+    "label": "Cuenta bancaria *",
+    "module": "ledger",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.income.form.input.1",
+    "label": "Importe *",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.income.form.input.2",
+    "label": "Moneda *",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.income.form.input.3",
+    "label": "Fecha *",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.income.form.input.4",
+    "label": "Descripción *",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.income.form.input.5",
+    "label": "Referencia",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.income.form.button.1",
+    "label": "Button 1",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.income.form.button.2",
+    "label": "Button 2",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.transfer.form.select.1",
+    "label": "Cuenta origen *",
+    "module": "ledger",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.transfer.form.select.2",
+    "label": "Cuenta destino *",
+    "module": "ledger",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.transfer.form.input.1",
+    "label": "Importe *",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.transfer.form.input.2",
+    "label": "Moneda *",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.transfer.form.input.3",
+    "label": "Fecha *",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.transfer.form.input.4",
+    "label": "Descripción",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.transfer.form.button.1",
+    "label": "Button 1",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.transfer.form.button.2",
+    "label": "Button 2",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.roles.assign.permissions.dialog.input.1",
+    "label": "Input 1",
+    "module": "roles",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "roles.permissions.module-toggle",
+    "label": "Button 1",
+    "module": "roles",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageRoles",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.roles.assign.permissions.dialog.button.2",
+    "label": "button 2",
+    "module": "roles",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.roles.assign.permissions.dialog.button.3",
+    "label": "Button 3",
+    "module": "roles",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.roles.assign.permissions.dialog.button.4",
+    "label": "Button 4",
+    "module": "roles",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "roles.compare.left",
+    "label": "Rol A",
+    "module": "roles",
+    "controlType": "select",
+    "requiredPermissionCode": "ManageRoles",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "roles.compare.right",
+    "label": "Rol B",
+    "module": "roles",
+    "controlType": "select",
+    "requiredPermissionCode": "ManageRoles",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.roles.role.form.input.1",
+    "label": "Nombre del rol",
+    "module": "roles",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.roles.role.form.input.2",
+    "label": "Descripción (opcional)",
+    "module": "roles",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.roles.role.form.select.1",
+    "label": "Aplica para (opcional)",
+    "module": "roles",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.roles.role.form.button.1",
+    "label": "Button 1",
+    "module": "roles",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.roles.role.form.button.2",
+    "label": "Button 2",
+    "module": "roles",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "roles.ui-policy.role",
+    "label": "Rol base",
+    "module": "roles",
+    "controlType": "select",
+    "requiredPermissionCode": "ManageRoles",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "roles.ui-policy.user",
+    "label": "Override de usuario",
+    "module": "roles",
+    "controlType": "select",
+    "requiredPermissionCode": "ManageRoles",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "roles.ui-policy.control",
+    "label": "Control",
+    "module": "roles",
+    "controlType": "select",
+    "requiredPermissionCode": "ManageRoles",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "roles.ui-policy.mode",
+    "label": "Comportamiento",
+    "module": "roles",
+    "controlType": "select",
+    "requiredPermissionCode": "ManageRoles",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "roles.ui-policy.save",
+    "label": "Button 1",
+    "module": "roles",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageRoles",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "roles.ui-policy.simulate",
+    "label": "Button 2",
+    "module": "roles",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageRoles",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.services.price.history.form.input.1",
+    "label": "Nuevo precio *",
+    "module": "services",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.services.price.history.form.input.2",
+    "label": "Moneda *",
+    "module": "services",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.services.price.history.form.input.3",
+    "label": "Fecha efectiva *",
+    "module": "services",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.services.price.history.form.textarea.1",
+    "label": "Motivo",
+    "module": "services",
+    "controlType": "textarea",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.services.price.history.form.button.1",
+    "label": "Button 1",
+    "module": "services",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.services.price.history.form.button.2",
+    "label": "Button 2",
+    "module": "services",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.services.service.form.button.1",
+    "label": "Button 1",
+    "module": "services",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.services.service.form.button.2",
+    "label": "Button 2",
+    "module": "services",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.services.service.form.input.1",
+    "label": "Nombre *",
+    "module": "services",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.services.service.form.textarea.1",
+    "label": "Descripción",
+    "module": "services",
+    "controlType": "textarea",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.services.service.form.select.1",
+    "label": "Categoría",
+    "module": "services",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.services.service.form.select.2",
+    "label": "Tipo de facturación *",
+    "module": "services",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.services.service.form.input.2",
+    "label": "Precio por defecto *",
+    "module": "services",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.services.service.form.input.3",
+    "label": "Moneda *",
+    "module": "services",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.subscriptions.change.price.form.input.1",
+    "label": "Nuevo precio *",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.subscriptions.change.price.form.input.2",
+    "label": "Moneda",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.subscriptions.change.price.form.input.3",
+    "label": "Fecha efectiva *",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.subscriptions.change.price.form.textarea.1",
+    "label": "Motivo",
+    "module": "subscriptions",
+    "controlType": "textarea",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.subscriptions.change.price.form.button.1",
+    "label": "Button 1",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.subscriptions.change.price.form.button.2",
+    "label": "Button 2",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.subscriptions.subscription.action.dialog.input.1",
+    "label": "Fecha efectiva",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.subscriptions.subscription.action.dialog.textarea.1",
+    "label": "Motivo (opcional)",
+    "module": "subscriptions",
+    "controlType": "textarea",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.subscriptions.subscription.action.dialog.button.1",
+    "label": "Button 1",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.subscriptions.subscription.action.dialog.button.2",
+    "label": "Button 2",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.subscriptions.subscription.form.button.1",
+    "label": "Button 1",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.subscriptions.subscription.form.button.2",
+    "label": "Button 2",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.subscriptions.subscription.form.select.1",
+    "label": "Tipo *",
+    "module": "subscriptions",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.subscriptions.subscription.form.input.1",
+    "label": "Día de facturación *",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.subscriptions.subscription.form.input.2",
+    "label": "Precio *",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.subscriptions.subscription.form.input.3",
+    "label": "Moneda *",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.subscriptions.subscription.form.input.4",
+    "label": "Inicio *",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.subscriptions.subscription.form.input.5",
+    "label": "Fin (opcional)",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.subscriptions.subscription.form.textarea.1",
+    "label": "Notas internas",
+    "module": "subscriptions",
+    "controlType": "textarea",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.users.assign.roles.dialog.button.1",
+    "label": "button 1",
+    "module": "users",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.users.assign.roles.dialog.button.2",
+    "label": "Button 2",
+    "module": "users",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.users.assign.roles.dialog.button.3",
+    "label": "Button 3",
+    "module": "users",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "security.required-password.current",
+    "label": "Contraseña temporal",
+    "module": "users",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "security.required-password.new",
+    "label": "Nueva contraseña",
+    "module": "users",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "security.required-password.logout",
+    "label": "Button 1",
+    "module": "users",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": true
+  },
+  {
+    "controlKey": "security.required-password.save",
+    "label": "Button 2",
+    "module": "users",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "users.reset-password.value",
+    "label": "Contraseña temporal",
+    "module": "users",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageUsers",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "users.reset-password.cancel",
+    "label": "Button 1",
+    "module": "users",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "users.reset-password.save",
+    "label": "Button 2",
+    "module": "users",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageUsers",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "users.access.tabs.roles",
+    "label": "Tab 1",
+    "module": "users",
+    "controlType": "tab",
+    "requiredPermissionCode": "ManageUsers",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "users.access.tabs.exceptions",
+    "label": "Tab 2",
+    "module": "users",
+    "controlType": "tab",
+    "requiredPermissionCode": "ManageUsers",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "users.access.tabs.sessions",
+    "label": "Tab 3",
+    "module": "users",
+    "controlType": "tab",
+    "requiredPermissionCode": "ManageUsers",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "users.access.roles.toggle",
+    "label": "button 1",
+    "module": "users",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageUsers",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "users.access.roles.save",
+    "label": "Button 2",
+    "module": "users",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageUsers",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "users.access.exceptions.permission",
+    "label": "Permiso",
+    "module": "users",
+    "controlType": "select",
+    "requiredPermissionCode": "ManageUsers",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "users.access.exceptions.effect",
+    "label": "Efecto",
+    "module": "users",
+    "controlType": "select",
+    "requiredPermissionCode": "ManageUsers",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "users.access.exceptions.client",
+    "label": "Alcance de cliente",
+    "module": "users",
+    "controlType": "select",
+    "requiredPermissionCode": "ManageUsers",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "users.access.exceptions.subscription",
+    "label": "Alcance de suscripción",
+    "module": "users",
+    "controlType": "select",
+    "requiredPermissionCode": "ManageUsers",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "users.access.exceptions.expires",
+    "label": "Expira (opcional)",
+    "module": "users",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageUsers",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "users.access.exceptions.save",
+    "label": "Button 3",
+    "module": "users",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageUsers",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "users.access.exceptions.remove",
+    "label": "Eliminar excepción",
+    "module": "users",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageUsers",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "users.access.sessions.revoke-all",
+    "label": "Button 5",
+    "module": "users",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageUsers",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "users.access.sessions.revoke",
+    "label": "Button 6",
+    "module": "users",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageUsers",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.users.user.form.input.1",
+    "label": "Nombre completo",
+    "module": "users",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.users.user.form.input.2",
+    "label": "Nombre de usuario",
+    "module": "users",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.users.user.form.input.3",
+    "label": "Contraseña",
+    "module": "users",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.users.user.form.input.4",
+    "label": "Correo electrónico",
+    "module": "users",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.users.user.form.select.1",
+    "label": "Tipo de usuario",
+    "module": "users",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "users.form.client",
+    "label": "Cliente",
+    "module": "users",
+    "controlType": "select",
+    "requiredPermissionCode": "ManageUsers",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.users.user.form.button.1",
+    "label": "Button 1",
+    "module": "users",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.users.user.form.button.2",
+    "label": "Button 2",
+    "module": "users",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "navigation.dashboard.open",
+    "label": "Resumen",
+    "module": "navigation",
+    "controlType": "link",
+    "requiredPermissionCode": "ViewDashboard",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "navigation.clients.open",
+    "label": "Clientes",
+    "module": "navigation",
+    "controlType": "link",
+    "requiredPermissionCode": "ViewClients",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "navigation.services.open",
+    "label": "Planes y servicios",
+    "module": "navigation",
+    "controlType": "link",
+    "requiredPermissionCode": "ViewServices",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "navigation.subscriptions.open",
+    "label": "Suscripciones",
+    "module": "navigation",
+    "controlType": "link",
+    "requiredPermissionCode": "ViewSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "navigation.billing.open",
+    "label": "Cargos",
+    "module": "navigation",
+    "controlType": "link",
+    "requiredPermissionCode": "ViewPayments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "navigation.ledger.open",
+    "label": "Major Ledger",
+    "module": "navigation",
+    "controlType": "link",
+    "requiredPermissionCode": "ViewPayments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "navigation.allocations.open",
+    "label": "Aplicación de pagos",
+    "module": "navigation",
+    "controlType": "link",
+    "requiredPermissionCode": "ViewPayments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "navigation.account-statement.open",
+    "label": "Estados de cuenta",
+    "module": "navigation",
+    "controlType": "link",
+    "requiredPermissionCode": "ViewPayments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "navigation.users.open",
+    "label": "Usuarios",
+    "module": "navigation",
+    "controlType": "link",
+    "requiredPermissionCode": "ManageUsers",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "navigation.roles.open",
+    "label": "Roles y permisos",
+    "module": "navigation",
+    "controlType": "link",
+    "requiredPermissionCode": "ManageRoles",
+    "isSystemRequired": false
+  }
+]

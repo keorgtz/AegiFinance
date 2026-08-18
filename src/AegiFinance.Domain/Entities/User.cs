@@ -12,10 +12,14 @@ public class User : AuditableEntity
     public string Name { get; set; } = string.Empty;
     public bool IsActive { get; set; }
     public bool EmailConfirmed { get; set; }
-    public string? RefreshToken { get; set; }
-    public DateTime? RefreshTokenExpiry { get; set; }
     public DateTime? LastLoginAt { get; set; }
+    public int FailedLoginAttempts { get; set; }
+    public DateTime? LockoutEnd { get; set; }
+    public DateTime? PasswordChangedAt { get; set; }
+    public bool MustChangePassword { get; set; }
 
     public List<Role> Roles { get; set; } = new List<Role>();
-    public List<UserPermission> UserPermissions { get; set; } = new List<UserPermission>();
+    public List<UserPermissionOverride> PermissionOverrides { get; set; } = new();
+    public List<UiControlPolicy> UiControlPolicies { get; set; } = new();
+    public List<UserSession> Sessions { get; set; } = new();
 }

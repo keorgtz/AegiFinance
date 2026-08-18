@@ -38,6 +38,10 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, UserD
 
         user.Email = request.Email;
         user.Name = request.Name;
+        if (user.Roles.Any(role => role.UserType.HasValue && role.UserType.Value != request.UserType))
+            throw new InvalidOperationException("Quitá los roles incompatibles antes de cambiar el tipo de usuario.");
+        user.UserType = request.UserType;
+        user.ClientId = request.ClientId;
 
         await _context.SaveChangesAsync(cancellationToken);
 
@@ -54,6 +58,9 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, UserD
             IsActive = user.IsActive,
             EmailConfirmed = user.EmailConfirmed,
             LastLoginAt = user.LastLoginAt,
+            LockoutEnd = user.LockoutEnd,
+            MustChangePassword = user.MustChangePassword,
+            ActiveSessionCount = await _context.UserSessions.CountAsync(session => session.UserId == user.Id && session.RevokedAt == null && session.ExpiresAt > DateTime.UtcNow, cancellationToken),
             Roles = user.Roles.Select(r => r.Name).ToList(),
             Permissions = permissions.ToList()
         };

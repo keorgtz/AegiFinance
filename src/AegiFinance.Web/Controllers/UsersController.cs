@@ -8,8 +8,15 @@ using AegiFinance.Application.Features.Users.Commands.DeleteUser;
 using AegiFinance.Application.Features.Users.Commands.RemoveUserPermission;
 using AegiFinance.Application.Features.Users.Commands.SetUserPermission;
 using AegiFinance.Application.Features.Users.Commands.UpdateUser;
+using AegiFinance.Application.Features.Users.Commands.RevokeUserSession;
+using AegiFinance.Application.Features.Users.Commands.RevokeAllUserSessions;
+using AegiFinance.Application.Features.Users.Commands.UnlockUser;
+using AegiFinance.Application.Features.Users.Commands.ResetUserPassword;
 using AegiFinance.Application.Features.Users.Queries.GetUserById;
 using AegiFinance.Application.Features.Users.Queries.GetUsers;
+using AegiFinance.Application.Features.Users.Queries.GetUserSessions;
+using AegiFinance.Application.Features.Users.Queries.GetUserPermissionOverrides;
+using AegiFinance.Web.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,12 +36,14 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "ManageUsers")]
     public async Task<ActionResult<PaginatedList<UserDto>>> GetAll([FromQuery] GetUsersQuery query, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(query, cancellationToken));
     }
 
     [HttpGet("{id:guid}")]
+    [Authorize(Policy = "ManageUsers")]
     public async Task<ActionResult<UserDto>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetUserByIdQuery { Id = id }, cancellationToken);
@@ -107,9 +116,55 @@ public class UsersController : ControllerBase
 
     [HttpDelete("{id:guid}/permissions/{permissionId:guid}")]
     [Authorize(Policy = "ManageUsers")]
-    public async Task<IActionResult> RemovePermission(Guid id, Guid permissionId, CancellationToken cancellationToken)
+    public async Task<IActionResult> RemovePermission(Guid id, Guid permissionId, [FromQuery] Guid? clientId, [FromQuery] Guid? subscriptionId, CancellationToken cancellationToken)
     {
-        await _mediator.Send(new RemoveUserPermissionCommand(id, permissionId), cancellationToken);
+        await _mediator.Send(new RemoveUserPermissionCommand
+        {
+            UserId = id, PermissionId = permissionId, ClientId = clientId, SubscriptionId = subscriptionId
+        }, cancellationToken);
+        return NoContent();
+    }
+
+    [HttpGet("{id:guid}/permissions")]
+    [Authorize(Policy = "ManageUsers")]
+    public async Task<ActionResult<List<UserPermissionOverrideDto>>> GetPermissionOverrides(Guid id, CancellationToken cancellationToken) =>
+        Ok(await _mediator.Send(new GetUserPermissionOverridesQuery(id), cancellationToken));
+
+    [HttpGet("{id:guid}/sessions")]
+    [Authorize(Policy = "ManageUsers")]
+    public async Task<ActionResult<List<UserSessionDto>>> GetSessions(Guid id, CancellationToken cancellationToken) =>
+        Ok(await _mediator.Send(new GetUserSessionsQuery(id), cancellationToken));
+
+    [HttpDelete("{id:guid}/sessions/{sessionId:guid}")]
+    [Authorize(Policy = "ManageUsers")]
+    public async Task<IActionResult> RevokeSession(Guid id, Guid sessionId, CancellationToken cancellationToken)
+    {
+        await _mediator.Send(new RevokeUserSessionCommand(id, sessionId, User.GetUserId()), cancellationToken);
+        return NoContent();
+    }
+
+    [HttpDelete("{id:guid}/sessions")]
+    [Authorize(Policy = "ManageUsers")]
+    public async Task<IActionResult> RevokeAllSessions(Guid id, CancellationToken cancellationToken)
+    {
+        await _mediator.Send(new RevokeAllUserSessionsCommand(id, User.GetUserId()), cancellationToken);
+        return NoContent();
+    }
+
+    [HttpPost("{id:guid}/unlock")]
+    [Authorize(Policy = "ManageUsers")]
+    public async Task<IActionResult> Unlock(Guid id, CancellationToken cancellationToken)
+    {
+        await _mediator.Send(new UnlockUserCommand(id), cancellationToken);
+        return NoContent();
+    }
+
+    [HttpPost("{id:guid}/reset-password")]
+    [Authorize(Policy = "ManageUsers")]
+    public async Task<IActionResult> ResetPassword(Guid id, ResetUserPasswordCommand command, CancellationToken cancellationToken)
+    {
+        command.UserId = id;
+        await _mediator.Send(command, cancellationToken);
         return NoContent();
     }
 }

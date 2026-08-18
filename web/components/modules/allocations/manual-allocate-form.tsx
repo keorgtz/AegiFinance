@@ -104,40 +104,40 @@ export function ManualAllocateForm({ open, onOpenChange, clientId }: ManualAlloc
               className={cn(
                 "flex items-start gap-3 rounded-input border p-3",
                 result.success
-                  ? "border-[#0E9F6E]/30 bg-[#ECFDF5]"
-                  : "border-[#B6452C]/30 bg-[#FEF2F2]"
+                  ? "border-success/30 bg-success-soft"
+                  : "border-danger/30 bg-danger-soft"
               )}
             >
               {result.success ? (
-                <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#0E9F6E]" />
+                <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-success" />
               ) : (
-                <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#B6452C]" />
+                <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-danger" />
               )}
               <div className="space-y-1">
-                <p className="text-[13px] font-600 text-[#16181D]">
+                <p className="text-[13px] font-semibold text-foreground">
                   {result.success ? "Asignación guardada" : "Asignación incompleta"}
                 </p>
-                <p className="text-[12px] text-[#5B6472]">
-                  Asignado: <span className="font-600">{formatAmount(result.allocatedAmount)}</span>
+                <p className="text-[12px] text-muted">
+                  Asignado: <span className="font-semibold">{formatAmount(result.allocatedAmount)}</span>
                   {result.remainingAmount > 0 && (
-                    <> · Restante: <span className="font-600 text-[#B6452C]">{formatAmount(result.remainingAmount)}</span></>
+                    <> · Restante: <span className="font-semibold text-danger">{formatAmount(result.remainingAmount)}</span></>
                   )}
                 </p>
                 {result.errors.length > 0 && (
                   <ul className="mt-1 space-y-0.5">
                     {result.errors.map((e, i) => (
-                      <li key={i} className="text-[12px] text-[#B6452C]">· {e}</li>
+                      <li key={i} className="text-[12px] text-danger">· {e}</li>
                     ))}
                   </ul>
                 )}
               </div>
             </div>
             <div className="flex justify-end gap-3">
-              <Button onClick={() => { setResult(null); setLedgerEntryId(""); setRows([{ billingItemId: "", amount: "" }]); }}>
+              <Button controlKey="ui.components.modules.allocations.manual.allocate.form.button.1" onClick={() => { setResult(null); setLedgerEntryId(""); setRows([{ billingItemId: "", amount: "" }]); }}>
                 Nueva asignación
               </Button>
               <DrawerClose asChild>
-                <Button variant="secondary">Cerrar</Button>
+                <Button controlKey="ui.components.modules.allocations.manual.allocate.form.button.2" variant="secondary">Cerrar</Button>
               </DrawerClose>
             </div>
           </div>
@@ -153,7 +153,7 @@ export function ManualAllocateForm({ open, onOpenChange, clientId }: ManualAlloc
             />
 
             <div>
-              <p className="mb-2 text-[11px] font-600 uppercase tracking-wider text-[#5B6472]">
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted">
                 Cargos a aplicar
               </p>
               <div className="space-y-2">
@@ -170,7 +170,7 @@ export function ManualAllocateForm({ open, onOpenChange, clientId }: ManualAlloc
                       />
                     </div>
                     <div className="w-32">
-                      <Input
+                      <Input controlKey="ui.components.modules.allocations.manual.allocate.form.input.1"
                         label={idx === 0 ? "Importe" : ""}
                         type="number"
                         step="0.01"
@@ -181,7 +181,7 @@ export function ManualAllocateForm({ open, onOpenChange, clientId }: ManualAlloc
                       />
                     </div>
                     {rows.length > 1 && (
-                      <Button
+                      <Button controlKey="ui.components.modules.allocations.manual.allocate.form.button.3"
                         type="button"
                         variant="ghost"
                         size="icon"
@@ -189,13 +189,13 @@ export function ManualAllocateForm({ open, onOpenChange, clientId }: ManualAlloc
                         onClick={() => removeRow(idx)}
                         aria-label="Eliminar fila"
                       >
-                        <Trash2 className="h-4 w-4 text-[#B6452C]" />
+                        <Trash2 className="h-4 w-4 text-danger" />
                       </Button>
                     )}
                   </div>
                 ))}
               </div>
-              <Button
+              <Button controlKey="ui.components.modules.allocations.manual.allocate.form.button.4"
                 type="button"
                 variant="ghost"
                 size="sm"
@@ -209,9 +209,9 @@ export function ManualAllocateForm({ open, onOpenChange, clientId }: ManualAlloc
 
             <div className="flex justify-end gap-3">
               <DrawerClose asChild>
-                <Button type="button" variant="secondary">Cancelar</Button>
+                <Button controlKey="ui.components.modules.allocations.manual.allocate.form.button.5" type="button" variant="secondary">Cancelar</Button>
               </DrawerClose>
-              <Button
+              <Button controlKey="ui.components.modules.allocations.manual.allocate.form.button.6"
                 onClick={handleSubmit}
                 disabled={!isValid}
                 loading={manualAllocate.isPending}

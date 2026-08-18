@@ -42,6 +42,9 @@ services:
       JwtSettings__Issuer: AegiFinance
       JwtSettings__Audience: AegiFinance
       JwtSettings__ExpiryMinutes: 15
+      Security__MaxFailedLoginAttempts: ${SECURITY_MAX_FAILED_LOGIN_ATTEMPTS:-5}
+      Security__LockoutMinutes: ${SECURITY_LOCKOUT_MINUTES:-15}
+      Security__SessionLifetimeDays: ${SECURITY_SESSION_LIFETIME_DAYS:-7}
       Cors__AllowedOrigins__0: ${CORS_ALLOWED_ORIGINS}
       ExchangeRateApi__BaseUrl: ${EXCHANGE_RATE_BASE_URL:-https://api.exchangerate-api.com/v4/latest/}
       ExchangeRateApi__ApiKey: ${EXCHANGE_RATE_API_KEY:-}
@@ -129,4 +132,5 @@ networks:
   aegifinance:
     driver: bridge
   proxy:
-    external: true
+    name: ${PROXY_NETWORK_NAME:-aegifinance-proxy}
+    external: ${PROXY_NETWORK_EXTERNAL:-false}

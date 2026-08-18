@@ -60,12 +60,12 @@ export function GenerateBillingDialog({ open, onOpenChange }: GenerateBillingDia
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent title="Generar facturación" size="sm">
-        <p className="mb-4 text-[13px] text-[#5B6472]">
+        <p className="mb-4 text-[13px] text-muted">
           Genera los cargos de facturación para el período indicado. Los cargos ya existentes no se duplican.
         </p>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
-            <Select
+            <Select controlKey="ui.components.modules.billing.generate.billing.dialog.select.1"
               label="Año *"
               value={String(watch("year"))}
               onValueChange={(v) => setValue("year", Number(v))}
@@ -74,7 +74,7 @@ export function GenerateBillingDialog({ open, onOpenChange }: GenerateBillingDia
                 <SelectItem key={y} value={String(y)}>{y}</SelectItem>
               ))}
             </Select>
-            <Select
+            <Select controlKey="ui.components.modules.billing.generate.billing.dialog.select.2"
               label="Mes (vacío = anual)"
               value={month ?? ""}
               onValueChange={(v) => setValue("month", v)}
@@ -88,9 +88,9 @@ export function GenerateBillingDialog({ open, onOpenChange }: GenerateBillingDia
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="secondary">Cancelar</Button>
+              <Button controlKey="ui.components.modules.billing.generate.billing.dialog.button.1" type="button" variant="secondary">Cancelar</Button>
             </DialogClose>
-            <Button type="submit" loading={isSubmitting}>
+            <Button controlKey="ui.components.modules.billing.generate.billing.dialog.button.2" type="submit" loading={isSubmitting}>
               Generar cargos
             </Button>
           </DialogFooter>

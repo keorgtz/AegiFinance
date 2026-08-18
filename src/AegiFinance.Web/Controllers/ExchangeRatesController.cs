@@ -29,14 +29,14 @@ public class ExchangeRatesController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Policy = "ManageBilling")]
+    [Authorize(Policy = "ManageExchangeRates")]
     public async Task<ActionResult<ExchangeRateDto>> Create(CreateExchangeRateCommand command, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(command, cancellationToken));
     }
 
     [HttpPut("{id:guid}")]
-    [Authorize(Policy = "ManageBilling")]
+    [Authorize(Policy = "ManageExchangeRates")]
     public async Task<ActionResult<ExchangeRateDto>> Update(Guid id, UpdateExchangeRateCommand command, CancellationToken cancellationToken)
     {
         command.Id = id;
@@ -44,7 +44,7 @@ public class ExchangeRatesController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
-    [Authorize(Policy = "ManageBilling")]
+    [Authorize(Policy = "ManageExchangeRates")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         await _mediator.Send(new DeleteExchangeRateCommand(id), cancellationToken);
@@ -52,7 +52,7 @@ public class ExchangeRatesController : ControllerBase
     }
 
     [HttpPost("sync")]
-    [Authorize(Policy = "ManageBilling")]
+    [Authorize(Policy = "SyncExchangeRates")]
     public async Task<ActionResult<ExchangeRateDto>> Sync(SyncExchangeRateCommand command, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(command, cancellationToken);

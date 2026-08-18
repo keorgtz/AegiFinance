@@ -68,7 +68,7 @@ export function IncomeForm({ open, onOpenChange, accounts, defaultAccountId }: I
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent title="Registrar ingreso" size="md">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <Select
+          <Select controlKey="ui.components.modules.ledger.income.form.select.1"
             label="Cuenta bancaria *"
             value={watch("bankAccountId")}
             onValueChange={(v) => setValue("bankAccountId", v)}
@@ -82,7 +82,7 @@ export function IncomeForm({ open, onOpenChange, accounts, defaultAccountId }: I
             ))}
           </Select>
           <div className="grid grid-cols-2 gap-3">
-            <Input
+            <Input controlKey="ui.components.modules.ledger.income.form.input.1"
               {...register("amount")}
               type="number"
               step="0.01"
@@ -91,25 +91,25 @@ export function IncomeForm({ open, onOpenChange, accounts, defaultAccountId }: I
               autoFocus
               error={errors.amount?.message}
             />
-            <Input
+            <Input controlKey="ui.components.modules.ledger.income.form.input.2"
               {...register("currency")}
               label="Moneda *"
               error={errors.currency?.message}
             />
           </div>
-          <Input
+          <Input controlKey="ui.components.modules.ledger.income.form.input.3"
             {...register("date")}
             type="date"
             label="Fecha *"
             error={errors.date?.message}
           />
-          <Input
+          <Input controlKey="ui.components.modules.ledger.income.form.input.4"
             {...register("description")}
             label="Descripción *"
             placeholder="Ej. Pago de factura F-0001"
             error={errors.description?.message}
           />
-          <Input
+          <Input controlKey="ui.components.modules.ledger.income.form.input.5"
             {...register("reference")}
             label="Referencia"
             placeholder="Ej. Transferencia, cheque, folio…"
@@ -117,9 +117,9 @@ export function IncomeForm({ open, onOpenChange, accounts, defaultAccountId }: I
           />
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="secondary">Cancelar</Button>
+              <Button controlKey="ui.components.modules.ledger.income.form.button.1" type="button" variant="secondary">Cancelar</Button>
             </DialogClose>
-            <Button type="submit" loading={isSubmitting}>Registrar ingreso</Button>
+            <Button controlKey="ui.components.modules.ledger.income.form.button.2" type="submit" loading={isSubmitting}>Registrar ingreso</Button>
           </DialogFooter>
         </form>
       </DialogContent>

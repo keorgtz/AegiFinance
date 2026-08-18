@@ -8,8 +8,10 @@ import { z } from "zod";
 import { useAuth } from "@/lib/auth/context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Brand } from "@/components/ui/brand";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { ApiRequestError } from "@/lib/api/client";
-import { Eye, EyeOff, Lock, User } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, GitCompareArrows, Lock, ShieldCheck, Smartphone, User } from "lucide-react";
 
 const schema = z.object({
   usernameOrEmail: z.string().min(1, "Campo requerido"),
@@ -45,21 +47,49 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-full max-w-sm">
-      {/* Card */}
-      <div className="rounded-card bg-white shadow-dp3 overflow-hidden">
-        {/* Header con color primario */}
-        <div className="bg-[#0F5C6B] px-8 py-6">
-          <h1 className="font-display text-[22px] font-700 text-white tracking-tight">
-            Aegi<span className="text-[#5BAEBC]">Finance</span>
+    <>
+      <section className="relative hidden overflow-hidden bg-action-soft p-10 lg:flex lg:flex-col lg:justify-between">
+        <div className="absolute -right-28 -top-28 h-80 w-80 rounded-full bg-action/15" />
+        <div className="absolute -bottom-40 -left-28 h-96 w-96 rounded-full bg-accent/10" />
+        <Brand className="relative z-10" />
+        <div className="relative z-10 max-w-lg">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-action">Control financiero sereno</p>
+          <h1 className="mt-4 text-4xl font-bold leading-[1.1] tracking-[-0.045em] text-foreground">
+            Conciliá pagos con claridad y trazabilidad.
           </h1>
-          <p className="mt-1 text-[12px] text-white/60">
-            Plataforma de gestión financiera
+          <p className="mt-5 max-w-md text-base leading-7 text-muted">
+            Cuentas, clientes, planes, cargos y abonos conectados a un Major Ledger auditable.
           </p>
+          <div className="mt-8 grid gap-3">
+            {[
+              { icon: GitCompareArrows, text: "Conciliación bancaria guiada" },
+              { icon: ShieldCheck, text: "Permisos y auditoría en cada operación" },
+              { icon: Smartphone, text: "Misma tarea, bien resuelta en teléfono y computadora" },
+            ].map(({ icon: Icon, text }) => (
+              <div key={text} className="flex items-center gap-3 text-sm font-semibold text-foreground-secondary">
+                <span className="grid h-10 w-10 place-items-center rounded-input bg-surface text-action shadow-dp1">
+                  <Icon className="h-5 w-5" />
+                </span>
+                {text}
+              </div>
+            ))}
+          </div>
+        </div>
+        <p className="relative z-10 text-xs text-muted">Keorsoft · AegiFinance</p>
+      </section>
+
+      <section className="flex min-h-full flex-col p-5 sm:p-8 lg:p-12">
+        <div className="flex items-center justify-between lg:justify-end">
+          <Brand className="lg:hidden" />
+          <ThemeToggle compact />
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="px-8 py-6 space-y-4">
+        <div className="my-auto w-full max-w-md self-center py-10">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-action">Acceso seguro</p>
+          <h2 className="mt-3 text-3xl font-bold tracking-[-0.04em] text-foreground">Bienvenido de nuevo</h2>
+          <p className="mt-2 text-sm leading-6 text-muted">Ingresá para continuar con tu operación financiera.</p>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-5">
           <Input
             {...register("usernameOrEmail")}
             label="Usuario o correo"
@@ -67,7 +97,9 @@ export default function LoginPage() {
             autoComplete="username"
             autoFocus
             error={errors.usernameOrEmail?.message}
-            leftIcon={<User className="h-3.5 w-3.5" />}
+            leftIcon={<User className="h-4 w-4" />}
+            id="login-identity"
+            data-ui-control="login.identity"
           />
 
           <div className="relative">
@@ -78,43 +110,45 @@ export default function LoginPage() {
               placeholder="••••••••"
               autoComplete="current-password"
               error={errors.password?.message}
-              leftIcon={<Lock className="h-3.5 w-3.5" />}
+              leftIcon={<Lock className="h-4 w-4" />}
+              id="login-password"
+              data-ui-control="login.password"
             />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
-              className="absolute right-2.5 bottom-2 text-[#5B6472] hover:text-[#16181D] transition-colors"
+              data-ui-control="login.password.toggle-visibility"
+              className="absolute bottom-0 right-0 grid h-11 w-11 place-items-center rounded-full text-muted transition-ui hover:text-foreground"
               aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-              tabIndex={-1}
             >
               {showPassword ? (
-                <EyeOff className="h-3.5 w-3.5" />
+                <EyeOff className="h-4 w-4" />
               ) : (
-                <Eye className="h-3.5 w-3.5" />
+                <Eye className="h-4 w-4" />
               )}
             </button>
           </div>
 
           {serverError && (
-            <div className="rounded-input bg-[#FFF6F1] border border-[#FBE6DC] px-3 py-2 text-[12px] text-[#B6452C]">
+            <div role="alert" className="rounded-input border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-danger">
               {serverError}
             </div>
           )}
 
           <Button
             type="submit"
-            className="w-full mt-2"
+            className="mt-2 w-full"
             size="lg"
             loading={isSubmitting}
+            data-ui-control="login.submit"
           >
             Iniciar sesión
+            {!isSubmitting && <ArrowRight className="h-4 w-4" />}
           </Button>
         </form>
-      </div>
-
-      <p className="mt-4 text-center text-[11px] text-[#5B6472]">
-        Keorsoft · AegiFinance v0.1
-      </p>
-    </div>
+          <p className="mt-6 text-center text-xs text-muted">Tus credenciales viajan cifradas y la sesión se renueva de forma segura.</p>
+        </div>
+      </section>
+    </>
   );
 }

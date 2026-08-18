@@ -17,5 +17,8 @@ public class CreatePermissionCommandValidator : AbstractValidator<CreatePermissi
 
         RuleFor(x => x.Description)
             .MaximumLength(500).WithMessage("La descripción no puede exceder 500 caracteres.");
+
+        RuleFor(x => x.Module).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.Action).NotEmpty().MaximumLength(100);
     }
 }

@@ -1,41 +1,49 @@
+"use client";
+
 import { cn } from "@/lib/utils/cn";
+import { useUiControl, type UiControlPermissionProps } from "@/lib/auth/ui-control";
 import React from "react";
 
-interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement>, UiControlPermissionProps {
   label?: string;
   error?: string;
   hint?: string;
 }
 
 export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ label, error, hint, className, id, ...props }, ref) => {
+  ({ label, error, hint, className, id, controlKey, permission, systemRequired, ...props }, ref) => {
     const inputId = id ?? label?.toLowerCase().replace(/\s+/g, "-");
+    const access = useUiControl({ controlKey, permission, systemRequired });
+    if (access.hidden) return null;
     return (
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-2">
         {label && (
           <label
             htmlFor={inputId}
-            className="text-[11px] font-600 uppercase tracking-wider text-[#5B6472]"
+            className="text-xs font-semibold text-muted"
           >
             {label}
           </label>
         )}
         <textarea
+          {...props}
           ref={ref}
           id={inputId}
+          disabled={props.disabled || access.disabled}
+          readOnly={props.readOnly || access.readOnly}
+          {...access.dataAttributes}
           className={cn(
-            "min-h-[80px] w-full rounded-input border border-[#E3E6EC] bg-white px-3 py-2 text-[13px]",
-            "text-[#16181D] placeholder:text-[#5B6472] resize-y",
-            "transition-colors duration-150",
-            "focus:outline-none focus:border-[#5BAEBC] focus:ring-1 focus:ring-[#5BAEBC]",
-            "disabled:bg-[#F7F8FA] disabled:cursor-not-allowed",
-            error && "border-[#B6452C] focus:border-[#B6452C] focus:ring-[#B6452C]",
+            "min-h-24 w-full rounded-input border border-border-strong bg-field px-3.5 py-3 text-sm",
+            "text-foreground placeholder:text-muted resize-y",
+            "transition-ui",
+            "focus:outline-none focus:border-action focus:ring-[3px] focus:ring-action/15",
+            "disabled:bg-surface-subtle disabled:cursor-not-allowed",
+            error && "border-danger focus:border-danger focus:ring-danger",
             className
           )}
-          {...props}
         />
-        {error && <p className="text-[11px] text-[#B6452C] font-500">{error}</p>}
-        {hint && !error && <p className="text-[11px] text-[#5B6472]">{hint}</p>}
+        {error && <p className="text-xs font-medium text-danger">{error}</p>}
+        {hint && !error && <p className="text-xs text-muted">{hint}</p>}
       </div>
     );
   }

@@ -39,7 +39,7 @@ public class BankAccountsController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Policy = "ManageBilling")]
+    [Authorize(Policy = "CreateBankAccounts")]
     public async Task<ActionResult<BankAccountDto>> Create(CreateBankAccountCommand command, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(command, cancellationToken);
@@ -47,7 +47,7 @@ public class BankAccountsController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
-    [Authorize(Policy = "ManageBilling")]
+    [Authorize(Policy = "UpdateBankAccounts")]
     public async Task<ActionResult<BankAccountDto>> Update(Guid id, UpdateBankAccountCommand command, CancellationToken cancellationToken)
     {
         command.Id = id;
@@ -55,7 +55,7 @@ public class BankAccountsController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
-    [Authorize(Policy = "ManageBilling")]
+    [Authorize(Policy = "DeleteBankAccounts")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         await _mediator.Send(new DeleteBankAccountCommand(id), cancellationToken);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
 import {
   useBillingCycles,
@@ -59,6 +59,11 @@ export default function BillingPage() {
   const [itemsPage, setItemsPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<BillingItemStatus | "">("");
   const [cycleIdFilter, setCycleIdFilter] = useState("");
+  const [dueDateFromFilter, setDueDateFromFilter] = useState("");
+  const [dueDateToFilter, setDueDateToFilter] = useState("");
+  const [clientIdFilter, setClientIdFilter] = useState("");
+  const [currencyFilter, setCurrencyFilter] = useState("");
+  const [outstandingOnly, setOutstandingOnly] = useState(false);
   const [cancelTarget, setCancelTarget] = useState<BillingItemListDto | null>(null);
 
   // Cycles tab state
@@ -70,6 +75,15 @@ export default function BillingPage() {
   // Dialogs
   const [generateOpen, setGenerateOpen] = useState(false);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setDueDateFromFilter(params.get("dueDateFrom") ?? "");
+    setDueDateToFilter(params.get("dueDateTo") ?? "");
+    setClientIdFilter(params.get("clientId") ?? "");
+    setCurrencyFilter(params.get("currency") ?? "");
+    setOutstandingOnly(params.get("outstandingOnly") === "true");
+  }, []);
+
   // Data
   const { data: cycles = [], isLoading: cyclesLoading } = useBillingCycles({
     year: Number(cyclesYear),
@@ -77,6 +91,11 @@ export default function BillingPage() {
   const { data: itemsData, isLoading: itemsLoading } = useBillingItems({
     status: statusFilter || undefined,
     billingCycleId: cycleIdFilter || undefined,
+    dueDateFrom: dueDateFromFilter || undefined,
+    dueDateTo: dueDateToFilter || undefined,
+    clientId: clientIdFilter || undefined,
+    currency: currencyFilter || undefined,
+    outstandingOnly,
     pageNumber: itemsPage,
     pageSize: PAGE_SIZE,
   });
@@ -100,8 +119,8 @@ export default function BillingPage() {
         const item = row.original;
         return (
           <div className="min-w-0">
-            <p className="truncate font-500 text-[#16181D]">{item.description}</p>
-            <p className="text-[11px] text-[#5B6472]">
+            <p className="truncate font-medium text-foreground">{item.description}</p>
+            <p className="text-[11px] text-muted">
               {item.clientName} · <span className="font-mono">{item.subscriptionCode}</span>
             </p>
           </div>
@@ -113,7 +132,7 @@ export default function BillingPage() {
       header: "Vencimiento",
       size: 115,
       cell: ({ getValue }) => (
-        <span className="text-[13px] text-[#5B6472]">{formatDate(getValue() as string)}</span>
+        <span className="text-[13px] text-muted">{formatDate(getValue() as string)}</span>
       ),
     },
     {
@@ -121,7 +140,7 @@ export default function BillingPage() {
       header: "Importe",
       size: 120,
       cell: ({ row }) => (
-        <span className="font-600 text-[#16181D]">
+        <span className="font-semibold text-foreground">
           {formatAmount(row.original.amount, row.original.currency)}
         </span>
       ),
@@ -133,7 +152,7 @@ export default function BillingPage() {
       cell: ({ row }) => {
         const paid = row.original.paidAmount;
         return (
-          <span className={cn("text-[13px]", paid > 0 ? "font-600 text-[#0E9F6E]" : "text-[#5B6472]")}>
+          <span className={cn("text-[13px]", paid > 0 ? "font-semibold text-success" : "text-muted")}>
             {paid > 0 ? formatAmount(paid, row.original.currency) : "—"}
           </span>
         );
@@ -147,7 +166,7 @@ export default function BillingPage() {
         const balance = row.original.balance;
         const cancelled = row.original.status === "Cancelled";
         return (
-          <span className={cn("text-[13px] font-600", cancelled ? "text-[#5B6472] line-through" : balance > 0 ? "text-[#B6452C]" : "text-[#0E9F6E]")}>
+          <span className={cn("text-[13px] font-semibold", cancelled ? "text-muted line-through" : balance > 0 ? "text-danger" : "text-success")}>
             {formatAmount(balance, row.original.currency)}
           </span>
         );
@@ -168,13 +187,13 @@ export default function BillingPage() {
         if (!canCancel) return null;
         return (
           <Can permission="ManageBilling">
-            <Button
+            <Button controlKey="ui.app.app.billing.page.button.1"
               variant="ghost"
               size="icon"
               aria-label="Cancelar cargo"
               onClick={(e) => { e.stopPropagation(); setCancelTarget(item); }}
             >
-              <XCircle className="h-4 w-4 text-[#B6452C]" />
+              <XCircle className="h-4 w-4 text-danger" />
             </Button>
           </Can>
         );
@@ -187,7 +206,7 @@ export default function BillingPage() {
       id: "period",
       header: "Período",
       cell: ({ row }) => (
-        <span className="font-600 text-[#16181D]">{cycleLabel(row.original)}</span>
+        <span className="font-semibold text-foreground">{cycleLabel(row.original)}</span>
       ),
     },
     {
@@ -200,7 +219,7 @@ export default function BillingPage() {
       id: "dates",
       header: "Rango",
       cell: ({ row }) => (
-        <span className="text-[12px] text-[#5B6472]">
+        <span className="text-[12px] text-muted">
           {formatDate(row.original.startDate)} – {formatDate(row.original.endDate)}
         </span>
       ),
@@ -218,7 +237,7 @@ export default function BillingPage() {
       header: "Cerrado",
       size: 120,
       cell: ({ getValue }) => (
-        <span className="text-[12px] text-[#5B6472]">
+        <span className="text-[12px] text-muted">
           {(getValue() as string | null) ? formatDate(getValue() as string) : "—"}
         </span>
       ),
@@ -233,7 +252,7 @@ export default function BillingPage() {
           <Can permission="ManageBilling">
             <div className="flex items-center gap-1.5">
               {isOpen && (
-                <Button
+                <Button controlKey="ui.app.app.billing.page.button.2"
                   size="sm"
                   variant="secondary"
                   onClick={(e) => {
@@ -246,7 +265,7 @@ export default function BillingPage() {
                   Cerrar
                 </Button>
               )}
-              <Button
+              <Button controlKey="ui.app.app.billing.page.button.3"
                 size="sm"
                 variant="ghost"
                 onClick={(e) => {
@@ -257,7 +276,7 @@ export default function BillingPage() {
                 <RefreshCw className="h-3.5 w-3.5" />
                 Reprocesar
               </Button>
-              <Button
+              <Button controlKey="ui.app.app.billing.page.button.4"
                 size="sm"
                 variant="ghost"
                 onClick={(e) => {
@@ -280,14 +299,14 @@ export default function BillingPage() {
       header: "Inicio",
       size: 140,
       cell: ({ getValue }) => (
-        <span className="text-[12px] text-[#5B6472]">{formatDateTime(getValue() as string)}</span>
+        <span className="text-[12px] text-muted">{formatDateTime(getValue() as string)}</span>
       ),
     },
     {
       accessorKey: "billingCycleLabel",
       header: "Ciclo",
       cell: ({ getValue }) => (
-        <span className="text-[13px] text-[#3A3F4B]">{(getValue() as string | null) ?? "—"}</span>
+        <span className="text-[13px] text-foreground-secondary">{(getValue() as string | null) ?? "—"}</span>
       ),
     },
     {
@@ -299,7 +318,7 @@ export default function BillingPage() {
         const isOk = s === "Completed" || s === "Success";
         const isErr = s === "Failed" || s === "Error";
         return (
-          <span className={cn("flex items-center gap-1 text-[12px] font-600", isOk ? "text-[#0E9F6E]" : isErr ? "text-[#B6452C]" : "text-[#B7791F]")}>
+          <span className={cn("flex items-center gap-1 text-[12px] font-semibold", isOk ? "text-success" : isErr ? "text-danger" : "text-warning")}>
             {isOk ? <CheckCircle2 className="h-3.5 w-3.5" /> : isErr ? <AlertCircle className="h-3.5 w-3.5" /> : <Loader2 className="h-3.5 w-3.5 animate-spin" />}
             {s}
           </span>
@@ -317,7 +336,7 @@ export default function BillingPage() {
       header: "Fin",
       size: 140,
       cell: ({ getValue }) => (
-        <span className="text-[12px] text-[#5B6472]">
+        <span className="text-[12px] text-muted">
           {(getValue() as string | null) ? formatDateTime(getValue() as string) : "—"}
         </span>
       ),
@@ -328,26 +347,26 @@ export default function BillingPage() {
       cell: ({ getValue }) => {
         const e = getValue() as string | null;
         return e ? (
-          <span className="truncate text-[12px] text-[#B6452C]" title={e}>{e}</span>
-        ) : <span className="text-[#5B6472]">—</span>;
+          <span className="truncate text-[12px] text-danger" title={e}>{e}</span>
+        ) : <span className="text-muted">—</span>;
       },
     },
   ];
 
-  const hasItemFilters = !!statusFilter || !!cycleIdFilter;
+  const hasItemFilters = !!statusFilter || !!cycleIdFilter || !!dueDateFromFilter || !!dueDateToFilter || !!clientIdFilter || !!currencyFilter || outstandingOnly;
 
   return (
     <div>
       {/* Header */}
       <div className="mb-5 flex items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-[22px] font-700 text-[#16181D]">Facturación</h1>
-          <p className="mt-0.5 text-[13px] text-[#5B6472]">
+          <h1 className="font-display text-[22px] font-bold text-foreground">Facturación</h1>
+          <p className="mt-0.5 text-[13px] text-muted">
             Motor de cargos y ciclos de cobro
           </p>
         </div>
         <Can permission="ManageBilling">
-          <Button onClick={() => setGenerateOpen(true)} size="md">
+          <Button controlKey="ui.app.app.billing.page.button.5" onClick={() => setGenerateOpen(true)} size="md">
             <Play className="h-4 w-4" />
             Generar facturación
           </Button>
@@ -356,29 +375,31 @@ export default function BillingPage() {
 
       <Tabs defaultTab="items">
         <TabList>
-          <Tab id="items">
+          <Tab controlKey="ui.app.app.billing.page.tab.1" id="items">
             Cargos
             {itemsData && itemsData.totalCount > 0 && (
-              <span className="ml-1.5 rounded-full bg-[#E3E6EC] px-1.5 py-0.5 text-[10px] font-700 text-[#5B6472]">
+              <span className="ml-1.5 rounded-full bg-border px-1.5 py-0.5 text-[10px] font-bold text-muted">
                 {itemsData.totalCount}
               </span>
             )}
           </Tab>
-          <Tab id="cycles">
+          <Tab controlKey="ui.app.app.billing.page.tab.2" id="cycles">
             Ciclos
             {cycles.length > 0 && (
-              <span className="ml-1.5 rounded-full bg-[#E3E6EC] px-1.5 py-0.5 text-[10px] font-700 text-[#5B6472]">
+              <span className="ml-1.5 rounded-full bg-border px-1.5 py-0.5 text-[10px] font-bold text-muted">
                 {cycles.length}
               </span>
             )}
           </Tab>
-          <Tab id="logs">Registro de generación</Tab>
+          <Tab controlKey="ui.app.app.billing.page.tab.3" id="logs">Registro de generación</Tab>
         </TabList>
 
         {/* ── CARGOS ── */}
         <TabPanel id="items">
           <div className="mb-4 flex flex-wrap items-center gap-3">
-            <Select
+            {outstandingOnly && <Badge variant="saffron">Sólo saldos pendientes</Badge>}
+            {currencyFilter && <Badge variant="muted">Moneda: {currencyFilter}</Badge>}
+            <Select controlKey="ui.app.app.billing.page.select.1"
               label=""
               value={statusFilter}
               onValueChange={(v) => { setStatusFilter(v as BillingItemStatus | ""); setItemsPage(1); }}
@@ -391,7 +412,7 @@ export default function BillingPage() {
             </Select>
 
             {cycles.length > 0 && (
-              <Select
+              <Select controlKey="ui.app.app.billing.page.select.2"
                 label=""
                 value={cycleIdFilter}
                 onValueChange={(v) => { setCycleIdFilter(v); setItemsPage(1); }}
@@ -403,10 +424,13 @@ export default function BillingPage() {
               </Select>
             )}
 
+            <input data-ui-control="billing.filters.due-from" data-ui-permission="ViewPayments" type="date" value={dueDateFromFilter} onChange={(event) => { setDueDateFromFilter(event.target.value); setItemsPage(1); }} aria-label="Vencimiento desde" className="min-h-11 rounded-input border border-border-strong bg-field px-3 text-xs text-foreground" />
+            <input data-ui-control="billing.filters.due-to" data-ui-permission="ViewPayments" type="date" value={dueDateToFilter} onChange={(event) => { setDueDateToFilter(event.target.value); setItemsPage(1); }} aria-label="Vencimiento hasta" className="min-h-11 rounded-input border border-border-strong bg-field px-3 text-xs text-foreground" />
+
             {hasItemFilters && (
-              <button
-                onClick={() => { setStatusFilter(""); setCycleIdFilter(""); setItemsPage(1); }}
-                className="text-[12px] text-[#5B6472] hover:text-[#0F5C6B] underline"
+              <button data-ui-control="ui.app.app.billing.page.button.6"
+                onClick={() => { setStatusFilter(""); setCycleIdFilter(""); setDueDateFromFilter(""); setDueDateToFilter(""); setClientIdFilter(""); setCurrencyFilter(""); setOutstandingOnly(false); setItemsPage(1); }}
+                className="text-[12px] text-muted hover:text-action underline"
               >
                 Limpiar
               </button>
@@ -435,7 +459,7 @@ export default function BillingPage() {
         {/* ── CICLOS ── */}
         <TabPanel id="cycles">
           <div className="mb-4 flex items-center gap-3">
-            <Select
+            <Select controlKey="ui.app.app.billing.page.select.3"
               label=""
               value={cyclesYear}
               onValueChange={setCyclesYear}
@@ -458,7 +482,7 @@ export default function BillingPage() {
         {/* ── LOGS ── */}
         <TabPanel id="logs">
           <div className="mb-4 flex items-center gap-3">
-            <Select
+            <Select controlKey="ui.app.app.billing.page.select.4"
               label=""
               value={logsYear}
               onValueChange={setLogsYear}

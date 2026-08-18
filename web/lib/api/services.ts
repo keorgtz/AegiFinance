@@ -25,29 +25,29 @@ function toQuery(params: GetServicesParams): string {
 
 export const servicesApi = {
   list: (params: GetServicesParams = {}) =>
-    api.get<PaginatedList<ServiceListDto>>(`/api/services${toQuery(params)}`),
+    api.get<PaginatedList<ServiceListDto>>(`/services${toQuery(params)}`),
 
   getById: (id: string) =>
-    api.get<ServiceDetailDto>(`/api/services/${id}`),
+    api.get<ServiceDetailDto>(`/services/${id}`),
 
   create: (data: CreateServiceRequest) =>
-    api.post<ServiceDto>("/api/services", data),
+    api.post<ServiceDto>("/services", data),
 
   update: (id: string, data: UpdateServiceRequest) =>
-    api.put<ServiceDto>(`/api/services/${id}`, data),
+    api.put<ServiceDto>(`/services/${id}`, data),
 
   delete: (id: string) =>
-    api.delete<void>(`/api/services/${id}`),
+    api.delete<void>(`/services/${id}`),
 
   activate: (id: string) =>
-    api.post<void>(`/api/services/${id}/activate`, {}),
+    api.post<void>(`/services/${id}/activate`, {}),
 
   deactivate: (id: string) =>
-    api.post<void>(`/api/services/${id}/deactivate`, {}),
+    api.post<void>(`/services/${id}/deactivate`, {}),
 
   getPriceHistory: (id: string) =>
-    api.get<ServicePriceHistoryDto[]>(`/api/services/${id}/price-history`),
+    api.get<ServicePriceHistoryDto[]>(`/services/${id}/price-history`),
 
   addPriceHistory: (id: string, data: AddPriceHistoryRequest) =>
-    api.post<ServicePriceHistoryDto>(`/api/services/${id}/price-history`, data),
+    api.post<ServicePriceHistoryDto>(`/services/${id}/price-history`, data),
 };

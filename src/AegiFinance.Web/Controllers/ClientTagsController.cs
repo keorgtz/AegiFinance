@@ -28,12 +28,14 @@ public class ClientTagsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "ManageClients")]
     public async Task<ActionResult<ClientTagDto>> Create(CreateClientTagCommand command, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(command, cancellationToken));
     }
 
     [HttpPut("{id:guid}")]
+    [Authorize(Policy = "ManageClients")]
     public async Task<ActionResult<ClientTagDto>> Update(Guid id, UpdateClientTagCommand command, CancellationToken cancellationToken)
     {
         command.Id = id;
@@ -41,6 +43,7 @@ public class ClientTagsController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Policy = "ManageClients")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         await _mediator.Send(new DeleteClientTagCommand(id), cancellationToken);

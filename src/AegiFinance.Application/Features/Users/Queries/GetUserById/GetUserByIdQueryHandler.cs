@@ -41,6 +41,9 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserDto
             IsActive = user.IsActive,
             EmailConfirmed = user.EmailConfirmed,
             LastLoginAt = user.LastLoginAt,
+            LockoutEnd = user.LockoutEnd,
+            MustChangePassword = user.MustChangePassword,
+            ActiveSessionCount = await _context.UserSessions.CountAsync(session => session.UserId == user.Id && session.RevokedAt == null && session.ExpiresAt > DateTime.UtcNow, cancellationToken),
             Roles = user.Roles.Select(r => r.Name).ToList(),
             Permissions = permissions.ToList()
         };

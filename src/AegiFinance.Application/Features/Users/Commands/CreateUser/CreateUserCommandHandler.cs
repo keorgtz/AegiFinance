@@ -39,6 +39,8 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserD
             ClientId = request.ClientId,
             IsActive = true,
             EmailConfirmed = false,
+            MustChangePassword = true,
+            PasswordChangedAt = DateTime.UtcNow,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };

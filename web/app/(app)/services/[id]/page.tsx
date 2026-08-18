@@ -43,7 +43,7 @@ export default function ServiceDetailPage() {
   if (isLoading) {
     return (
       <div className="flex h-40 items-center justify-center">
-        <Spinner className="text-[#0F5C6B]" />
+        <Spinner className="text-action" />
       </div>
     );
   }
@@ -51,8 +51,8 @@ export default function ServiceDetailPage() {
   if (!service) {
     return (
       <div className="flex h-40 flex-col items-center justify-center gap-3">
-        <p className="text-[14px] text-[#5B6472]">Servicio no encontrado.</p>
-        <Button variant="ghost" onClick={() => router.back()}>
+        <p className="text-[14px] text-muted">Servicio no encontrado.</p>
+        <Button controlKey="ui.app.app.services.id.page.button.1" variant="ghost" onClick={() => router.back()}>
           <ArrowLeft className="h-4 w-4" />
           Volver
         </Button>
@@ -65,14 +65,14 @@ export default function ServiceDetailPage() {
       accessorKey: "effectiveDate",
       header: "Fecha efectiva",
       cell: ({ getValue }) => (
-        <span className="text-[13px] text-[#3A3F4B]">{formatDate(getValue() as string)}</span>
+        <span className="text-[13px] text-foreground-secondary">{formatDate(getValue() as string)}</span>
       ),
     },
     {
       accessorKey: "price",
       header: "Precio",
       cell: ({ row }) => (
-        <span className="font-600 text-[#16181D]">
+        <span className="font-semibold text-foreground">
           {formatAmount(row.original.price, row.original.currency)}
         </span>
       ),
@@ -81,7 +81,7 @@ export default function ServiceDetailPage() {
       accessorKey: "reason",
       header: "Motivo",
       cell: ({ getValue }) => (
-        <span className="text-[13px] text-[#5B6472]">{(getValue() as string | null) ?? "—"}</span>
+        <span className="text-[13px] text-muted">{(getValue() as string | null) ?? "—"}</span>
       ),
     },
     {
@@ -89,7 +89,7 @@ export default function ServiceDetailPage() {
       header: "Registrado",
       size: 130,
       cell: ({ getValue }) => (
-        <span className="text-[12px] text-[#5B6472]">{formatDate(getValue() as string)}</span>
+        <span className="text-[12px] text-muted">{formatDate(getValue() as string)}</span>
       ),
     },
   ];
@@ -98,9 +98,9 @@ export default function ServiceDetailPage() {
     <div>
       {/* Back + header */}
       <div className="mb-5">
-        <button
+        <button data-ui-control="ui.app.app.services.id.page.button.2"
           onClick={() => router.back()}
-          className="mb-3 inline-flex items-center gap-1.5 text-[12px] text-[#5B6472] hover:text-[#0F5C6B] transition-colors"
+          className="mb-3 inline-flex items-center gap-1.5 text-[12px] text-muted hover:text-action transition-colors"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Catálogo de servicios
@@ -108,12 +108,12 @@ export default function ServiceDetailPage() {
 
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-card bg-[#F5F0FF] text-[#6B46C1]">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-card bg-action-soft text-action">
               <Package className="h-6 w-6" />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="font-display text-[22px] font-700 text-[#16181D] truncate">
+                <h1 className="font-display text-[22px] font-bold text-foreground truncate">
                   {service.name}
                 </h1>
                 <Badge variant={service.isActive ? "jade" : "terracotta"}>
@@ -127,9 +127,9 @@ export default function ServiceDetailPage() {
                 )}
               </div>
               <div className="mt-0.5 flex items-center gap-2 flex-wrap">
-                <span className="font-mono text-[12px] text-[#5B6472]">{service.code}</span>
+                <span className="font-mono text-[12px] text-muted">{service.code}</span>
                 {service.categoryName && (
-                  <span className="text-[12px] text-[#5B6472]">· {service.categoryName}</span>
+                  <span className="text-[12px] text-muted">· {service.categoryName}</span>
                 )}
                 <BillingTypeBadge billingType={service.billingType} />
               </div>
@@ -137,18 +137,18 @@ export default function ServiceDetailPage() {
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
-            <Button
+            <Button controlKey="ui.app.app.services.id.page.button.3"
               variant="secondary"
               size="sm"
               onClick={() => toggleStatus.mutate({ id: service.id, active: !service.isActive })}
             >
               {service.isActive ? (
-                <><ToggleLeft className="h-3.5 w-3.5 text-[#B7791F]" /> Desactivar</>
+                <><ToggleLeft className="h-3.5 w-3.5 text-warning" /> Desactivar</>
               ) : (
-                <><ToggleRight className="h-3.5 w-3.5 text-[#0E9F6E]" /> Activar</>
+                <><ToggleRight className="h-3.5 w-3.5 text-success" /> Activar</>
               )}
             </Button>
-            <Button variant="secondary" size="sm" onClick={() => setEditOpen(true)}>
+            <Button controlKey="ui.app.app.services.id.page.button.4" variant="secondary" size="sm" onClick={() => setEditOpen(true)}>
               <Pencil className="h-3.5 w-3.5" />
               Editar
             </Button>
@@ -159,11 +159,11 @@ export default function ServiceDetailPage() {
       {/* Tabs */}
       <Tabs defaultTab="info">
         <TabList>
-          <Tab id="info">Información</Tab>
-          <Tab id="prices">
+          <Tab controlKey="ui.app.app.services.id.page.tab.1" id="info">Información</Tab>
+          <Tab controlKey="ui.app.app.services.id.page.tab.2" id="prices">
             Historial de precios
             {priceHistory.length > 0 && (
-              <span className="ml-1.5 rounded-full bg-[#E3E6EC] px-1.5 py-0.5 text-[10px] font-700 text-[#5B6472]">
+              <span className="ml-1.5 rounded-full bg-border px-1.5 py-0.5 text-[10px] font-bold text-muted">
                 {priceHistory.length}
               </span>
             )}
@@ -175,10 +175,10 @@ export default function ServiceDetailPage() {
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <InfoCard title="Precio y facturación">
               <InfoRow label="Precio base">
-                <span className="text-[20px] font-700 text-[#16181D]">
+                <span className="text-[20px] font-bold text-foreground">
                   {formatAmount(service.defaultPrice, service.currency)}
                 </span>
-                <span className="ml-1 text-[12px] text-[#5B6472]">{service.currency}</span>
+                <span className="ml-1 text-[12px] text-muted">{service.currency}</span>
               </InfoRow>
               <InfoRow label="Tipo de facturación">
                 <BillingTypeBadge billingType={service.billingType} />
@@ -198,7 +198,7 @@ export default function ServiceDetailPage() {
               </InfoRow>
               {service.categoryName && (
                 <InfoRow label="Categoría">
-                  <span className="text-[13px] text-[#3A3F4B]">{service.categoryName}</span>
+                  <span className="text-[13px] text-foreground-secondary">{service.categoryName}</span>
                 </InfoRow>
               )}
             </InfoCard>
@@ -206,7 +206,7 @@ export default function ServiceDetailPage() {
             {service.description && (
               <div className="col-span-full">
                 <InfoCard title="Descripción">
-                  <p className="whitespace-pre-wrap text-[13px] text-[#3A3F4B]">
+                  <p className="whitespace-pre-wrap text-[13px] text-foreground-secondary">
                     {service.description}
                   </p>
                 </InfoCard>
@@ -218,19 +218,19 @@ export default function ServiceDetailPage() {
         {/* ── TAB: Historial de precios ── */}
         <TabPanel id="prices">
           <div className="mb-4 flex items-center justify-between">
-            <p className="text-[13px] text-[#5B6472]">
+            <p className="text-[13px] text-muted">
               {priceHistory.length === 0
                 ? "Sin cambios de precio registrados."
                 : `${priceHistory.length} entrada${priceHistory.length !== 1 ? "s" : ""} en el historial`}
             </p>
-            <Button size="sm" onClick={() => setPriceFormOpen(true)}>
+            <Button controlKey="ui.app.app.services.id.page.button.5" size="sm" onClick={() => setPriceFormOpen(true)}>
               <Plus className="h-3.5 w-3.5" />
               Registrar cambio
             </Button>
           </div>
 
           {historyLoading ? (
-            <Spinner className="text-[#0F5C6B]" />
+            <Spinner className="text-action" />
           ) : (
             <DataTable
               columns={priceColumns}
@@ -257,8 +257,8 @@ export default function ServiceDetailPage() {
 
 function InfoCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-card border border-[#E3E6EC] bg-white p-4 shadow-dp1">
-      <p className="mb-3 text-[11px] font-700 uppercase tracking-wider text-[#5B6472]">{title}</p>
+    <div className="rounded-card border border-border bg-surface p-4 shadow-dp1">
+      <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-muted">{title}</p>
       <div className="space-y-3">{children}</div>
     </div>
   );
@@ -267,7 +267,7 @@ function InfoCard({ title, children }: { title: string; children: React.ReactNod
 function InfoRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-4">
-      <span className="text-[12px] text-[#5B6472]">{label}</span>
+      <span className="text-[12px] text-muted">{label}</span>
       <div className="flex items-baseline gap-1">{children}</div>
     </div>
   );

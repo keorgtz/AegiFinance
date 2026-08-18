@@ -52,15 +52,15 @@ export function CancelItemDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent title="Cancelar cargo" size="sm">
-        <div className="mb-4 rounded-input border border-[#E3E6EC] bg-[#F7F8FA] p-3">
-          <p className="text-[13px] font-600 text-[#16181D]">{description}</p>
-          <p className="mt-0.5 text-[12px] text-[#5B6472]">{formatAmount(amount, currency)}</p>
+        <div className="mb-4 rounded-input border border-border bg-surface-subtle p-3">
+          <p className="text-[13px] font-semibold text-foreground">{description}</p>
+          <p className="mt-0.5 text-[12px] text-muted">{formatAmount(amount, currency)}</p>
         </div>
-        <p className="mb-4 text-[13px] text-[#5B6472]">
+        <p className="mb-4 text-[13px] text-muted">
           Esta acción cancelará el cargo. Proporciona un motivo para el registro de auditoría.
         </p>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <Textarea
+          <Textarea controlKey="ui.components.modules.billing.cancel.item.dialog.textarea.1"
             {...register("reason")}
             label="Motivo *"
             placeholder="Ej. Error de generación, duplicado, solicitud del cliente…"
@@ -70,9 +70,9 @@ export function CancelItemDialog({
           />
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="secondary">Volver</Button>
+              <Button controlKey="ui.components.modules.billing.cancel.item.dialog.button.1" type="button" variant="secondary">Volver</Button>
             </DialogClose>
-            <Button type="submit" variant="danger" loading={isSubmitting}>
+            <Button controlKey="ui.components.modules.billing.cancel.item.dialog.button.2" type="submit" variant="danger" loading={isSubmitting}>
               Cancelar cargo
             </Button>
           </DialogFooter>

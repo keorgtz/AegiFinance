@@ -49,6 +49,7 @@ public class SubscriptionsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "CreateSubscriptions")]
     public async Task<ActionResult<SubscriptionDto>> Create(CreateSubscriptionCommand command, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(command, cancellationToken);
@@ -56,6 +57,7 @@ public class SubscriptionsController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [Authorize(Policy = "UpdateSubscriptions")]
     public async Task<ActionResult<SubscriptionDto>> Update(Guid id, UpdateSubscriptionCommand command, CancellationToken cancellationToken)
     {
         command.Id = id;
@@ -63,6 +65,7 @@ public class SubscriptionsController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Policy = "DeleteSubscriptions")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         await _mediator.Send(new DeleteSubscriptionCommand(id), cancellationToken);
@@ -70,6 +73,7 @@ public class SubscriptionsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/suspend")]
+    [Authorize(Policy = "ManageSubscriptionLifecycle")]
     public async Task<IActionResult> Suspend(Guid id, SuspendSubscriptionCommand command, CancellationToken cancellationToken)
     {
         command.Id = id;
@@ -78,6 +82,7 @@ public class SubscriptionsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/reactivate")]
+    [Authorize(Policy = "ManageSubscriptionLifecycle")]
     public async Task<IActionResult> Reactivate(Guid id, ReactivateSubscriptionCommand command, CancellationToken cancellationToken)
     {
         command.Id = id;
@@ -86,6 +91,7 @@ public class SubscriptionsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/cancel")]
+    [Authorize(Policy = "ManageSubscriptionLifecycle")]
     public async Task<IActionResult> Cancel(Guid id, CancelSubscriptionCommand command, CancellationToken cancellationToken)
     {
         command.Id = id;
@@ -94,6 +100,7 @@ public class SubscriptionsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/renew")]
+    [Authorize(Policy = "ManageSubscriptionLifecycle")]
     public async Task<IActionResult> Renew(Guid id, RenewSubscriptionCommand command, CancellationToken cancellationToken)
     {
         command.Id = id;
@@ -102,6 +109,7 @@ public class SubscriptionsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/change-price")]
+    [Authorize(Policy = "UpdateSubscriptions")]
     public async Task<ActionResult<SubscriptionDto>> ChangePrice(Guid id, ChangeSubscriptionPriceCommand command, CancellationToken cancellationToken)
     {
         command.Id = id;

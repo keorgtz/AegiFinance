@@ -58,46 +58,46 @@ export function AutoAllocateDialog({ open, onOpenChange, clientId }: AutoAllocat
               className={cn(
                 "flex items-start gap-3 rounded-input border p-3",
                 result.success
-                  ? "border-[#0E9F6E]/30 bg-[#ECFDF5]"
-                  : "border-[#B6452C]/30 bg-[#FEF2F2]"
+                  ? "border-success/30 bg-success-soft"
+                  : "border-danger/30 bg-danger-soft"
               )}
             >
               {result.success ? (
-                <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#0E9F6E]" />
+                <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-success" />
               ) : (
-                <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#B6452C]" />
+                <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-danger" />
               )}
               <div className="space-y-1">
-                <p className="text-[13px] font-600 text-[#16181D]">
+                <p className="text-[13px] font-semibold text-foreground">
                   {result.success ? "Asignación completada" : "Asignación incompleta"}
                 </p>
-                <p className="text-[12px] text-[#5B6472]">
-                  Asignado: <span className="font-600">{formatAmount(result.allocatedAmount)}</span>
+                <p className="text-[12px] text-muted">
+                  Asignado: <span className="font-semibold">{formatAmount(result.allocatedAmount)}</span>
                   {result.remainingAmount > 0 && (
-                    <> · Restante: <span className="font-600 text-[#B6452C]">{formatAmount(result.remainingAmount)}</span></>
+                    <> · Restante: <span className="font-semibold text-danger">{formatAmount(result.remainingAmount)}</span></>
                   )}
                 </p>
                 {result.errors.length > 0 && (
                   <ul className="mt-1 space-y-0.5">
                     {result.errors.map((e, i) => (
-                      <li key={i} className="text-[12px] text-[#B6452C]">· {e}</li>
+                      <li key={i} className="text-[12px] text-danger">· {e}</li>
                     ))}
                   </ul>
                 )}
               </div>
             </div>
             <DialogFooter>
-              <Button onClick={() => { setResult(null); setSelectedEntryId(""); }}>
+              <Button controlKey="ui.components.modules.allocations.auto.allocate.dialog.button.1" onClick={() => { setResult(null); setSelectedEntryId(""); }}>
                 Nueva asignación
               </Button>
               <DialogClose asChild>
-                <Button variant="secondary">Cerrar</Button>
+                <Button controlKey="ui.components.modules.allocations.auto.allocate.dialog.button.2" variant="secondary">Cerrar</Button>
               </DialogClose>
             </DialogFooter>
           </div>
         ) : (
           <>
-            <p className="mb-4 text-[13px] text-[#5B6472]">
+            <p className="mb-4 text-[13px] text-muted">
               Selecciona un ingreso del cliente. El sistema lo aplicará automáticamente a los
               cargos pendientes más antiguos.
             </p>
@@ -111,9 +111,9 @@ export function AutoAllocateDialog({ open, onOpenChange, clientId }: AutoAllocat
             />
             <DialogFooter>
               <DialogClose asChild>
-                <Button type="button" variant="secondary">Cancelar</Button>
+                <Button controlKey="ui.components.modules.allocations.auto.allocate.dialog.button.3" type="button" variant="secondary">Cancelar</Button>
               </DialogClose>
-              <Button
+              <Button controlKey="ui.components.modules.allocations.auto.allocate.dialog.button.4"
                 onClick={handleSubmit}
                 disabled={!selectedEntryId}
                 loading={autoAllocate.isPending}

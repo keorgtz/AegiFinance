@@ -73,7 +73,7 @@ export function TransferForm({ open, onOpenChange, accounts, defaultFromAccountI
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent title="Registrar transferencia" size="md">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <Select
+          <Select controlKey="ui.components.modules.ledger.transfer.form.select.1"
             label="Cuenta origen *"
             value={watch("fromBankAccountId")}
             onValueChange={(v) => setValue("fromBankAccountId", v)}
@@ -86,7 +86,7 @@ export function TransferForm({ open, onOpenChange, accounts, defaultFromAccountI
               </SelectItem>
             ))}
           </Select>
-          <Select
+          <Select controlKey="ui.components.modules.ledger.transfer.form.select.2"
             label="Cuenta destino *"
             value={watch("toBankAccountId")}
             onValueChange={(v) => setValue("toBankAccountId", v)}
@@ -100,7 +100,7 @@ export function TransferForm({ open, onOpenChange, accounts, defaultFromAccountI
             ))}
           </Select>
           <div className="grid grid-cols-2 gap-3">
-            <Input
+            <Input controlKey="ui.components.modules.ledger.transfer.form.input.1"
               {...register("amount")}
               type="number"
               step="0.01"
@@ -109,19 +109,19 @@ export function TransferForm({ open, onOpenChange, accounts, defaultFromAccountI
               autoFocus
               error={errors.amount?.message}
             />
-            <Input
+            <Input controlKey="ui.components.modules.ledger.transfer.form.input.2"
               {...register("currency")}
               label="Moneda *"
               error={errors.currency?.message}
             />
           </div>
-          <Input
+          <Input controlKey="ui.components.modules.ledger.transfer.form.input.3"
             {...register("date")}
             type="date"
             label="Fecha *"
             error={errors.date?.message}
           />
-          <Input
+          <Input controlKey="ui.components.modules.ledger.transfer.form.input.4"
             {...register("description")}
             label="Descripción"
             placeholder="Ej. Traspaso de fondos…"
@@ -129,9 +129,9 @@ export function TransferForm({ open, onOpenChange, accounts, defaultFromAccountI
           />
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="secondary">Cancelar</Button>
+              <Button controlKey="ui.components.modules.ledger.transfer.form.button.1" type="button" variant="secondary">Cancelar</Button>
             </DialogClose>
-            <Button type="submit" loading={isSubmitting}>Registrar transferencia</Button>
+            <Button controlKey="ui.components.modules.ledger.transfer.form.button.2" type="submit" loading={isSubmitting}>Registrar transferencia</Button>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -16,13 +16,13 @@ interface BadgeProps {
 }
 
 const variantClasses: Record<BadgeVariant, string> = {
-  jade: "bg-[#DFFBEF] text-[#0E9F6E]",
-  saffron: "bg-[#FBEACB] text-[#B7791F]",
-  terracotta: "bg-[#FBE6DC] text-[#B6452C]",
-  periwinkle: "bg-[#E4E9FC] text-[#5469D4]",
-  plum: "bg-[#F8E1EE] text-[#A1336B]",
-  muted: "bg-[#E3E6EC] text-[#5B6472]",
-  primary: "bg-[#C9E8ED] text-[#0F5C6B]",
+  jade: "bg-success-soft text-success",
+  saffron: "bg-warning-soft text-warning",
+  terracotta: "bg-danger-soft text-danger",
+  periwinkle: "bg-info-soft text-info",
+  plum: "bg-accent-soft text-accent",
+  muted: "bg-border text-muted",
+  primary: "bg-action-soft text-action",
 };
 
 export function Badge({ variant = "muted", children, className }: BadgeProps) {
@@ -30,7 +30,7 @@ export function Badge({ variant = "muted", children, className }: BadgeProps) {
     <span
       className={cn(
         "inline-flex items-center rounded-full px-2.5 py-0.5",
-        "text-[10px] font-700 uppercase tracking-wider whitespace-nowrap",
+        "text-[10px] font-bold uppercase tracking-wider whitespace-nowrap",
         variantClasses[variant],
         className
       )}

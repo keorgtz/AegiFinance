@@ -14,6 +14,6 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand>
 
     public Task Handle(LogoutCommand request, CancellationToken cancellationToken)
     {
-        return _authService.LogoutAsync(request.UserId, cancellationToken);
+        return _authService.LogoutAsync(request.UserId, request.SessionId, cancellationToken);
     }
 }

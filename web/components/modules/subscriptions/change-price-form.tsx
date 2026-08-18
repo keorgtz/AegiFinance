@@ -67,12 +67,12 @@ export function ChangePriceForm({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent title="Cambiar precio" size="sm">
-        <p className="mb-4 text-[13px] text-[#5B6472]">
+        <p className="mb-4 text-[13px] text-muted">
           Precio actual: <strong>{formatAmount(currentPrice, currency)}</strong>
         </p>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
-            <Input
+            <Input controlKey="ui.components.modules.subscriptions.change.price.form.input.1"
               {...register("newPrice")}
               label="Nuevo precio *"
               type="number"
@@ -82,20 +82,20 @@ export function ChangePriceForm({
               autoFocus
               error={errors.newPrice?.message}
             />
-            <Input
+            <Input controlKey="ui.components.modules.subscriptions.change.price.form.input.2"
               label="Moneda"
               value={currency}
               readOnly
               disabled
             />
           </div>
-          <Input
+          <Input controlKey="ui.components.modules.subscriptions.change.price.form.input.3"
             {...register("effectiveDate")}
             label="Fecha efectiva *"
             type="date"
             error={errors.effectiveDate?.message}
           />
-          <Textarea
+          <Textarea controlKey="ui.components.modules.subscriptions.change.price.form.textarea.1"
             {...register("reason")}
             label="Motivo"
             placeholder="Ej. Ajuste tarifario Q3 2026"
@@ -103,9 +103,9 @@ export function ChangePriceForm({
           />
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="secondary">Cancelar</Button>
+              <Button controlKey="ui.components.modules.subscriptions.change.price.form.button.1" type="button" variant="secondary">Cancelar</Button>
             </DialogClose>
-            <Button type="submit" loading={isSubmitting}>Actualizar precio</Button>
+            <Button controlKey="ui.components.modules.subscriptions.change.price.form.button.2" type="submit" loading={isSubmitting}>Actualizar precio</Button>
           </DialogFooter>
         </form>
       </DialogContent>

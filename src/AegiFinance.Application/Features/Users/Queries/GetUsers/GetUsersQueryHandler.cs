@@ -56,6 +56,9 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, PaginatedList
                 IsActive = u.IsActive,
                 EmailConfirmed = u.EmailConfirmed,
                 LastLoginAt = u.LastLoginAt,
+                LockoutEnd = u.LockoutEnd,
+                MustChangePassword = u.MustChangePassword,
+                ActiveSessionCount = _context.UserSessions.Count(session => session.UserId == u.Id && session.RevokedAt == null && session.ExpiresAt > DateTime.UtcNow),
                 Roles = u.Roles.Select(r => r.Name).ToList()
             });
 

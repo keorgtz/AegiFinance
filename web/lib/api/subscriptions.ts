@@ -30,50 +30,50 @@ function toQuery(p: GetSubscriptionsParams): string {
 
 export const subscriptionsApi = {
   list: (params: GetSubscriptionsParams = {}) =>
-    api.get<PaginatedList<SubscriptionListDto>>(`/api/subscriptions${toQuery(params)}`),
+    api.get<PaginatedList<SubscriptionListDto>>(`/subscriptions${toQuery(params)}`),
 
   getById: (id: string) =>
-    api.get<SubscriptionDetailDto>(`/api/subscriptions/${id}`),
+    api.get<SubscriptionDetailDto>(`/subscriptions/${id}`),
 
   create: (data: CreateSubscriptionRequest) =>
-    api.post<SubscriptionDto>("/api/subscriptions", data),
+    api.post<SubscriptionDto>("/subscriptions", data),
 
   update: (id: string, data: UpdateSubscriptionRequest) =>
-    api.put<SubscriptionDto>(`/api/subscriptions/${id}`, data),
+    api.put<SubscriptionDto>(`/subscriptions/${id}`, data),
 
   delete: (id: string) =>
-    api.delete<void>(`/api/subscriptions/${id}`),
+    api.delete<void>(`/subscriptions/${id}`),
 
   suspend: (id: string, data: SubscriptionActionRequest) =>
-    api.post<void>(`/api/subscriptions/${id}/suspend`, data),
+    api.post<void>(`/subscriptions/${id}/suspend`, data),
 
   reactivate: (id: string, data: SubscriptionActionRequest) =>
-    api.post<void>(`/api/subscriptions/${id}/reactivate`, data),
+    api.post<void>(`/subscriptions/${id}/reactivate`, data),
 
   cancel: (id: string, data: SubscriptionActionRequest) =>
-    api.post<void>(`/api/subscriptions/${id}/cancel`, data),
+    api.post<void>(`/subscriptions/${id}/cancel`, data),
 
   renew: (id: string, data: SubscriptionActionRequest) =>
-    api.post<void>(`/api/subscriptions/${id}/renew`, data),
+    api.post<void>(`/subscriptions/${id}/renew`, data),
 
   changePrice: (id: string, data: ChangePriceRequest) =>
-    api.post<SubscriptionDto>(`/api/subscriptions/${id}/change-price`, data),
+    api.post<SubscriptionDto>(`/subscriptions/${id}/change-price`, data),
 
   getPriceHistory: (id: string) =>
-    api.get<SubscriptionPriceHistoryDto[]>(`/api/subscriptions/${id}/price-history`),
+    api.get<SubscriptionPriceHistoryDto[]>(`/subscriptions/${id}/price-history`),
 
   getHistory: (id: string) =>
-    api.get<SubscriptionChangeLogDto[]>(`/api/subscriptions/${id}/history`),
+    api.get<SubscriptionChangeLogDto[]>(`/subscriptions/${id}/history`),
 
   getByClient: (clientId: string) =>
-    api.get<SubscriptionListDto[]>(`/api/subscriptions/by-client/${clientId}`),
+    api.get<SubscriptionListDto[]>(`/subscriptions/by-client/${clientId}`),
 
   getPermissions: (id: string) =>
-    api.get<SubscriptionPermissionDto[]>(`/api/subscriptions/${id}/permissions`),
+    api.get<SubscriptionPermissionDto[]>(`/subscriptions/${id}/permissions`),
 
   addPermission: (id: string, data: AddSubscriptionPermissionRequest) =>
-    api.post<SubscriptionPermissionDto>(`/api/subscriptions/${id}/permissions`, data),
+    api.post<SubscriptionPermissionDto>(`/subscriptions/${id}/permissions`, data),
 
   deletePermission: (id: string, permissionId: string) =>
-    api.delete<void>(`/api/subscriptions/${id}/permissions/${permissionId}`),
+    api.delete<void>(`/subscriptions/${id}/permissions/${permissionId}`),
 };

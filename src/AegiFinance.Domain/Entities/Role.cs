@@ -9,5 +9,6 @@ public class Role : BaseEntity
     public UserType? UserType { get; set; }
 
     public List<User> Users { get; set; } = new List<User>();
-    public List<Permission> Permissions { get; set; } = new List<Permission>();
+    public List<RolePermission> RolePermissions { get; set; } = new();
+    public List<UiControlPolicy> UiControlPolicies { get; set; } = new();
 }

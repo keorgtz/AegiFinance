@@ -75,6 +75,27 @@ public class AuditInterceptor : SaveChangesInterceptor
             }
         }
 
+        foreach (var entry in context.ChangeTracker.Entries<RolePermission>()
+                     .Where(entry => entry.State is EntityState.Added or EntityState.Modified or EntityState.Deleted))
+        {
+            var action = entry.State switch
+            {
+                EntityState.Added => "Granted",
+                EntityState.Deleted => "Revoked",
+                _ => entry.Entity.IsGranted ? "Granted" : "Denied"
+            };
+            auditLogs.Add(new AuditLog
+            {
+                Id = Guid.NewGuid(),
+                EntityType = nameof(RolePermission),
+                EntityId = $"{entry.Entity.RoleId}:{entry.Entity.PermissionId}",
+                Action = action,
+                Changes = JsonSerializer.Serialize(new { entry.Entity.RoleId, entry.Entity.PermissionId, entry.Entity.IsGranted }),
+                UserId = currentUserId,
+                Timestamp = now
+            });
+        }
+
         if (auditLogs.Any())
         {
             context.Set<AuditLog>().AddRange(auditLogs);
@@ -103,6 +124,10 @@ public class AuditInterceptor : SaveChangesInterceptor
 
         foreach (var property in entry.OriginalValues.Properties)
         {
+            if (property.Name.Contains("Token", StringComparison.OrdinalIgnoreCase) || property.Name.Contains("Password", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
             var original = entry.OriginalValues[property];
             var current = entry.CurrentValues[property];
 

@@ -18,7 +18,8 @@ public class GetRoleByIdQueryHandler : IRequestHandler<GetRoleByIdQuery, RoleDet
     {
         var role = await _context.Roles
             .AsNoTracking()
-            .Include(r => r.Permissions)
+            .Include(r => r.RolePermissions)
+                .ThenInclude(rolePermission => rolePermission.Permission)
             .FirstOrDefaultAsync(r => r.Id == request.Id, cancellationToken);
 
         if (role is null)
@@ -32,12 +33,17 @@ public class GetRoleByIdQueryHandler : IRequestHandler<GetRoleByIdQuery, RoleDet
             Name = role.Name,
             Description = role.Description,
             UserType = role.UserType?.ToString(),
-            Permissions = role.Permissions.Select(p => new PermissionDto
+            Permissions = role.RolePermissions.Select(rolePermission => new PermissionDto
             {
-                Id = p.Id,
-                Code = p.Code,
-                Name = p.Name,
-                Description = p.Description
+                Id = rolePermission.Permission.Id,
+                Code = rolePermission.Permission.Code,
+                Name = rolePermission.Permission.Name,
+                Description = rolePermission.Permission.Description,
+                Module = rolePermission.Permission.Module,
+                Action = rolePermission.Permission.Action,
+                Kind = rolePermission.Permission.Kind.ToString(),
+                IsSystemGenerated = rolePermission.Permission.IsSystemGenerated,
+                IsActive = rolePermission.Permission.IsActive
             }).ToList()
         };
     }

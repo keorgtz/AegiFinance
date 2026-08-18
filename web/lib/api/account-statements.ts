@@ -17,11 +17,11 @@ function qs(params: object): string {
 
 export const accountStatementsApi = {
   getStatement: (clientId: string, params: GetClientStatementParams = {}) =>
-    api.get<AccountStatementDto>(`/api/accountstatements/client/${clientId}${qs(params)}`),
+    api.get<AccountStatementDto>(`/accountstatements/client/${clientId}${qs(params)}`),
 
   getSummary: (clientId: string, params: GetClientStatementParams = {}) =>
-    api.get<FinancialSummaryDto>(`/api/accountstatements/client/${clientId}/summary${qs(params)}`),
+    api.get<FinancialSummaryDto>(`/accountstatements/client/${clientId}/summary${qs(params)}`),
 
   getMovements: (clientId: string, params: GetClientStatementParams = {}) =>
-    api.get<AccountStatementItemDto[]>(`/api/accountstatements/client/${clientId}/movements${qs(params)}`),
+    api.get<AccountStatementItemDto[]>(`/accountstatements/client/${clientId}/movements${qs(params)}`),
 };

@@ -24,7 +24,12 @@ public class GetPermissionsQueryHandler : IRequestHandler<GetPermissionsQuery, L
                 Id = p.Id,
                 Code = p.Code,
                 Name = p.Name,
-                Description = p.Description
+                Description = p.Description,
+                Module = p.Module,
+                Action = p.Action,
+                Kind = p.Kind.ToString(),
+                IsSystemGenerated = p.IsSystemGenerated,
+                IsActive = p.IsActive
             })
             .ToListAsync(cancellationToken);
     }

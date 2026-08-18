@@ -2,6 +2,7 @@ using AegiFinance.Application.Common.Extensions;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Common.Models;
 using AegiFinance.Application.Dtos;
+using AegiFinance.Application.Features.Dashboard;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +27,7 @@ public class GetBillingItemsQueryHandler : IRequestHandler<GetBillingItemsQuery,
             .Include(bi => bi.Subscription)
             .AsQueryable();
 
+        Guid? clientId = request.ClientId;
         if (_currentUserService.IsClientUser())
         {
             if (!_currentUserService.ClientId.HasValue)
@@ -33,31 +35,23 @@ public class GetBillingItemsQueryHandler : IRequestHandler<GetBillingItemsQuery,
                 return new PaginatedList<BillingItemListDto>(new List<BillingItemListDto>(), 0, request.PageNumber, request.PageSize);
             }
 
-            query = query.Where(bi => bi.ClientId == _currentUserService.ClientId.Value);
+            clientId = _currentUserService.ClientId.Value;
         }
-        else if (request.ClientId.HasValue)
-        {
-            query = query.Where(bi => bi.ClientId == request.ClientId.Value);
-        }
+
+        query = query.ApplyOperationalScope(clientId, request.DueDateFrom, request.DueDateTo, request.Currency?.ToUpperInvariant());
 
         if (request.BillingCycleId.HasValue)
         {
             query = query.Where(bi => bi.BillingCycleId == request.BillingCycleId.Value);
         }
 
-        if (request.Status.HasValue)
+        if (request.OutstandingOnly)
+        {
+            query = query.Outstanding();
+        }
+        else if (request.Status.HasValue)
         {
             query = query.Where(bi => bi.Status == request.Status.Value);
-        }
-
-        if (request.DueDateFrom.HasValue)
-        {
-            query = query.Where(bi => bi.DueDate >= request.DueDateFrom.Value);
-        }
-
-        if (request.DueDateTo.HasValue)
-        {
-            query = query.Where(bi => bi.DueDate <= request.DueDateTo.Value);
         }
 
         query = query.OrderByDescending(bi => bi.DueDate);

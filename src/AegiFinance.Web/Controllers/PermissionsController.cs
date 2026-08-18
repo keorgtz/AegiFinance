@@ -22,6 +22,7 @@ public class PermissionsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "ManageRoles")]
     public async Task<ActionResult<List<PermissionDto>>> GetAll(CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(new GetPermissionsQuery(), cancellationToken));

@@ -79,7 +79,7 @@ export function PriceHistoryForm({
       <DialogContent title="Registrar cambio de precio" size="sm">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
-            <Input
+            <Input controlKey="ui.components.modules.services.price.history.form.input.1"
               {...register("price")}
               label="Nuevo precio *"
               type="number"
@@ -90,20 +90,20 @@ export function PriceHistoryForm({
               autoFocus
               error={errors.price?.message}
             />
-            <Input
+            <Input controlKey="ui.components.modules.services.price.history.form.input.2"
               {...register("currency")}
               label="Moneda *"
               placeholder="MXN"
               error={errors.currency?.message}
             />
           </div>
-          <Input
+          <Input controlKey="ui.components.modules.services.price.history.form.input.3"
             {...register("effectiveDate")}
             label="Fecha efectiva *"
             type="date"
             error={errors.effectiveDate?.message}
           />
-          <Textarea
+          <Textarea controlKey="ui.components.modules.services.price.history.form.textarea.1"
             {...register("reason")}
             label="Motivo"
             placeholder="Ej. Ajuste por inflación Q3 2026"
@@ -112,9 +112,9 @@ export function PriceHistoryForm({
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="secondary">Cancelar</Button>
+              <Button controlKey="ui.components.modules.services.price.history.form.button.1" type="button" variant="secondary">Cancelar</Button>
             </DialogClose>
-            <Button type="submit" loading={isSubmitting}>Guardar</Button>
+            <Button controlKey="ui.components.modules.services.price.history.form.button.2" type="submit" loading={isSubmitting}>Guardar</Button>
           </DialogFooter>
         </form>
       </DialogContent>

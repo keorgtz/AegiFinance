@@ -20,6 +20,7 @@ public class AuditLogsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "ManageRoles")]
     public async Task<ActionResult<PaginatedList<AuditLogDto>>> GetAll([FromQuery] GetAuditLogsQuery query, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(query, cancellationToken));

@@ -68,11 +68,11 @@ export function AdjustmentForm({ open, onOpenChange, accounts, defaultAccountId 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent title="Registrar ajuste" size="md">
-        <p className="mb-4 text-[13px] text-[#5B6472]">
+        <p className="mb-4 text-[13px] text-muted">
           Usa un importe positivo para incrementar el saldo y negativo para reducirlo.
         </p>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <Select
+          <Select controlKey="ui.components.modules.ledger.adjustment.form.select.1"
             label="Cuenta bancaria *"
             value={watch("bankAccountId")}
             onValueChange={(v) => setValue("bankAccountId", v)}
@@ -86,7 +86,7 @@ export function AdjustmentForm({ open, onOpenChange, accounts, defaultAccountId 
             ))}
           </Select>
           <div className="grid grid-cols-2 gap-3">
-            <Input
+            <Input controlKey="ui.components.modules.ledger.adjustment.form.input.1"
               {...register("amount")}
               type="number"
               step="0.01"
@@ -95,25 +95,25 @@ export function AdjustmentForm({ open, onOpenChange, accounts, defaultAccountId 
               autoFocus
               error={errors.amount?.message}
             />
-            <Input
+            <Input controlKey="ui.components.modules.ledger.adjustment.form.input.2"
               {...register("currency")}
               label="Moneda *"
               error={errors.currency?.message}
             />
           </div>
-          <Input
+          <Input controlKey="ui.components.modules.ledger.adjustment.form.input.3"
             {...register("date")}
             type="date"
             label="Fecha *"
             error={errors.date?.message}
           />
-          <Input
+          <Input controlKey="ui.components.modules.ledger.adjustment.form.input.4"
             {...register("description")}
             label="Descripción *"
             placeholder="Ej. Corrección de saldo apertura"
             error={errors.description?.message}
           />
-          <Textarea
+          <Textarea controlKey="ui.components.modules.ledger.adjustment.form.textarea.1"
             {...register("reason")}
             label="Motivo *"
             placeholder="Ej. Error de captura inicial, diferencia de conciliación…"
@@ -122,9 +122,9 @@ export function AdjustmentForm({ open, onOpenChange, accounts, defaultAccountId 
           />
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="secondary">Cancelar</Button>
+              <Button controlKey="ui.components.modules.ledger.adjustment.form.button.1" type="button" variant="secondary">Cancelar</Button>
             </DialogClose>
-            <Button type="submit" loading={isSubmitting}>Registrar ajuste</Button>
+            <Button controlKey="ui.components.modules.ledger.adjustment.form.button.2" type="submit" loading={isSubmitting}>Registrar ajuste</Button>
           </DialogFooter>
         </form>
       </DialogContent>

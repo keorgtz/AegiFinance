@@ -68,14 +68,14 @@ export default function SubscriptionDetailPage() {
   const [actionState, setActionState] = useState<ActionType | null>(null);
 
   if (isLoading) {
-    return <div className="flex h-40 items-center justify-center"><Spinner className="text-[#0F5C6B]" /></div>;
+    return <div className="flex h-40 items-center justify-center"><Spinner className="text-action" /></div>;
   }
 
   if (!sub) {
     return (
       <div className="flex h-40 flex-col items-center justify-center gap-3">
-        <p className="text-[14px] text-[#5B6472]">Suscripción no encontrada.</p>
-        <Button variant="ghost" onClick={() => router.back()}>
+        <p className="text-[14px] text-muted">Suscripción no encontrada.</p>
+        <Button controlKey="ui.app.app.subscriptions.id.page.button.1" variant="ghost" onClick={() => router.back()}>
           <ArrowLeft className="h-4 w-4" /> Volver
         </Button>
       </div>
@@ -107,7 +107,7 @@ export default function SubscriptionDetailPage() {
       cell: ({ row }) => {
         const up = row.original.newPrice > row.original.oldPrice;
         return (
-          <span className={`flex items-center gap-1 text-[13px] font-600 ${up ? "text-[#B6452C]" : "text-[#0E9F6E]"}`}>
+          <span className={`flex items-center gap-1 text-[13px] font-semibold ${up ? "text-danger" : "text-success"}`}>
             {up ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
             {formatAmount(row.original.oldPrice, sub.currency)} → {formatAmount(row.original.newPrice, sub.currency)}
           </span>
@@ -117,13 +117,13 @@ export default function SubscriptionDetailPage() {
     {
       accessorKey: "reason",
       header: "Motivo",
-      cell: ({ getValue }) => <span className="text-[13px] text-[#5B6472]">{(getValue() as string | null) ?? "—"}</span>,
+      cell: ({ getValue }) => <span className="text-[13px] text-muted">{(getValue() as string | null) ?? "—"}</span>,
     },
     {
       accessorKey: "createdAt",
       header: "Registrado",
       size: 130,
-      cell: ({ getValue }) => <span className="text-[12px] text-[#5B6472]">{formatDate(getValue() as string)}</span>,
+      cell: ({ getValue }) => <span className="text-[12px] text-muted">{formatDate(getValue() as string)}</span>,
     },
   ];
 
@@ -132,7 +132,7 @@ export default function SubscriptionDetailPage() {
       accessorKey: "createdAt",
       header: "Fecha",
       size: 130,
-      cell: ({ getValue }) => <span className="text-[12px] text-[#5B6472]">{formatDateTime(getValue() as string)}</span>,
+      cell: ({ getValue }) => <span className="text-[12px] text-muted">{formatDateTime(getValue() as string)}</span>,
     },
     {
       accessorKey: "changeType",
@@ -145,10 +145,10 @@ export default function SubscriptionDetailPage() {
       header: "Detalle",
       cell: ({ row }) => {
         const { oldValue, newValue } = row.original;
-        if (!oldValue && !newValue) return <span className="text-[#5B6472]">—</span>;
+        if (!oldValue && !newValue) return <span className="text-muted">—</span>;
         return (
-          <span className="text-[13px] text-[#3A3F4B]">
-            {oldValue && <span className="line-through text-[#5B6472] mr-1">{oldValue}</span>}
+          <span className="text-[13px] text-foreground-secondary">
+            {oldValue && <span className="line-through text-muted mr-1">{oldValue}</span>}
             {newValue && <span>{newValue}</span>}
           </span>
         );
@@ -157,7 +157,7 @@ export default function SubscriptionDetailPage() {
     {
       accessorKey: "reason",
       header: "Motivo",
-      cell: ({ getValue }) => <span className="text-[13px] text-[#5B6472]">{(getValue() as string | null) ?? "—"}</span>,
+      cell: ({ getValue }) => <span className="text-[13px] text-muted">{(getValue() as string | null) ?? "—"}</span>,
     },
   ];
 
@@ -165,20 +165,20 @@ export default function SubscriptionDetailPage() {
     {
       accessorKey: "userName",
       header: "Usuario",
-      cell: ({ getValue }) => <span className="font-600 text-[#16181D]">{getValue() as string}</span>,
+      cell: ({ getValue }) => <span className="font-semibold text-foreground">{getValue() as string}</span>,
     },
     {
       id: "remove",
       size: 80,
       cell: ({ row }) => (
-        <Button
+        <Button controlKey="ui.app.app.subscriptions.id.page.button.2"
           variant="ghost"
           size="sm"
           onClick={() =>
             deletePermission.mutate({ subscriptionId: sub.id, permissionId: row.original.id })
           }
         >
-          <Trash2 className="h-3.5 w-3.5 text-[#B6452C]" />
+          <Trash2 className="h-3.5 w-3.5 text-danger" />
         </Button>
       ),
     },
@@ -188,21 +188,21 @@ export default function SubscriptionDetailPage() {
     <div>
       {/* Header */}
       <div className="mb-5">
-        <button onClick={() => router.back()} className="mb-3 inline-flex items-center gap-1.5 text-[12px] text-[#5B6472] hover:text-[#0F5C6B] transition-colors">
+        <button data-ui-control="ui.app.app.subscriptions.id.page.button.3" onClick={() => router.back()} className="mb-3 inline-flex items-center gap-1.5 text-[12px] text-muted hover:text-action transition-colors">
           <ArrowLeft className="h-3.5 w-3.5" /> Suscripciones
         </button>
 
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-card bg-[#EFF1F7] text-[#4A5568]">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-card bg-canvas text-muted">
               <Layers className="h-6 w-6" />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="font-display text-[22px] font-700 text-[#16181D]">{sub.serviceName}</h1>
+                <h1 className="font-display text-[22px] font-bold text-foreground">{sub.serviceName}</h1>
                 <SubscriptionStatusBadge status={sub.status} />
               </div>
-              <div className="mt-0.5 flex items-center gap-2 flex-wrap text-[12px] text-[#5B6472]">
+              <div className="mt-0.5 flex items-center gap-2 flex-wrap text-[12px] text-muted">
                 <span className="font-mono">{sub.code}</span>
                 <span>·</span>
                 <span>{sub.clientName}</span>
@@ -213,26 +213,26 @@ export default function SubscriptionDetailPage() {
 
           <div className="flex shrink-0 flex-wrap items-center gap-2">
             {canSuspend && (
-              <Button variant="secondary" size="sm" onClick={() => setActionState("suspend")}>
+              <Button controlKey="ui.app.app.subscriptions.id.page.button.4" variant="secondary" size="sm" onClick={() => setActionState("suspend")}>
                 Suspender
               </Button>
             )}
             {canReactivate && (
-              <Button variant="secondary" size="sm" onClick={() => setActionState("reactivate")}>
+              <Button controlKey="ui.app.app.subscriptions.id.page.button.5" variant="secondary" size="sm" onClick={() => setActionState("reactivate")}>
                 <RefreshCw className="h-3.5 w-3.5" /> Reactivar
               </Button>
             )}
             {canRenew && (
-              <Button variant="secondary" size="sm" onClick={() => setActionState("renew")}>
+              <Button controlKey="ui.app.app.subscriptions.id.page.button.6" variant="secondary" size="sm" onClick={() => setActionState("renew")}>
                 <RefreshCw className="h-3.5 w-3.5" /> Renovar
               </Button>
             )}
             {canCancel && (
-              <Button variant="danger" size="sm" onClick={() => setActionState("cancel")}>
+              <Button controlKey="ui.app.app.subscriptions.id.page.button.7" variant="danger" size="sm" onClick={() => setActionState("cancel")}>
                 <XCircle className="h-3.5 w-3.5" /> Cancelar
               </Button>
             )}
-            <Button variant="secondary" size="sm" onClick={() => setEditOpen(true)}>
+            <Button controlKey="ui.app.app.subscriptions.id.page.button.8" variant="secondary" size="sm" onClick={() => setEditOpen(true)}>
               <Pencil className="h-3.5 w-3.5" /> Editar
             </Button>
           </div>
@@ -242,25 +242,25 @@ export default function SubscriptionDetailPage() {
       {/* Tabs */}
       <Tabs defaultTab="info">
         <TabList>
-          <Tab id="info">Información</Tab>
-          <Tab id="prices">
+          <Tab controlKey="ui.app.app.subscriptions.id.page.tab.1" id="info">Información</Tab>
+          <Tab controlKey="ui.app.app.subscriptions.id.page.tab.2" id="prices">
             Historial de precios
             {priceHistory.length > 0 && (
-              <span className="ml-1.5 rounded-full bg-[#E3E6EC] px-1.5 py-0.5 text-[10px] font-700 text-[#5B6472]">
+              <span className="ml-1.5 rounded-full bg-border px-1.5 py-0.5 text-[10px] font-bold text-muted">
                 {priceHistory.length}
               </span>
             )}
           </Tab>
-          <Tab id="log">
+          <Tab controlKey="ui.app.app.subscriptions.id.page.tab.3" id="log">
             Cambios
             {changeLogs.length > 0 && (
-              <span className="ml-1.5 rounded-full bg-[#E3E6EC] px-1.5 py-0.5 text-[10px] font-700 text-[#5B6472]">
+              <span className="ml-1.5 rounded-full bg-border px-1.5 py-0.5 text-[10px] font-bold text-muted">
                 {changeLogs.length}
               </span>
             )}
           </Tab>
           <Can permission="ManageUsers">
-            <Tab id="permissions">Visibilidad</Tab>
+            <Tab controlKey="ui.app.app.subscriptions.id.page.tab.4" id="permissions">Visibilidad</Tab>
           </Can>
         </TabList>
 
@@ -269,22 +269,22 @@ export default function SubscriptionDetailPage() {
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <InfoCard title="Precio y facturación">
               <InfoRow label="Precio actual">
-                <span className="text-[20px] font-700 text-[#16181D]">
+                <span className="text-[20px] font-bold text-foreground">
                   {formatAmount(sub.price, sub.currency)}
                 </span>
-                <span className="ml-1 text-[12px] text-[#5B6472]">{sub.currency}</span>
+                <span className="ml-1 text-[12px] text-muted">{sub.currency}</span>
               </InfoRow>
               <InfoRow label="Tipo de facturación">
                 <BillingTypeBadge billingType={sub.billingType} />
               </InfoRow>
               <InfoRow label="Día de corte">
-                <span className="font-600 text-[#16181D]">Día {sub.billingDay}</span>
+                <span className="font-semibold text-foreground">Día {sub.billingDay}</span>
               </InfoRow>
               <InfoRow label="Renovación automática">
                 <Badge variant={sub.autoRenew ? "jade" : "muted"}>{sub.autoRenew ? "Sí" : "No"}</Badge>
               </InfoRow>
-              <div className="mt-3 border-t border-[#F7F8FA] pt-3">
-                <Button size="sm" onClick={() => setPriceOpen(true)}>
+              <div className="mt-3 border-t border-surface-subtle pt-3">
+                <Button controlKey="ui.app.app.subscriptions.id.page.button.9" size="sm" onClick={() => setPriceOpen(true)}>
                   Cambiar precio
                 </Button>
               </div>
@@ -304,7 +304,7 @@ export default function SubscriptionDetailPage() {
             {sub.notes && (
               <div className="col-span-full">
                 <InfoCard title="Notas">
-                  <p className="whitespace-pre-wrap text-[13px] text-[#3A3F4B]">{sub.notes}</p>
+                  <p className="whitespace-pre-wrap text-[13px] text-foreground-secondary">{sub.notes}</p>
                 </InfoCard>
               </div>
             )}
@@ -314,10 +314,10 @@ export default function SubscriptionDetailPage() {
         {/* ── PRICE HISTORY ── */}
         <TabPanel id="prices">
           <div className="mb-4 flex items-center justify-between">
-            <p className="text-[13px] text-[#5B6472]">
+            <p className="text-[13px] text-muted">
               {priceHistory.length === 0 ? "Sin cambios de precio." : `${priceHistory.length} registro${priceHistory.length !== 1 ? "s" : ""}`}
             </p>
-            <Button size="sm" onClick={() => setPriceOpen(true)}>
+            <Button controlKey="ui.app.app.subscriptions.id.page.button.10" size="sm" onClick={() => setPriceOpen(true)}>
               <Plus className="h-3.5 w-3.5" /> Registrar cambio
             </Button>
           </div>
@@ -343,7 +343,7 @@ export default function SubscriptionDetailPage() {
         <Can permission="ManageUsers">
           <TabPanel id="permissions">
             <div className="mb-4 flex items-center justify-between">
-              <p className="text-[13px] text-[#5B6472]">
+              <p className="text-[13px] text-muted">
                 Usuarios con visibilidad sobre esta suscripción en el portal.
               </p>
             </div>
@@ -380,8 +380,8 @@ export default function SubscriptionDetailPage() {
 
 function InfoCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-card border border-[#E3E6EC] bg-white p-4 shadow-dp1">
-      <p className="mb-3 text-[11px] font-700 uppercase tracking-wider text-[#5B6472]">{title}</p>
+    <div className="rounded-card border border-border bg-surface p-4 shadow-dp1">
+      <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-muted">{title}</p>
       <div className="space-y-2.5">{children}</div>
     </div>
   );
@@ -390,8 +390,8 @@ function InfoCard({ title, children }: { title: string; children: React.ReactNod
 function InfoRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-4">
-      <span className="text-[12px] text-[#5B6472] shrink-0">{label}</span>
-      <span className="text-[13px] text-[#3A3F4B]">{children}</span>
+      <span className="text-[12px] text-muted shrink-0">{label}</span>
+      <span className="text-[13px] text-foreground-secondary">{children}</span>
     </div>
   );
 }

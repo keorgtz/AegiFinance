@@ -131,23 +131,23 @@ export function ServiceForm({ open, onOpenChange, editingService }: ServiceFormP
         footer={
           <>
             <DrawerClose asChild>
-              <Button type="button" variant="secondary" onClick={handleClose}>Cancelar</Button>
+              <Button controlKey="ui.components.modules.services.service.form.button.1" type="button" variant="secondary" onClick={handleClose}>Cancelar</Button>
             </DrawerClose>
-            <Button form="service-form" type="submit" loading={isSubmitting}>
+            <Button controlKey="ui.components.modules.services.service.form.button.2" form="service-form" type="submit" loading={isSubmitting}>
               {isEdit ? "Guardar cambios" : "Crear servicio"}
             </Button>
           </>
         }
       >
         <form id="service-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <Input
+          <Input controlKey="ui.components.modules.services.service.form.input.1"
             {...register("name")}
             label="Nombre *"
             placeholder="Ej. Hosting mensual básico"
             autoFocus
             error={errors.name?.message}
           />
-          <Textarea
+          <Textarea controlKey="ui.components.modules.services.service.form.textarea.1"
             {...register("description")}
             label="Descripción"
             placeholder="Descripción del servicio para el catálogo público…"
@@ -155,7 +155,7 @@ export function ServiceForm({ open, onOpenChange, editingService }: ServiceFormP
           />
 
           <div className="grid grid-cols-2 gap-3">
-            <Select
+            <Select controlKey="ui.components.modules.services.service.form.select.1"
               label="Categoría"
               value={categoryId ?? ""}
               onValueChange={(v) => setValue("categoryId", v)}
@@ -165,7 +165,7 @@ export function ServiceForm({ open, onOpenChange, editingService }: ServiceFormP
                 <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
               ))}
             </Select>
-            <Select
+            <Select controlKey="ui.components.modules.services.service.form.select.2"
               label="Tipo de facturación *"
               value={billingType}
               onValueChange={(v) => setValue("billingType", v as BillingType)}
@@ -178,7 +178,7 @@ export function ServiceForm({ open, onOpenChange, editingService }: ServiceFormP
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <Input
+            <Input controlKey="ui.components.modules.services.service.form.input.2"
               {...register("defaultPrice")}
               label="Precio por defecto *"
               type="number"
@@ -188,7 +188,7 @@ export function ServiceForm({ open, onOpenChange, editingService }: ServiceFormP
               placeholder="0.00"
               error={errors.defaultPrice?.message}
             />
-            <Input
+            <Input controlKey="ui.components.modules.services.service.form.input.3"
               {...register("currency")}
               label="Moneda *"
               placeholder="MXN"
@@ -196,7 +196,7 @@ export function ServiceForm({ open, onOpenChange, editingService }: ServiceFormP
             />
           </div>
 
-          <hr className="border-[#F7F8FA]" />
+          <hr className="border-surface-subtle" />
 
           <div className="space-y-3">
             <SwitchRow
@@ -234,18 +234,18 @@ function SwitchRow({
   onCheckedChange: (v: boolean) => void;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-input border border-[#E3E6EC] px-3 py-2.5">
+    <div className="flex items-center justify-between rounded-input border border-border px-3 py-2.5">
       <label htmlFor={id} className="cursor-pointer">
-        <p className="text-[13px] font-500 text-[#3A3F4B]">{label}</p>
-        <p className="text-[11px] text-[#5B6472]">{description}</p>
+        <p className="text-[13px] font-medium text-foreground-secondary">{label}</p>
+        <p className="text-[11px] text-muted">{description}</p>
       </label>
       <RadixSwitch.Root
         id={id}
         checked={checked}
         onCheckedChange={onCheckedChange}
-        className="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors data-[state=checked]:bg-[#0F5C6B] data-[state=unchecked]:bg-[#E3E6EC]"
+        className="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors data-[state=checked]:bg-action data-[state=unchecked]:bg-border"
       >
-        <RadixSwitch.Thumb className="block h-4 w-4 rounded-full bg-white shadow-dp1 transition-transform data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0.5" />
+        <RadixSwitch.Thumb className="block h-4 w-4 rounded-full bg-surface shadow-dp1 transition-transform data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0.5" />
       </RadixSwitch.Root>
     </div>
   );

@@ -77,19 +77,19 @@ export function RoleForm({ open, onOpenChange, editingRole }: RoleFormProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent title={isEdit ? "Editar rol" : "Nuevo rol"} size="sm">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <Input
+          <Input controlKey="ui.components.modules.roles.role.form.input.1"
             {...register("name")}
             label="Nombre del rol"
             placeholder="Ej. Admin, Supervisor"
             autoFocus
             error={errors.name?.message}
           />
-          <Input
+          <Input controlKey="ui.components.modules.roles.role.form.input.2"
             {...register("description")}
             label="Descripción (opcional)"
             placeholder="Ej. Acceso total al sistema"
           />
-          <Select
+          <Select controlKey="ui.components.modules.roles.role.form.select.1"
             label="Aplica para (opcional)"
             value={userType ?? ""}
             onValueChange={(v) => setValue("userType", v as "" | "Administrator" | "Client")}
@@ -101,9 +101,9 @@ export function RoleForm({ open, onOpenChange, editingRole }: RoleFormProps) {
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="secondary">Cancelar</Button>
+              <Button controlKey="ui.components.modules.roles.role.form.button.1" type="button" variant="secondary">Cancelar</Button>
             </DialogClose>
-            <Button type="submit" loading={isSubmitting}>
+            <Button controlKey="ui.components.modules.roles.role.form.button.2" type="submit" loading={isSubmitting}>
               {isEdit ? "Guardar" : "Crear rol"}
             </Button>
           </DialogFooter>

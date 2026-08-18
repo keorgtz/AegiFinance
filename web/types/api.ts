@@ -12,8 +12,37 @@ export interface UserDto {
   isActive: boolean;
   emailConfirmed: boolean;
   lastLoginAt?: string | null;
+  lockoutEnd?: string | null;
+  mustChangePassword: boolean;
+  activeSessionCount: number;
   roles: string[];
   permissions: string[];
+  uiPolicies: Record<string, UiAccessMode>;
+}
+
+export type UiAccessMode = "Hidden" | "ReadOnly" | "Disabled" | "Enabled";
+
+export interface UiControlDefinitionDto {
+  controlKey: string;
+  label: string;
+  module: string;
+  controlType: string;
+  requiredPermissionCode?: string | null;
+  isSystemRequired: boolean;
+}
+
+export interface UiControlCatalogItem extends UiControlDefinitionDto {
+  id: string;
+}
+
+export interface UiControlPolicyRequest {
+  uiControlDefinitionId: string;
+  roleId?: string | null;
+  userId?: string | null;
+  clientId?: string | null;
+  subscriptionId?: string | null;
+  accessMode: UiAccessMode;
+  expiresAt?: string | null;
 }
 
 export interface AuthResponseDto {
@@ -37,6 +66,24 @@ export interface PermissionDto {
   code: string;
   name: string;
   description?: string | null;
+  module: string;
+  action: string;
+  kind: string;
+  isSystemGenerated: boolean;
+  isActive: boolean;
+}
+
+export interface AuditLogDto {
+  id: string;
+  entityType: string;
+  entityId: string;
+  action: string;
+  changes: string;
+  userId?: string | null;
+  userName?: string | null;
+  timestamp: string;
+  ipAddress?: string | null;
+  userAgent?: string | null;
 }
 
 export interface PaginatedList<T> {
@@ -69,6 +116,35 @@ export interface AssignRolesRequest {
   roleIds: string[];
 }
 
+export interface UserSessionDto {
+  id: string;
+  deviceName: string;
+  ipAddress?: string | null;
+  lastSeenAt: string;
+  expiresAt: string;
+  revokedAt?: string | null;
+  isActive: boolean;
+}
+
+export interface UserPermissionOverrideDto {
+  id: string;
+  permissionId: string;
+  permissionCode: string;
+  permissionName: string;
+  isGranted: boolean;
+  clientId?: string | null;
+  subscriptionId?: string | null;
+  expiresAt?: string | null;
+}
+
+export interface SetUserPermissionRequest {
+  permissionId: string;
+  isGranted: boolean;
+  clientId?: string | null;
+  subscriptionId?: string | null;
+  expiresAt?: string | null;
+}
+
 export interface CreateRoleRequest {
   name: string;
   description?: string | null;
@@ -89,6 +165,8 @@ export interface CreatePermissionRequest {
   code: string;
   name: string;
   description?: string | null;
+  module: string;
+  action: string;
 }
 
 export interface UpdatePermissionRequest {
@@ -494,6 +572,8 @@ export interface GetBillingItemsParams {
   status?: BillingItemStatus;
   dueDateFrom?: string;
   dueDateTo?: string;
+  currency?: string;
+  outstandingOnly?: boolean;
   pageNumber?: number;
   pageSize?: number;
 }
@@ -567,8 +647,99 @@ export interface GetLedgerEntriesParams {
   dateFrom?: string;
   dateTo?: string;
   clientId?: string;
+  currency?: string;
+  isReconciled?: boolean;
+  hasUnappliedBalance?: boolean;
   pageNumber?: number;
   pageSize?: number;
+}
+
+// ── OPERATIONAL DASHBOARD ───────────────────────────────────────────────────
+
+export interface DashboardFilters {
+  from?: string;
+  to?: string;
+  bankAccountId?: string;
+  clientId?: string;
+  currency?: string;
+}
+
+export interface DashboardMetricDto {
+  count: number;
+  amount?: number | null;
+  currency: string;
+}
+
+export interface DashboardSummaryDto {
+  activeClients?: DashboardMetricDto | null;
+  outstandingCharges?: DashboardMetricDto | null;
+  overdueCharges?: DashboardMetricDto | null;
+  ledgerMovements?: DashboardMetricDto | null;
+  from: string;
+  to: string;
+  currency: string;
+}
+
+export interface DashboardAttentionItemDto {
+  kind: string;
+  severity: "Attention" | "Risk" | "Info";
+  title: string;
+  detail: string;
+  count: number;
+  amount?: number | null;
+  currency: string;
+  href: string;
+  permission: string;
+}
+
+export interface DashboardAttentionDto {
+  items: DashboardAttentionItemDto[];
+  generatedAt: string;
+}
+
+export interface DashboardTrendPointDto {
+  periodStart: string;
+  label: string;
+  charges: number;
+  payments: number;
+}
+
+export interface DashboardActivityDto {
+  trend: DashboardTrendPointDto[];
+  recentMovements: LedgerEntryListDto[];
+  summary: string;
+  currency: string;
+  from: string;
+  to: string;
+}
+
+export interface BankImportAttemptDto {
+  id: string;
+  bankAccountName: string;
+  fileName: string;
+  status: string;
+  error: string | null;
+  recordsImported: number;
+  attemptedAt: string;
+}
+
+export interface UnreconciledBankLineDto {
+  id: string;
+  bankAccountName: string;
+  transactionDate: string;
+  description: string;
+  amount: number;
+  currency: string;
+  reference: string | null;
+}
+
+export interface CurrencyConfigDto {
+  id: string;
+  code: string;
+  name: string;
+  symbol: string;
+  isActive: boolean;
+  isDefault: boolean;
 }
 
 export interface RegisterIncomeRequest {

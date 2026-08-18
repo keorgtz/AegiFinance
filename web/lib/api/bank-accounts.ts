@@ -19,20 +19,20 @@ function qs(params: object): string {
 
 export const bankAccountsApi = {
   getAll: (params: GetBankAccountsParams = {}) =>
-    api.get<PaginatedList<BankAccountListDto>>(`/api/bankaccounts${qs(params)}`),
+    api.get<PaginatedList<BankAccountListDto>>(`/bankaccounts${qs(params)}`),
 
   getById: (id: string) =>
-    api.get<BankAccountDto>(`/api/bankaccounts/${id}`),
+    api.get<BankAccountDto>(`/bankaccounts/${id}`),
 
   getBalance: (id: string, asOfDate?: string) =>
-    api.get<number>(`/api/bankaccounts/${id}/balance${asOfDate ? `?asOfDate=${asOfDate}` : ""}`),
+    api.get<number>(`/bankaccounts/${id}/balance${asOfDate ? `?asOfDate=${asOfDate}` : ""}`),
 
   create: (data: CreateBankAccountRequest) =>
-    api.post<BankAccountDto>("/api/bankaccounts", data),
+    api.post<BankAccountDto>("/bankaccounts", data),
 
   update: (id: string, data: UpdateBankAccountRequest) =>
-    api.put<BankAccountDto>(`/api/bankaccounts/${id}`, data),
+    api.put<BankAccountDto>(`/bankaccounts/${id}`, data),
 
   delete: (id: string) =>
-    api.delete<void>(`/api/bankaccounts/${id}`),
+    api.delete<void>(`/bankaccounts/${id}`),
 };

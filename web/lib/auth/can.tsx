@@ -13,6 +13,15 @@ export function Can({ permission, children, fallback = null }: CanProps) {
   return can(permission) ? <>{children}</> : <>{fallback}</>;
 }
 
+interface PermissionBoundaryProps extends CanProps {
+  controlKey: string;
+}
+
+export function PermissionBoundary({ controlKey, permission, children, fallback = null }: PermissionBoundaryProps) {
+  const { accessFor } = usePermissions();
+  return accessFor(controlKey, permission) === "Hidden" ? <>{fallback}</> : <>{children}</>;
+}
+
 interface IsAdminProps {
   children: React.ReactNode;
   fallback?: React.ReactNode;

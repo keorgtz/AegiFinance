@@ -1,81 +1,60 @@
 "use client";
 
+import Link from "next/link";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { LogOut, UserRound } from "lucide-react";
 import { useAuth } from "@/lib/auth/context";
 import { Avatar } from "@/components/ui/avatar";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { Brand } from "@/components/ui/brand";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { CommandPalette } from "./command-palette";
-import { LogOut, Settings, User } from "lucide-react";
-import Link from "next/link";
 
 export function Topbar() {
   const { user, logout } = useAuth();
 
   return (
-    <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-[#1f2937] bg-[#12141A] px-6">
-      {/* Logo */}
-      <div className="flex items-center gap-3">
-        <span className="font-display text-[18px] font-700 text-white tracking-tight">
-          Aegi<span className="text-[#5BAEBC]">Finance</span>
-        </span>
+    <header className="app-surface-glass sticky top-0 z-40 flex h-[72px] items-center justify-between gap-3 border-b border-border px-3 sm:px-5 lg:px-8">
+      <Link data-ui-control="ui.components.layout.topbar.link.1" href="/dashboard" className="lg:hidden" aria-label="Ir al resumen">
+        <Brand compact />
+      </Link>
+
+      <div className="hidden lg:block">
+        <p className="text-xs font-semibold text-muted">Espacio financiero</p>
+        <p className="text-sm font-bold text-foreground">Control y conciliación</p>
       </div>
 
-      {/* Center — Command palette trigger */}
       <CommandPalette />
 
-      {/* Right — Avatar + menu */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
+        <ThemeToggle compact />
         <DropdownMenu.Root>
           <DropdownMenu.Trigger
-            className="flex items-center gap-2 rounded-button px-2 py-1 hover:bg-white/10 transition-colors focus:outline-none"
-            aria-label="Menú de usuario"
+            data-ui-control="account.menu.open"
+            className="flex min-h-11 items-center gap-2 rounded-full border border-transparent px-1.5 pr-2 transition-ui hover:border-border hover:bg-surface-subtle focus:outline-none"
+            aria-label="Abrir menú de cuenta"
           >
-            <Avatar name={user?.name ?? user?.userName} size="sm" />
-            <div className="hidden sm:flex flex-col items-start">
-              <span className="text-[12px] font-600 text-white leading-tight">
-                {user?.name || user?.userName}
-              </span>
-              <span className="text-[10px] text-white/50 leading-tight">
-                {user?.roles[0] ?? user?.userType}
-              </span>
+            <Avatar name={user?.name ?? user?.userName} size="md" />
+            <div className="hidden flex-col items-start sm:flex">
+              <span className="max-w-32 truncate text-xs font-bold text-foreground">{user?.name || user?.userName}</span>
+              <span className="max-w-32 truncate text-[10px] text-muted">{user?.roles[0] ?? user?.userType}</span>
             </div>
           </DropdownMenu.Trigger>
 
           <DropdownMenu.Portal>
-            <DropdownMenu.Content
-              className="z-50 min-w-[180px] overflow-hidden rounded-table border border-[#E3E6EC] bg-white shadow-dp2"
-              sideOffset={8}
-              align="end"
-            >
-              <div className="px-3 py-2 border-b border-[#F7F8FA]">
-                <p className="text-[13px] font-600 text-[#16181D]">{user?.name}</p>
-                <p className="text-[11px] text-[#5B6472]">{user?.email}</p>
+            <DropdownMenu.Content className="z-50 min-w-[220px] overflow-hidden rounded-table border border-border bg-surface p-2 shadow-dp2" sideOffset={8} align="end">
+              <div className="px-3 py-2">
+                <p className="text-sm font-bold text-foreground">{user?.name || user?.userName}</p>
+                <p className="text-xs text-muted">{user?.email}</p>
               </div>
-
-              <DropdownMenu.Item asChild>
-                <Link
-                  href="/settings"
-                  className="flex items-center gap-2 px-3 py-2 text-[13px] text-[#3A3F4B] hover:bg-[#F7F8FA] cursor-pointer focus:outline-none focus:bg-[#F7F8FA]"
-                >
-                  <Settings className="h-4 w-4" />
-                  Configuración
-                </Link>
+              <DropdownMenu.Separator className="my-1 h-px bg-border" />
+              <DropdownMenu.Item className="flex min-h-11 cursor-pointer items-center gap-2 rounded-input px-3 text-sm text-foreground-secondary outline-none focus:bg-surface-subtle">
+                <UserRound className="h-4 w-4" />
+                Mi cuenta
               </DropdownMenu.Item>
-
-              <DropdownMenu.Item asChild>
-                <Link
-                  href="/profile"
-                  className="flex items-center gap-2 px-3 py-2 text-[13px] text-[#3A3F4B] hover:bg-[#F7F8FA] cursor-pointer focus:outline-none focus:bg-[#F7F8FA]"
-                >
-                  <User className="h-4 w-4" />
-                  Mi perfil
-                </Link>
-              </DropdownMenu.Item>
-
-              <DropdownMenu.Separator className="my-1 h-px bg-[#F7F8FA]" />
-
               <DropdownMenu.Item
                 onSelect={() => logout()}
-                className="flex items-center gap-2 px-3 py-2 text-[13px] text-[#B6452C] hover:bg-[#FFF6F1] cursor-pointer focus:outline-none focus:bg-[#FFF6F1]"
+                data-ui-control="session.logout"
+                className="flex min-h-11 cursor-pointer items-center gap-2 rounded-input px-3 text-sm font-semibold text-danger outline-none focus:bg-danger-soft"
               >
                 <LogOut className="h-4 w-4" />
                 Cerrar sesión

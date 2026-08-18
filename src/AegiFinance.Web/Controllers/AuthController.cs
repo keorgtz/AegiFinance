@@ -29,6 +29,7 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     public async Task<ActionResult<AuthResponseDto>> Login(LoginCommand command, CancellationToken cancellationToken)
     {
+        ApplySessionContext(command);
         try
         {
             var result = await _mediator.Send(command, cancellationToken);
@@ -45,6 +46,7 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     public async Task<ActionResult<AuthResponseDto>> LoginWithPin(LoginWithPinCommand command, CancellationToken cancellationToken)
     {
+        ApplySessionContext(command);
         try
         {
             var result = await _mediator.Send(command, cancellationToken);
@@ -70,7 +72,9 @@ public class AuthController : ControllerBase
 
         try
         {
-            var result = await _mediator.Send(new RefreshTokenCommand(refreshToken), cancellationToken);
+            var command = new RefreshTokenCommand(refreshToken);
+            ApplySessionContext(command);
+            var result = await _mediator.Send(command, cancellationToken);
             SetRefreshTokenCookie(result.RefreshToken, result.RefreshTokenExpiry);
             return Ok(new AuthResponseDto { AccessToken = result.AccessToken, User = result.User });
         }
@@ -85,7 +89,8 @@ public class AuthController : ControllerBase
     [Authorize]
     public async Task<IActionResult> Logout(CancellationToken cancellationToken)
     {
-        await _mediator.Send(new LogoutCommand(User.GetUserId()), cancellationToken);
+        Guid? sessionId = Guid.TryParse(User.FindFirst("sessionId")?.Value, out var parsedSessionId) ? parsedSessionId : null;
+        await _mediator.Send(new LogoutCommand(User.GetUserId(), sessionId), cancellationToken);
         ClearRefreshTokenCookie();
         return NoContent();
     }
@@ -139,5 +144,37 @@ public class AuthController : ControllerBase
         {
             Path = "/api/auth"
         });
+    }
+
+    private void ApplySessionContext(LoginCommand command)
+    {
+        command.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+        command.UserAgent = Request.Headers.UserAgent.ToString();
+        command.DeviceName = DescribeDevice(command.UserAgent);
+    }
+
+    private void ApplySessionContext(LoginWithPinCommand command)
+    {
+        command.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+        command.UserAgent = Request.Headers.UserAgent.ToString();
+        command.DeviceName = DescribeDevice(command.UserAgent);
+    }
+
+    private void ApplySessionContext(RefreshTokenCommand command)
+    {
+        command.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+        command.UserAgent = Request.Headers.UserAgent.ToString();
+        command.DeviceName = DescribeDevice(command.UserAgent);
+    }
+
+    private static string DescribeDevice(string? userAgent)
+    {
+        if (string.IsNullOrWhiteSpace(userAgent)) return "Dispositivo desconocido";
+        var platform = userAgent.Contains("Mobile", StringComparison.OrdinalIgnoreCase) ? "Teléfono" : "Computadora";
+        var browser = userAgent.Contains("Edg/", StringComparison.OrdinalIgnoreCase) ? "Edge" :
+            userAgent.Contains("Chrome/", StringComparison.OrdinalIgnoreCase) ? "Chrome" :
+            userAgent.Contains("Firefox/", StringComparison.OrdinalIgnoreCase) ? "Firefox" :
+            userAgent.Contains("Safari/", StringComparison.OrdinalIgnoreCase) ? "Safari" : "Navegador";
+        return $"{platform} · {browser}";
     }
 }

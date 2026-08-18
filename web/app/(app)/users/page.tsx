@@ -2,14 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
-import { useUsers, useDeleteUser, useToggleUserActive } from "@/hooks/use-users";
+import { useUsers, useDeleteUser, useToggleUserActive, useUnlockUser } from "@/hooks/use-users";
 import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Pagination } from "@/components/ui/pagination";
 import { UserForm } from "@/components/modules/users/user-form";
-import { AssignRolesDialog } from "@/components/modules/users/assign-roles-dialog";
+import { UserAccessDialog } from "@/components/modules/users/user-access-dialog";
+import { ResetPasswordDialog } from "@/components/modules/users/reset-password-dialog";
 import { Can } from "@/lib/auth/can";
 import { formatDate, getUserTypeLabel } from "@/lib/utils/format";
 import type { UserDto } from "@/types/api";
@@ -18,6 +19,9 @@ import {
   Plus,
   Search,
   ShieldCheck,
+  MonitorSmartphone,
+  KeyRound,
+  LockOpen,
   Trash2,
   UserCheck,
   UserX,
@@ -31,9 +35,11 @@ export default function UsersPage() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [formOpen, setFormOpen] = useState(false);
-  const [rolesOpen, setRolesOpen] = useState(false);
+  const [accessOpen, setAccessOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<UserDto | null>(null);
-  const [rolesUser, setRolesUser] = useState<UserDto | null>(null);
+  const [accessUser, setAccessUser] = useState<UserDto | null>(null);
+  const [passwordUser, setPasswordUser] = useState<UserDto | null>(null);
+  const [passwordOpen, setPasswordOpen] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
 
   // Debounce search
@@ -72,6 +78,7 @@ export default function UsersPage() {
 
   const deleteUser = useDeleteUser();
   const toggleActive = useToggleUserActive();
+  const unlockUser = useUnlockUser();
 
   const openEdit = (user: UserDto) => {
     setEditingUser(user);
@@ -79,8 +86,8 @@ export default function UsersPage() {
   };
 
   const openRoles = (user: UserDto) => {
-    setRolesUser(user);
-    setRolesOpen(true);
+    setAccessUser(user);
+    setAccessOpen(true);
   };
 
   const columns: ColumnDef<UserDto, unknown>[] = [
@@ -89,8 +96,9 @@ export default function UsersPage() {
       header: "Nombre",
       cell: ({ row }) => (
         <div>
-          <p className="font-600 text-[#16181D]">{row.original.name}</p>
-          <p className="text-[11px] text-[#5B6472]">@{row.original.userName}</p>
+          <p className="font-semibold text-foreground">{row.original.name}</p>
+          <p className="text-[11px] text-muted">@{row.original.userName}</p>
+          {row.original.mustChangePassword && <span className="mt-1 inline-block text-[10px] font-bold text-warning">Cambio de contraseña pendiente</span>}
         </div>
       ),
     },
@@ -98,7 +106,7 @@ export default function UsersPage() {
       accessorKey: "email",
       header: "Correo",
       cell: ({ getValue }) => (
-        <span className="text-[#3A3F4B]">{getValue() as string}</span>
+        <span className="text-foreground-secondary">{getValue() as string}</span>
       ),
     },
     {
@@ -117,7 +125,7 @@ export default function UsersPage() {
       cell: ({ getValue }) => {
         const roles = getValue() as string[];
         return roles.length === 0 ? (
-          <span className="text-[#5B6472]">—</span>
+          <span className="text-muted">—</span>
         ) : (
           <div className="flex flex-wrap gap-1">
             {roles.map((r) => (
@@ -131,19 +139,24 @@ export default function UsersPage() {
       accessorKey: "isActive",
       header: "Estado",
       size: 100,
-      cell: ({ getValue }) => (
-        <Badge variant={getValue() ? "jade" : "terracotta"}>
-          {getValue() ? "Activo" : "Inactivo"}
-        </Badge>
-      ),
+      cell: ({ row }) => {
+        const locked = !!row.original.lockoutEnd && new Date(row.original.lockoutEnd) > new Date();
+        return <Badge variant={locked ? "saffron" : row.original.isActive ? "jade" : "terracotta"}>{locked ? "Bloqueado" : row.original.isActive ? "Activo" : "Inactivo"}</Badge>;
+      },
     },
     {
       accessorKey: "lastLoginAt",
       header: "Último acceso",
       size: 130,
       cell: ({ getValue }) => (
-        <span className="text-[#5B6472]">{formatDate(getValue() as string | null)}</span>
+        <span className="text-muted">{formatDate(getValue() as string | null)}</span>
       ),
+    },
+    {
+      accessorKey: "activeSessionCount",
+      header: "Sesiones",
+      size: 90,
+      cell: ({ row }) => <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground-secondary"><MonitorSmartphone className="h-3.5 w-3.5 text-action" />{row.original.activeSessionCount}</span>,
     },
     {
       id: "actions",
@@ -154,7 +167,7 @@ export default function UsersPage() {
           <Can permission="ManageUsers">
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
-                <Button
+                <Button controlKey="ui.app.app.users.page.button.1"
                   variant="ghost"
                   size="icon"
                   aria-label="Más acciones"
@@ -165,32 +178,36 @@ export default function UsersPage() {
               </DropdownMenu.Trigger>
               <DropdownMenu.Portal>
                 <DropdownMenu.Content
-                  className="z-50 min-w-[160px] overflow-hidden rounded-table border border-[#E3E6EC] bg-white shadow-dp2"
+                  className="z-50 min-w-[160px] overflow-hidden rounded-table border border-border bg-surface shadow-dp2"
                   align="end"
                   sideOffset={4}
                 >
                   <DropdownMenu.Item
                     onSelect={() => openEdit(user)}
-                    className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-[#3A3F4B] hover:bg-[#F7F8FA] cursor-pointer focus:outline-none"
+                    className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle cursor-pointer focus:outline-none"
                   >
                     Editar
                   </DropdownMenu.Item>
                   <DropdownMenu.Item
                     onSelect={() => openRoles(user)}
-                    className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-[#3A3F4B] hover:bg-[#F7F8FA] cursor-pointer focus:outline-none"
+                    className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle cursor-pointer focus:outline-none"
                   >
                     <ShieldCheck className="h-3.5 w-3.5" />
-                    Asignar roles
+                    Acceso y sesiones
                   </DropdownMenu.Item>
-                  <DropdownMenu.Separator className="my-1 h-px bg-[#F7F8FA]" />
+                  <DropdownMenu.Item data-ui-control="users.actions.reset-password" data-ui-permission="ManageUsers" onSelect={() => { setPasswordUser(user); setPasswordOpen(true); }} className="flex min-h-11 items-center gap-2 px-3 py-2 text-[13px] text-foreground-secondary hover:bg-surface-subtle cursor-pointer focus:outline-none">
+                    <KeyRound className="h-3.5 w-3.5" />Restablecer contraseña
+                  </DropdownMenu.Item>
+                  {user.lockoutEnd && new Date(user.lockoutEnd) > new Date() && <DropdownMenu.Item data-ui-control="users.actions.unlock" data-ui-permission="ManageUsers" onSelect={() => unlockUser.mutate(user.id)} className="flex min-h-11 items-center gap-2 px-3 py-2 text-[13px] text-foreground-secondary hover:bg-surface-subtle cursor-pointer focus:outline-none"><LockOpen className="h-3.5 w-3.5 text-warning" />Desbloquear</DropdownMenu.Item>}
+                  <DropdownMenu.Separator className="my-1 h-px bg-surface-subtle" />
                   <DropdownMenu.Item
                     onSelect={() => toggleActive.mutate({ id: user.id, active: !user.isActive })}
-                    className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-[#3A3F4B] hover:bg-[#F7F8FA] cursor-pointer focus:outline-none"
+                    className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle cursor-pointer focus:outline-none"
                   >
                     {user.isActive ? (
-                      <><UserX className="h-3.5 w-3.5 text-[#B7791F]" /> Desactivar</>
+                      <><UserX className="h-3.5 w-3.5 text-warning" /> Desactivar</>
                     ) : (
-                      <><UserCheck className="h-3.5 w-3.5 text-[#0E9F6E]" /> Activar</>
+                      <><UserCheck className="h-3.5 w-3.5 text-success" /> Activar</>
                     )}
                   </DropdownMenu.Item>
                   <DropdownMenu.Item
@@ -199,7 +216,7 @@ export default function UsersPage() {
                         deleteUser.mutate(user.id);
                       }
                     }}
-                    className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-[#B6452C] hover:bg-[#FFF6F1] cursor-pointer focus:outline-none"
+                    className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-danger hover:bg-danger-soft cursor-pointer focus:outline-none"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                     Eliminar
@@ -214,31 +231,32 @@ export default function UsersPage() {
   ];
 
   return (
-    <div>
+    <div className="space-y-6">
       {/* Header */}
-      <div className="mb-5 flex items-center justify-between gap-4">
+      <div className="flex flex-col gap-4 rounded-hero border border-border bg-gradient-to-br from-action-soft via-surface to-accent-soft p-5 sm:flex-row sm:items-end sm:justify-between sm:p-6">
         <div>
-          <h1 className="font-display text-[22px] font-700 text-[#16181D]">Usuarios</h1>
-          <p className="mt-0.5 text-[13px] text-[#5B6472]">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-action">Administración de acceso</p>
+          <h1 className="mt-2 font-display text-[24px] font-bold text-foreground">Usuarios</h1>
+          <p className="mt-0.5 text-[13px] text-muted">
             Gestión de accesos al sistema
           </p>
         </div>
         <Can permission="ManageUsers">
-          <Button
+          <Button controlKey="ui.app.app.users.page.button.2"
             onClick={() => { setEditingUser(null); setFormOpen(true); }}
             size="md"
           >
             <Plus className="h-4 w-4" />
             Nuevo
-            <kbd className="ml-1 rounded bg-white/20 px-1 text-[10px]">N</kbd>
+            <kbd className="ml-1 rounded bg-surface/20 px-1 text-[10px]">N</kbd>
           </Button>
         </Can>
       </div>
 
       {/* Filtros */}
-      <div className="mb-4 flex items-center gap-3">
-        <div className="w-72">
-          <Input
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <div className="w-full sm:max-w-sm">
+          <Input controlKey="ui.app.app.users.page.input.1"
             ref={searchRef}
             placeholder="Buscar usuario…"
             value={search}
@@ -246,7 +264,7 @@ export default function UsersPage() {
             leftIcon={<Search className="h-3.5 w-3.5" />}
           />
         </div>
-        <kbd className="rounded bg-[#E3E6EC] px-1.5 py-0.5 text-[10px] font-600 text-[#5B6472]">
+        <kbd className="rounded bg-border px-1.5 py-0.5 text-[10px] font-semibold text-muted">
           /
         </kbd>
       </div>
@@ -278,11 +296,12 @@ export default function UsersPage() {
         onOpenChange={setFormOpen}
         editingUser={editingUser}
       />
-      <AssignRolesDialog
-        open={rolesOpen}
-        onOpenChange={setRolesOpen}
-        user={rolesUser}
+      <UserAccessDialog
+        open={accessOpen}
+        onOpenChange={setAccessOpen}
+        user={accessUser}
       />
+      <ResetPasswordDialog open={passwordOpen} onOpenChange={setPasswordOpen} user={passwordUser} />
     </div>
   );
 }

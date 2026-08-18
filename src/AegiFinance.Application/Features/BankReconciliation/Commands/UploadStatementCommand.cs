@@ -30,22 +30,39 @@ public class UploadStatementCommandHandler : IRequestHandler<UploadStatementComm
         if (bankAccount == null)
             throw new Exception("Bank account not found.");
 
-        var records = new List<BankStatementRecord>();
+        var attempt = new BankImportAttempt
+        {
+            Id = Guid.NewGuid(),
+            BankAccountId = request.BankAccountId,
+            FileName = Path.GetFileName(request.FileName),
+            Status = "Processing",
+            AttemptedAt = DateTime.UtcNow
+        };
+        _context.BankImportAttempts.Add(attempt);
+        await _context.SaveChangesAsync(cancellationToken);
 
-        using (var reader = new StreamReader(request.FileStream))
-        using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)
+        List<BankStatementRecord> records;
+
+        try
         {
-            HasHeaderRecord = true,
-            MissingFieldFound = null,
-            HeaderValidated = null
-        }))
-        {
-            // Esperamos un CSV con Date, Description, Reference, Amount
+            using var reader = new StreamReader(request.FileStream);
+            using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                HasHeaderRecord = true,
+                MissingFieldFound = null,
+                HeaderValidated = null
+            });
             records = csv.GetRecords<BankStatementRecord>().ToList();
+            if (records.Count == 0) throw new InvalidOperationException("No records found in the CSV.");
         }
-
-        if (!records.Any())
-            throw new Exception("No records found in the CSV.");
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            attempt.Status = "Failed";
+            attempt.Error = exception.Message.Length > 2000 ? exception.Message[..2000] : exception.Message;
+            attempt.CompletedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync(cancellationToken);
+            throw new InvalidOperationException("The bank statement could not be imported. Review the file format and try again.", exception);
+        }
 
         var statement = new BankStatement
         {
@@ -92,6 +109,10 @@ public class UploadStatementCommandHandler : IRequestHandler<UploadStatementComm
             // Link them
             line.LedgerEntry = ledgerEntry;
         }
+
+        attempt.Status = "Succeeded";
+        attempt.RecordsImported = records.Count;
+        attempt.CompletedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);
 

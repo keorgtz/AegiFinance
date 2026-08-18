@@ -1,4 +1,6 @@
 using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Infrastructure.Authorization;
 using AegiFinance.Infrastructure.Data;
@@ -18,13 +20,17 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddHttpContextAccessor();
         services.AddScoped<AuditInterceptor>();
+        services.AddScoped<TenantSessionContextInterceptor>();
 
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
             options.UseSqlServer(connectionString);
-            options.AddInterceptors(sp.GetRequiredService<AuditInterceptor>());
+            options.AddInterceptors(
+                sp.GetRequiredService<AuditInterceptor>(),
+                sp.GetRequiredService<TenantSessionContextInterceptor>());
         });
 
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
@@ -33,6 +39,7 @@ public static class DependencyInjection
         services.AddScoped<IPinHasher, PinHasher>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IPermissionService, PermissionService>();
+        services.AddScoped<IUiPermissionService, UiPermissionService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<ICurrencyConverter, CurrencyConverter>();
@@ -71,6 +78,27 @@ public static class DependencyInjection
                     ValidIssuer = issuer,
                     ValidAudience = audience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))
+                };
+                options.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = async context =>
+                    {
+                        var userClaim = context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                            ?? context.Principal?.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+                        var sessionClaim = context.Principal?.FindFirst("sessionId")?.Value;
+                        if (!Guid.TryParse(userClaim, out var userId) || !Guid.TryParse(sessionClaim, out var sessionId))
+                        {
+                            context.Fail("Token de sesión inválido.");
+                            return;
+                        }
+
+                        var db = context.HttpContext.RequestServices.GetRequiredService<ApplicationDbContext>();
+                        var active = await db.UserSessions.AsNoTracking().AnyAsync(item =>
+                            item.Id == sessionId && item.UserId == userId && item.RevokedAt == null &&
+                            item.ExpiresAt > DateTime.UtcNow && item.User.IsActive,
+                            context.HttpContext.RequestAborted);
+                        if (!active) context.Fail("La sesión fue revocada.");
+                    }
                 };
             });
 

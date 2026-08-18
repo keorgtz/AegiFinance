@@ -68,7 +68,7 @@ export function ExpenseForm({ open, onOpenChange, accounts, defaultAccountId }: 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent title="Registrar egreso" size="md">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <Select
+          <Select controlKey="ui.components.modules.ledger.expense.form.select.1"
             label="Cuenta bancaria *"
             value={watch("bankAccountId")}
             onValueChange={(v) => setValue("bankAccountId", v)}
@@ -82,7 +82,7 @@ export function ExpenseForm({ open, onOpenChange, accounts, defaultAccountId }: 
             ))}
           </Select>
           <div className="grid grid-cols-2 gap-3">
-            <Input
+            <Input controlKey="ui.components.modules.ledger.expense.form.input.1"
               {...register("amount")}
               type="number"
               step="0.01"
@@ -91,25 +91,25 @@ export function ExpenseForm({ open, onOpenChange, accounts, defaultAccountId }: 
               autoFocus
               error={errors.amount?.message}
             />
-            <Input
+            <Input controlKey="ui.components.modules.ledger.expense.form.input.2"
               {...register("currency")}
               label="Moneda *"
               error={errors.currency?.message}
             />
           </div>
-          <Input
+          <Input controlKey="ui.components.modules.ledger.expense.form.input.3"
             {...register("date")}
             type="date"
             label="Fecha *"
             error={errors.date?.message}
           />
-          <Input
+          <Input controlKey="ui.components.modules.ledger.expense.form.input.4"
             {...register("description")}
             label="Descripción *"
             placeholder="Ej. Renta local, servicios, proveedor…"
             error={errors.description?.message}
           />
-          <Input
+          <Input controlKey="ui.components.modules.ledger.expense.form.input.5"
             {...register("reference")}
             label="Referencia"
             placeholder="Ej. Comprobante, folio…"
@@ -117,9 +117,9 @@ export function ExpenseForm({ open, onOpenChange, accounts, defaultAccountId }: 
           />
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="secondary">Cancelar</Button>
+              <Button controlKey="ui.components.modules.ledger.expense.form.button.1" type="button" variant="secondary">Cancelar</Button>
             </DialogClose>
-            <Button type="submit" loading={isSubmitting}>Registrar egreso</Button>
+            <Button controlKey="ui.components.modules.ledger.expense.form.button.2" type="submit" loading={isSubmitting}>Registrar egreso</Button>
           </DialogFooter>
         </form>
       </DialogContent>

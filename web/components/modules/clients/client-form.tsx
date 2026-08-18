@@ -130,9 +130,9 @@ export function ClientForm({ open, onOpenChange, editingClient }: ClientFormProp
         footer={
           <>
             <DrawerClose asChild>
-              <Button type="button" variant="secondary" onClick={handleClose}>Cancelar</Button>
+              <Button controlKey="ui.components.modules.clients.client.form.button.1" type="button" variant="secondary" onClick={handleClose}>Cancelar</Button>
             </DrawerClose>
-            <Button form="client-form" type="submit" loading={isSubmitting}>
+            <Button controlKey="ui.components.modules.clients.client.form.button.2" form="client-form" type="submit" loading={isSubmitting}>
               {isEdit ? "Guardar cambios" : "Crear cliente"}
             </Button>
           </>
@@ -140,7 +140,7 @@ export function ClientForm({ open, onOpenChange, editingClient }: ClientFormProp
       >
         <form id="client-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Datos principales */}
-          <Input
+          <Input controlKey="ui.components.modules.clients.client.form.input.1"
             {...register("name")}
             label="Nombre / Razón social *"
             placeholder="Ej. Restaurante El Fogón S.A."
@@ -148,12 +148,12 @@ export function ClientForm({ open, onOpenChange, editingClient }: ClientFormProp
             error={errors.name?.message}
           />
           <div className="grid grid-cols-2 gap-3">
-            <Input
+            <Input controlKey="ui.components.modules.clients.client.form.input.2"
               {...register("tradeName")}
               label="Nombre comercial"
               placeholder="Ej. El Fogón"
             />
-            <Input
+            <Input controlKey="ui.components.modules.clients.client.form.input.3"
               {...register("taxId")}
               label="RFC / ID Fiscal"
               placeholder="Ej. XEXX010101000"
@@ -162,7 +162,7 @@ export function ClientForm({ open, onOpenChange, editingClient }: ClientFormProp
 
           {/* Categoría y estado */}
           <div className="grid grid-cols-2 gap-3">
-            <Select
+            <Select controlKey="ui.components.modules.clients.client.form.select.1"
               label="Categoría"
               value={categoryId ?? ""}
               onValueChange={(v) => setValue("categoryId", v)}
@@ -172,7 +172,7 @@ export function ClientForm({ open, onOpenChange, editingClient }: ClientFormProp
                 <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
               ))}
             </Select>
-            <Select
+            <Select controlKey="ui.components.modules.clients.client.form.select.2"
               label="Estado"
               value={status}
               onValueChange={(v) => setValue("status", v as ClientStatus)}
@@ -186,30 +186,30 @@ export function ClientForm({ open, onOpenChange, editingClient }: ClientFormProp
 
           {/* Etiquetas */}
           <div className="flex flex-col gap-1">
-            <span className="text-[11px] font-600 uppercase tracking-wider text-[#5B6472]">Etiquetas</span>
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">Etiquetas</span>
             <div className="flex flex-wrap items-center gap-1.5">
               {selectedTags.map((t) => (
                 <TagChip key={t.id} tag={t} />
               ))}
-              <button
+              <button data-ui-control="ui.components.modules.clients.client.form.button.3"
                 type="button"
                 onClick={() => setTagPickerOpen(!tagPickerOpen)}
-                className="inline-flex items-center gap-1 rounded-full border border-dashed border-[#E3E6EC] px-2.5 py-0.5 text-[11px] text-[#5B6472] hover:border-[#5BAEBC] hover:text-[#0F5C6B] transition-colors"
+                className="inline-flex items-center gap-1 rounded-full border border-dashed border-border px-2.5 py-0.5 text-[11px] text-muted hover:border-action hover:text-action transition-colors"
               >
                 <Tag className="h-3 w-3" />
                 Editar
               </button>
             </div>
             {tagPickerOpen && (
-              <div className="mt-2 rounded-table border border-[#E3E6EC] bg-white p-2 shadow-dp1">
+              <div className="mt-2 rounded-table border border-border bg-surface p-2 shadow-dp1">
                 <div className="flex flex-wrap gap-1.5">
                   {allTags.map((tag) => (
-                    <button
+                    <button data-ui-control="ui.components.modules.clients.client.form.button.4"
                       key={tag.id}
                       type="button"
                       onClick={() => toggleTag(tag.id)}
                       className={cn(
-                        "flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-600 transition-colors",
+                        "flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors",
                         selectedTagIds.has(tag.id) ? "ring-2 ring-offset-1" : "opacity-70"
                       )}
                       style={{
@@ -225,18 +225,18 @@ export function ClientForm({ open, onOpenChange, editingClient }: ClientFormProp
                     </button>
                   ))}
                   {allTags.length === 0 && (
-                    <p className="text-[12px] text-[#5B6472] p-1">No hay etiquetas. Créalas desde Configuración.</p>
+                    <p className="text-[12px] text-muted p-1">No hay etiquetas. Créalas desde Configuración.</p>
                   )}
                 </div>
               </div>
             )}
           </div>
 
-          <hr className="border-[#F7F8FA]" />
+          <hr className="border-surface-subtle" />
 
           {/* Datos de contacto */}
-          <p className="text-[11px] font-700 uppercase tracking-wider text-[#5B6472]">Datos de contacto</p>
-          <Input
+          <p className="text-[11px] font-bold uppercase tracking-wider text-muted">Datos de contacto</p>
+          <Input controlKey="ui.components.modules.clients.client.form.input.4"
             {...register("billingEmail")}
             label="Correo de facturación"
             type="email"
@@ -244,23 +244,23 @@ export function ClientForm({ open, onOpenChange, editingClient }: ClientFormProp
             error={errors.billingEmail?.message}
           />
           <div className="grid grid-cols-2 gap-3">
-            <Input
+            <Input controlKey="ui.components.modules.clients.client.form.input.5"
               {...register("phone")}
               label="Teléfono"
               placeholder="+52 33 0000 0000"
               inputMode="tel"
             />
           </div>
-          <Input
+          <Input controlKey="ui.components.modules.clients.client.form.input.6"
             {...register("billingAddress")}
             label="Dirección de facturación"
             placeholder="Calle, número, ciudad"
           />
 
-          <hr className="border-[#F7F8FA]" />
+          <hr className="border-surface-subtle" />
 
           {/* Notas internas */}
-          <Textarea
+          <Textarea controlKey="ui.components.modules.clients.client.form.textarea.1"
             {...register("notes")}
             label="Notas internas"
             placeholder="Observaciones sobre el cliente…"

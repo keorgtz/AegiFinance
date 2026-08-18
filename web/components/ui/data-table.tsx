@@ -43,16 +43,16 @@ export function DataTable<TData>({
   });
 
   return (
-    <div className="w-full overflow-hidden rounded-table border border-[#E3E6EC] bg-white shadow-dp1">
+    <div className="w-full overflow-hidden rounded-table border border-border bg-surface shadow-dp1">
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
+        <table className="w-full min-w-[680px] border-collapse">
           <thead>
             {table.getHeaderGroups().map((hg) => (
-              <tr key={hg.id} className="border-b border-[#E3E6EC] bg-[#F7F8FA]">
+              <tr key={hg.id} className="border-b border-border bg-surface-subtle">
                 {hg.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="px-3 py-2 text-left text-[10px] font-700 uppercase tracking-wider text-[#5B6472]"
+                    className="px-4 py-3 text-left text-xs font-bold uppercase tracking-[0.08em] text-muted"
                     style={{ width: header.getSize() !== 150 ? header.getSize() : undefined }}
                   >
                     {header.isPlaceholder
@@ -67,14 +67,14 @@ export function DataTable<TData>({
             {isLoading ? (
               <tr>
                 <td colSpan={columns.length} className="py-12 text-center">
-                  <Spinner className="mx-auto text-[#0F5C6B]" />
+                  <Spinner className="mx-auto text-action" />
                 </td>
               </tr>
             ) : table.getRowModel().rows.length === 0 ? (
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="py-10 text-center text-[13px] text-[#5B6472]"
+                  className="py-12 text-center text-sm text-muted"
                 >
                   {emptyMessage}
                 </td>
@@ -85,15 +85,15 @@ export function DataTable<TData>({
                   key={row.id}
                   onClick={() => onRowClick?.(row.original)}
                   className={cn(
-                    "border-b border-[#F7F8FA] transition-colors duration-100",
-                    onRowClick && "cursor-pointer hover:bg-[#F7F8FA]",
-                    row.getIsSelected() && "bg-[#F5F7FF]"
+                    "border-b border-border transition-colors duration-100 last:border-b-0",
+                    onRowClick && "cursor-pointer hover:bg-surface-subtle",
+                    row.getIsSelected() && "bg-info-soft"
                   )}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <td
                       key={cell.id}
-                      className="px-3 py-2 text-[13px] text-[#3A3F4B]"
+                      className="px-4 py-3 text-sm text-foreground-secondary"
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>

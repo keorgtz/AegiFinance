@@ -23,6 +23,12 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand>
             throw new InvalidOperationException("El usuario no existe.");
         }
 
+        var sessions = await _context.UserSessions.Where(item => item.UserId == user.Id && item.RevokedAt == null).ToListAsync(cancellationToken);
+        foreach (var session in sessions)
+        {
+            session.RevokedAt = DateTime.UtcNow;
+            session.RevokedReason = "User deleted";
+        }
         _context.Users.Remove(user);
         await _context.SaveChangesAsync(cancellationToken);
     }

@@ -6,10 +6,11 @@ Plataforma financiera (control de clientes, suscripciones, facturación y ledger
 
 La fuente de verdad de planeación vive en, por orden de prioridad ante conflicto:
 
-1. `Plan1.2-Extension.md` — stack de frontend (React/TS/Next.js), AegisUI, reglas de teclado y eficiencia de captura.
-2. `Plan1.1-Extension.md` — modelo de usuarios, permisos, Portal Cliente y SVA.
-3. `Plan1-Maestro.md` — visión, principios y fases (referencia histórica de visión y fases).
-4. `.refi/modules/aegifinance/` — desglose operativo: `master-blueprint.md`, `progress.md`, `orchestration-map.md`, `verification.md`, `domain-shards/*.md`.
+1. `Plan2-Maestro.md` — plan vigente, gates, Major Ledger y Permission Engine 2.0.
+2. `Plan1.2-Extension.md` — referencia histórica del stack frontend.
+3. `Plan1.1-Extension.md` — referencia histórica de usuarios, permisos y SVA.
+4. `Plan1-Maestro.md` — visión y fases originales.
+5. `.refi/modules/aegifinance/` — desglose operativo histórico.
 
 No dupliques estas reglas en código vía comentarios; consulta los documentos cuando falte contexto.
 
@@ -39,15 +40,23 @@ Una sola ruta de Next.js por módulo, compartida entre administradores y cliente
 
 Jerarquía de autorización: `Permission → Role → User → Client → Subscription`. `UserType` (Administrator/Client) es independiente de `Role`. Toda autorización real ocurre en el backend; el frontend solo refleja lo ya autorizado vía `GET /api/auth/me`.
 
+## Regla obligatoria de permisos de UI
+
+Todo elemento interactivo nuevo o modificado —ruta, navegación, enlace, botón, acción de menú, pestaña, control y campo— debe tener una clave semántica estable y una política declarativa. La política central decide `hidden`, `disabled`, `read-only` o `enabled`; queda prohibido dispersar verificaciones ad-hoc por rol dentro de componentes.
+
+Si al modificar un control su permiso no existe, se agrega al catálogo generado en el mismo cambio. Las policies nuevas declaradas por endpoints se sincronizan automáticamente con el catálogo al iniciar la API. La API siempre vuelve a autorizar la operación real: ocultar o deshabilitar UI nunca se considera seguridad.
+
+Controles de escape de seguridad y accesibilidad —por ejemplo cerrar sesión o cerrar un modal— conservan clave estable, pero no pueden configurarse de forma que dejen atrapado al usuario.
+
 ## Dinero y auditoría
 
 - Todo monto se almacena en MXN. Conversión a otra moneda es solo visual, vía `ICurrencyConverter`, con la tasa usada siempre registrada.
 - Ledger First: ningún saldo se almacena calculado; todo se deriva del ledger.
 - Toda acción crítica queda en `AuditLog`.
 
-## AegisUI (sistema de diseño)
+## AegiPulse (sistema de diseño)
 
-Sistema de diseño propio de AegiFinance. Inspirado en la filosofía de MeridianUI (densidad controlada, color semántico, elevación sutil, interacción silenciosa) pero con valores propios e independientes: paleta de 5 roles (Jade/Saffron/Periwinkle/Plum/Terracotta + primario petróleo), tipografía Manrope + Sora, iconografía lucide-react, radios y layout propios. **Nunca reutilizar hex, fuentes o iconos de MeridianUI.** Tokens completos en `Plan1.2-Extension.md`.
+AegiFinance adopta AegiPulse: progreso sereno, acción púrpura, éxito verde, atención ámbar y rojo sólo para error o riesgo. Usa Inter, iconografía lucide-react, tokens semánticos, superficies suaves y jerarquía calmada. Claro y oscuro deben conservar la misma lectura, no limitarse a invertir colores.
 
 Regla añadida sobre MeridianUI: **teclado primero** — todo flujo de alta/edición debe completarse sin tocar el mouse.
 
@@ -67,3 +76,7 @@ Access token JWT en memoria en el cliente (nunca `localStorage`). Refresh token 
 ## Git
 
 - No crear ni usar otras branches. Todo se unifica en `Master`; operar exclusivamente sobre `Master`.
+
+## Regla obligatoria de despliegue
+
+Todo cambio debe evaluar si requiere ajustar Dockerfiles, `docker-compose.yml`, variables de entorno, health checks, volúmenes, redes, orden de arranque o aplicación de migraciones. Si afecta el despliegue, la configuración se actualiza en el mismo cambio. Si no requiere modificaciones, igualmente se valida con `docker compose config`. Ninguna fase puede depender de pasos manuales de despliegue que deban estar codificados en Compose o en la imagen.

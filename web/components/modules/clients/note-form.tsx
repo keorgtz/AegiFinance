@@ -68,7 +68,7 @@ export function NoteForm({ open, onOpenChange, clientId }: NoteFormProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent title="Nueva nota" size="sm">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <Textarea
+          <Textarea controlKey="ui.components.modules.clients.note.form.textarea.1"
             {...restRegister}
             ref={(el) => {
               registerRef(el);
@@ -81,27 +81,27 @@ export function NoteForm({ open, onOpenChange, clientId }: NoteFormProps) {
             onKeyDown={handleKeyDown}
           />
 
-          <div className="flex items-center justify-between rounded-input border border-[#E3E6EC] px-3 py-2">
-            <label htmlFor="is-pinned" className="text-[13px] font-500 text-[#3A3F4B]">
+          <div className="flex items-center justify-between rounded-input border border-border px-3 py-2">
+            <label htmlFor="is-pinned" className="text-[13px] font-medium text-foreground-secondary">
               Fijar nota
             </label>
             <RadixSwitch.Root
               id="is-pinned"
               checked={isPinned ?? false}
               onCheckedChange={(v) => setValue("isPinned", v)}
-              className="relative inline-flex h-5 w-9 items-center rounded-full transition-colors data-[state=checked]:bg-[#0F5C6B] data-[state=unchecked]:bg-[#E3E6EC]"
+              className="relative inline-flex h-5 w-9 items-center rounded-full transition-colors data-[state=checked]:bg-action data-[state=unchecked]:bg-border"
             >
-              <RadixSwitch.Thumb className="block h-4 w-4 rounded-full bg-white shadow-dp1 transition-transform data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0.5" />
+              <RadixSwitch.Thumb className="block h-4 w-4 rounded-full bg-surface shadow-dp1 transition-transform data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0.5" />
             </RadixSwitch.Root>
           </div>
 
-          <p className="text-[11px] text-[#5B6472]">Tip: Ctrl+Enter para guardar rápido</p>
+          <p className="text-[11px] text-muted">Tip: Ctrl+Enter para guardar rápido</p>
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="secondary">Cancelar</Button>
+              <Button controlKey="ui.components.modules.clients.note.form.button.1" type="button" variant="secondary">Cancelar</Button>
             </DialogClose>
-            <Button type="submit" loading={isSubmitting}>Guardar nota</Button>
+            <Button controlKey="ui.components.modules.clients.note.form.button.2" type="submit" loading={isSubmitting}>Guardar nota</Button>
           </DialogFooter>
         </form>
       </DialogContent>

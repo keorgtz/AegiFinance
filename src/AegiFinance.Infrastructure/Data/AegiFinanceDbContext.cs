@@ -1,11 +1,15 @@
 using AegiFinance.Domain.Entities;
 using AegiFinance.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace AegiFinance.Infrastructure.Data;
 
 public class AegiFinanceDbContext : DbContext
 {
+    protected virtual bool IsClientScope => false;
+    protected virtual Guid? CurrentClientId => null;
+
     public AegiFinanceDbContext(DbContextOptions<AegiFinanceDbContext> options)
         : base(options)
     {
@@ -17,9 +21,13 @@ public class AegiFinanceDbContext : DbContext
     }
 
     public DbSet<User> Users => Set<User>();
+    public DbSet<UserSession> UserSessions => Set<UserSession>();
     public DbSet<Role> Roles => Set<Role>();
-    public DbSet<Permission> Permissions => Set<Permission>();
-    public DbSet<UserPermission> UserPermissions => Set<UserPermission>();
+    public DbSet<PermissionDefinition> Permissions => Set<PermissionDefinition>();
+    public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
+    public DbSet<UserPermissionOverride> UserPermissionOverrides => Set<UserPermissionOverride>();
+    public DbSet<UiControlDefinition> UiControlDefinitions => Set<UiControlDefinition>();
+    public DbSet<UiControlPolicy> UiControlPolicies => Set<UiControlPolicy>();
     public DbSet<ClientUser> ClientUsers => Set<ClientUser>();
     public DbSet<ClientPinCredential> ClientPinCredentials => Set<ClientPinCredential>();
     public DbSet<SubscriptionPermission> SubscriptionPermissions => Set<SubscriptionPermission>();
@@ -46,15 +54,19 @@ public class AegiFinanceDbContext : DbContext
     public DbSet<SubscriptionAllocation> SubscriptionAllocations => Set<SubscriptionAllocation>();
     public DbSet<BankStatement> BankStatements => Set<BankStatement>();
     public DbSet<BankStatementLine> BankStatementLines => Set<BankStatementLine>();
+    public DbSet<BankImportAttempt> BankImportAttempts => Set<BankImportAttempt>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
         ConfigureUser(modelBuilder);
+        ConfigureUserSession(modelBuilder);
         ConfigureRole(modelBuilder);
         ConfigurePermission(modelBuilder);
         ConfigureUserPermission(modelBuilder);
+        ConfigureUiControlDefinition(modelBuilder);
+        ConfigureUiControlPolicy(modelBuilder);
         ConfigureClientUser(modelBuilder);
         ConfigureClientPinCredential(modelBuilder);
         ConfigureSubscriptionPermission(modelBuilder);
@@ -81,8 +93,10 @@ public class AegiFinanceDbContext : DbContext
         ConfigureSubscriptionAllocation(modelBuilder);
         ConfigureBankStatement(modelBuilder);
         ConfigureBankStatementLine(modelBuilder);
+        ConfigureBankImportAttempt(modelBuilder);
 
         ApplySoftDeleteQueryFilters(modelBuilder);
+        ApplyTenantQueryFilters(modelBuilder);
     }
 
     private static void ConfigureUser(ModelBuilder modelBuilder)
@@ -99,7 +113,6 @@ public class AegiFinanceDbContext : DbContext
                     v => v.ToString(),
                     v => (UserType)Enum.Parse(typeof(UserType), v));
             entity.Property(e => e.ClientId).IsRequired(false);
-            entity.Property(e => e.RefreshToken).IsRequired(false);
 
             entity.HasIndex(e => e.UserName).IsUnique();
             entity.HasIndex(e => e.Email).IsUnique();
@@ -116,9 +129,31 @@ public class AegiFinanceDbContext : DbContext
                         j.ToTable("UserRoles");
                     });
 
-            entity.HasMany(u => u.UserPermissions)
-                .WithOne()
+            entity.HasMany(u => u.PermissionOverrides)
+                .WithOne(up => up.User)
                 .HasForeignKey(up => up.UserId);
+
+            entity.HasMany(u => u.UiControlPolicies)
+                .WithOne(policy => policy.User)
+                .HasForeignKey(policy => policy.UserId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+    }
+
+    private static void ConfigureUserSession(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<UserSession>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.RefreshTokenHash).HasMaxLength(200).IsRequired();
+            entity.Property(item => item.DeviceName).HasMaxLength(120);
+            entity.Property(item => item.IpAddress).HasMaxLength(64);
+            entity.Property(item => item.UserAgent).HasMaxLength(500);
+            entity.Property(item => item.RevokedReason).HasMaxLength(300);
+            entity.HasIndex(item => new { item.UserId, item.ExpiresAt });
+            entity.HasOne(item => item.User).WithMany(user => user.Sessions)
+                .HasForeignKey(item => item.UserId).OnDelete(DeleteBehavior.Cascade);
         });
     }
 
@@ -136,28 +171,46 @@ public class AegiFinanceDbContext : DbContext
 
             entity.HasIndex(e => e.Name).IsUnique();
 
-            entity.HasMany(r => r.Permissions)
-                .WithMany(p => p.Roles)
-                .UsingEntity<Dictionary<string, object>>(
-                    "RolePermission",
-                    j => j.HasOne<Permission>().WithMany().HasForeignKey("PermissionId"),
-                    j => j.HasOne<Role>().WithMany().HasForeignKey("RoleId"),
-                    j =>
-                    {
-                        j.HasKey("RoleId", "PermissionId");
-                        j.ToTable("RolePermissions");
-                    });
+            entity.HasMany(r => r.RolePermissions)
+                .WithOne(rp => rp.Role)
+                .HasForeignKey(rp => rp.RoleId);
+
+            entity.HasMany(r => r.UiControlPolicies)
+                .WithOne(policy => policy.Role)
+                .HasForeignKey(policy => policy.RoleId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
         });
+
+        modelBuilder.Entity<RolePermission>(entity =>
+        {
+            entity.ToTable("RolePermissions");
+            entity.HasKey(e => new { e.RoleId, e.PermissionId });
+            entity.Property(e => e.IsGranted).HasDefaultValue(true);
+            entity.HasOne(e => e.Permission)
+                .WithMany(permission => permission.RolePermissions)
+                .HasForeignKey(e => e.PermissionId);
+        });
+
+        AppendQueryFilter<RolePermission>(modelBuilder, entity => !entity.Permission.IsDeleted);
     }
 
     private static void ConfigurePermission(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Permission>(entity =>
+        modelBuilder.Entity<PermissionDefinition>(entity =>
         {
+            entity.ToTable("Permissions");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Code).HasMaxLength(100).IsRequired();
             entity.Property(e => e.Name).HasMaxLength(200).IsRequired();
             entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.Module).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.Action).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.Kind)
+                .HasConversion(
+                    value => value.ToString(),
+                    value => (PermissionKind)Enum.Parse(typeof(PermissionKind), value));
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
 
             entity.HasIndex(e => e.Code).IsUnique();
         });
@@ -165,13 +218,60 @@ public class AegiFinanceDbContext : DbContext
 
     private static void ConfigureUserPermission(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<UserPermission>(entity =>
+        modelBuilder.Entity<UserPermissionOverride>(entity =>
         {
+            entity.ToTable("UserPermissions");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.UserId).IsRequired();
             entity.Property(e => e.PermissionId).IsRequired();
 
-            entity.HasIndex(e => new { e.UserId, e.PermissionId }).IsUnique();
+            entity.HasIndex(e => new { e.UserId, e.PermissionId })
+                .IsUnique().HasFilter("[ClientId] IS NULL AND [SubscriptionId] IS NULL AND [IsDeleted] = 0");
+            entity.HasIndex(e => new { e.UserId, e.PermissionId, e.ClientId })
+                .IsUnique().HasFilter("[ClientId] IS NOT NULL AND [SubscriptionId] IS NULL AND [IsDeleted] = 0");
+            entity.HasIndex(e => new { e.UserId, e.PermissionId, e.SubscriptionId })
+                .IsUnique().HasFilter("[SubscriptionId] IS NOT NULL AND [IsDeleted] = 0");
+            entity.HasOne(e => e.Permission)
+                .WithMany(permission => permission.UserPermissionOverrides)
+                .HasForeignKey(e => e.PermissionId);
+        });
+    }
+
+    private static void ConfigureUiControlDefinition(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<UiControlDefinition>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.ControlKey).HasMaxLength(240).IsRequired();
+            entity.Property(e => e.Label).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.Module).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.ControlType).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.RequiredPermissionCode).HasMaxLength(100);
+            entity.HasIndex(e => e.ControlKey).IsUnique();
+        });
+    }
+
+    private static void ConfigureUiControlPolicy(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<UiControlPolicy>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.AccessMode)
+                .HasConversion(
+                    value => value.ToString(),
+                    value => (UiAccessMode)Enum.Parse(typeof(UiAccessMode), value));
+            entity.HasOne(e => e.UiControlDefinition)
+                .WithMany(definition => definition.Policies)
+                .HasForeignKey(e => e.UiControlDefinitionId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(e => new { e.UiControlDefinitionId, e.RoleId })
+                .IsUnique().HasFilter("[RoleId] IS NOT NULL AND [UserId] IS NULL AND [ClientId] IS NULL AND [SubscriptionId] IS NULL AND [IsDeleted] = 0");
+            entity.HasIndex(e => new { e.UiControlDefinitionId, e.UserId })
+                .IsUnique().HasFilter("[UserId] IS NOT NULL AND [RoleId] IS NULL AND [ClientId] IS NULL AND [SubscriptionId] IS NULL AND [IsDeleted] = 0");
+            entity.HasIndex(e => new { e.UiControlDefinitionId, e.RoleId, e.ClientId, e.SubscriptionId })
+                .IsUnique().HasFilter("[RoleId] IS NOT NULL AND [UserId] IS NULL AND ([ClientId] IS NOT NULL OR [SubscriptionId] IS NOT NULL) AND [IsDeleted] = 0");
+            entity.HasIndex(e => new { e.UiControlDefinitionId, e.UserId, e.ClientId, e.SubscriptionId })
+                .IsUnique().HasFilter("[UserId] IS NOT NULL AND [RoleId] IS NULL AND ([ClientId] IS NOT NULL OR [SubscriptionId] IS NOT NULL) AND [IsDeleted] = 0");
         });
     }
 
@@ -200,6 +300,10 @@ public class AegiFinanceDbContext : DbContext
         modelBuilder.Entity<SubscriptionPermission>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.HasOne(e => e.Subscription)
+                .WithMany()
+                .HasForeignKey(e => e.SubscriptionId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 
@@ -679,6 +783,23 @@ public class AegiFinanceDbContext : DbContext
         });
     }
 
+    private static void ConfigureBankImportAttempt(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<BankImportAttempt>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.FileName).HasMaxLength(260).IsRequired();
+            entity.Property(item => item.Status).HasMaxLength(30).IsRequired();
+            entity.Property(item => item.Error).HasMaxLength(2000);
+            entity.Property(item => item.AttemptedAt).IsRequired();
+            entity.HasIndex(item => new { item.Status, item.AttemptedAt });
+            entity.HasOne(item => item.BankAccount)
+                .WithMany()
+                .HasForeignKey(item => item.BankAccountId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+    }
+
     private static void ApplySoftDeleteQueryFilters(ModelBuilder modelBuilder)
     {
         var entityTypes = modelBuilder.Model.GetEntityTypes()
@@ -698,5 +819,79 @@ public class AegiFinanceDbContext : DbContext
         where TEntity : BaseEntity
     {
         builder.Entity<TEntity>().HasQueryFilter(e => !e.IsDeleted);
+    }
+
+    private void ApplyTenantQueryFilters(ModelBuilder modelBuilder)
+    {
+        AppendQueryFilter<Client>(modelBuilder, entity =>
+            !IsClientScope || (CurrentClientId.HasValue && entity.Id == CurrentClientId.Value));
+        AppendQueryFilter<User>(modelBuilder, entity =>
+            !IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value));
+        AppendQueryFilter<ClientUser>(modelBuilder, entity =>
+            !IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value));
+        AppendQueryFilter<ClientNote>(modelBuilder, entity =>
+            !IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value));
+        AppendQueryFilter<ClientContact>(modelBuilder, entity =>
+            !IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value));
+        AppendQueryFilter<Subscription>(modelBuilder, entity =>
+            !IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value));
+        AppendQueryFilter<SubscriptionPriceHistory>(modelBuilder, entity =>
+            !IsClientScope || (CurrentClientId.HasValue && entity.Subscription.ClientId == CurrentClientId.Value));
+        AppendQueryFilter<SubscriptionChangeLog>(modelBuilder, entity =>
+            !IsClientScope || (CurrentClientId.HasValue && entity.Subscription.ClientId == CurrentClientId.Value));
+        AppendQueryFilter<BillingItem>(modelBuilder, entity =>
+            !IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value));
+        AppendQueryFilter<LedgerEntry>(modelBuilder, entity =>
+            !IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value));
+        AppendQueryFilter<SubscriptionAllocation>(modelBuilder, entity =>
+            !IsClientScope || (CurrentClientId.HasValue && entity.BillingItem.ClientId == CurrentClientId.Value));
+        AppendQueryFilter<SubscriptionPermission>(modelBuilder, entity =>
+            !IsClientScope || (CurrentClientId.HasValue && entity.Subscription.ClientId == CurrentClientId.Value));
+        AppendQueryFilter<UiControlPolicy>(modelBuilder, entity =>
+            !IsClientScope || !entity.ClientId.HasValue ||
+            (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value));
+        AppendQueryFilter<UserPermissionOverride>(modelBuilder, entity =>
+            !IsClientScope || !entity.ClientId.HasValue ||
+            (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value));
+    }
+
+    private static void AppendQueryFilter<TEntity>(
+        ModelBuilder modelBuilder,
+        Expression<Func<TEntity, bool>> filter)
+        where TEntity : class
+    {
+        var entityType = modelBuilder.Entity<TEntity>().Metadata;
+        var existingFilter = entityType.GetQueryFilter();
+        if (existingFilter is null)
+        {
+            modelBuilder.Entity<TEntity>().HasQueryFilter(filter);
+            return;
+        }
+
+        var parameter = Expression.Parameter(typeof(TEntity), "entity");
+        var existingBody = new ParameterReplaceVisitor(existingFilter.Parameters[0], parameter)
+            .Visit(existingFilter.Body)!;
+        var addedBody = new ParameterReplaceVisitor(filter.Parameters[0], parameter)
+            .Visit(filter.Body)!;
+        var combined = Expression.Lambda<Func<TEntity, bool>>(
+            Expression.AndAlso(existingBody, addedBody),
+            parameter);
+
+        modelBuilder.Entity<TEntity>().HasQueryFilter(combined);
+    }
+
+    private sealed class ParameterReplaceVisitor : ExpressionVisitor
+    {
+        private readonly ParameterExpression _source;
+        private readonly ParameterExpression _target;
+
+        public ParameterReplaceVisitor(ParameterExpression source, ParameterExpression target)
+        {
+            _source = source;
+            _target = target;
+        }
+
+        protected override Expression VisitParameter(ParameterExpression node)
+            => node == _source ? _target : base.VisitParameter(node);
     }
 }

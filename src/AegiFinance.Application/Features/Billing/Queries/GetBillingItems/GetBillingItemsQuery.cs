@@ -12,6 +12,8 @@ public class GetBillingItemsQuery : IRequest<PaginatedList<BillingItemListDto>>
     public BillingItemStatus? Status { get; set; }
     public DateTime? DueDateFrom { get; set; }
     public DateTime? DueDateTo { get; set; }
+    public string? Currency { get; set; }
+    public bool OutstandingOnly { get; set; }
     public int PageNumber { get; set; } = 1;
     public int PageSize { get; set; } = 10;
 }

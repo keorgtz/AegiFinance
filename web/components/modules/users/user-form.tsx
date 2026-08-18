@@ -10,21 +10,24 @@ import { Select, SelectItem } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { useCreateUser, useUpdateUser } from "@/hooks/use-users";
 import { useRoles } from "@/hooks/use-roles";
+import { useClients } from "@/hooks/use-clients";
 import type { UserDto } from "@/types/api";
 
 const createSchema = z.object({
   name: z.string().min(1, "Requerido"),
   userName: z.string().min(3, "Mínimo 3 caracteres"),
   email: z.string().email("Correo inválido"),
-  password: z.string().min(6, "Mínimo 6 caracteres"),
+  password: z.string().min(8, "Mínimo 8 caracteres").regex(/[A-Z]/, "Incluí una mayúscula").regex(/[a-z]/, "Incluí una minúscula").regex(/[0-9]/, "Incluí un número").regex(/[^a-zA-Z0-9]/, "Incluí un símbolo"),
   userType: z.enum(["Administrator", "Client"] as const),
-});
+  clientId: z.string().optional(),
+}).superRefine((value, context) => { if (value.userType === "Client" && !value.clientId) context.addIssue({ code: "custom", path: ["clientId"], message: "Seleccioná un cliente" }); });
 
 const updateSchema = z.object({
   name: z.string().min(1, "Requerido"),
   email: z.string().email("Correo inválido"),
   userType: z.enum(["Administrator", "Client"] as const),
-});
+  clientId: z.string().optional(),
+}).superRefine((value, context) => { if (value.userType === "Client" && !value.clientId) context.addIssue({ code: "custom", path: ["clientId"], message: "Seleccioná un cliente" }); });
 
 type CreateValues = z.infer<typeof createSchema>;
 type UpdateValues = z.infer<typeof updateSchema>;
@@ -39,6 +42,7 @@ export function UserForm({ open, onOpenChange, editingUser }: UserFormProps) {
   const isEdit = !!editingUser;
   const createUser = useCreateUser();
   const updateUser = useUpdateUser();
+  const { data: clients } = useClients({ pageSize: 200 });
 
   const {
     register,
@@ -63,9 +67,10 @@ export function UserForm({ open, onOpenChange, editingUser }: UserFormProps) {
           userType: editingUser.userType,
           userName: editingUser.userName,
           password: "",
+          clientId: editingUser.clientId ?? "",
         });
       } else {
-        reset({ name: "", userName: "", email: "", password: "", userType: "Administrator" });
+        reset({ name: "", userName: "", email: "", password: "", userType: "Administrator", clientId: "" });
       }
     }
   }, [open, editingUser, reset]);
@@ -78,6 +83,7 @@ export function UserForm({ open, onOpenChange, editingUser }: UserFormProps) {
           name: values.name,
           email: values.email,
           userType: values.userType,
+          clientId: values.userType === "Client" ? values.clientId : null,
         },
       });
     } else {
@@ -93,7 +99,7 @@ export function UserForm({ open, onOpenChange, editingUser }: UserFormProps) {
         description={isEdit ? `Editando ${editingUser?.userName}` : undefined}
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <Input
+          <Input controlKey="ui.components.modules.users.user.form.input.1"
             {...register("name")}
             label="Nombre completo"
             placeholder="Ej. Juan Pérez"
@@ -103,14 +109,14 @@ export function UserForm({ open, onOpenChange, editingUser }: UserFormProps) {
 
           {!isEdit && (
             <>
-              <Input
+              <Input controlKey="ui.components.modules.users.user.form.input.2"
                 {...register("userName")}
                 label="Nombre de usuario"
                 placeholder="Ej. jperez"
                 autoComplete="off"
                 error={(errors as { userName?: { message?: string } }).userName?.message}
               />
-              <Input
+              <Input controlKey="ui.components.modules.users.user.form.input.3"
                 {...register("password")}
                 label="Contraseña"
                 type="password"
@@ -121,7 +127,7 @@ export function UserForm({ open, onOpenChange, editingUser }: UserFormProps) {
             </>
           )}
 
-          <Input
+          <Input controlKey="ui.components.modules.users.user.form.input.4"
             {...register("email")}
             label="Correo electrónico"
             type="email"
@@ -129,7 +135,7 @@ export function UserForm({ open, onOpenChange, editingUser }: UserFormProps) {
             error={errors.email?.message}
           />
 
-          <Select
+          <Select controlKey="ui.components.modules.users.user.form.select.1"
             label="Tipo de usuario"
             value={userType}
             onValueChange={(v) => setValue("userType", v as "Administrator" | "Client")}
@@ -139,13 +145,19 @@ export function UserForm({ open, onOpenChange, editingUser }: UserFormProps) {
             <SelectItem value="Client">Cliente</SelectItem>
           </Select>
 
+          {userType === "Client" && (
+            <Select controlKey="users.form.client" permission="ManageUsers" label="Cliente" value={watch("clientId") || ""} onValueChange={(value) => setValue("clientId", value)} error={(errors as { clientId?: { message?: string } }).clientId?.message} placeholder="Seleccioná un cliente">
+              {clients?.items.map((client) => <SelectItem key={client.id} value={client.id}>{client.name}</SelectItem>)}
+            </Select>
+          )}
+
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="secondary">
+              <Button controlKey="ui.components.modules.users.user.form.button.1" type="button" variant="secondary">
                 Cancelar
               </Button>
             </DialogClose>
-            <Button type="submit" loading={isSubmitting}>
+            <Button controlKey="ui.components.modules.users.user.form.button.2" type="submit" loading={isSubmitting}>
               {isEdit ? "Guardar cambios" : "Crear usuario"}
             </Button>
           </DialogFooter>

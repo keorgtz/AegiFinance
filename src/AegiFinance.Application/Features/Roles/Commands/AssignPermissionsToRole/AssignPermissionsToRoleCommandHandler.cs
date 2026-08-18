@@ -1,4 +1,5 @@
 using AegiFinance.Application.Common.Interfaces;
+using AegiFinance.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,7 +17,7 @@ public class AssignPermissionsToRoleCommandHandler : IRequestHandler<AssignPermi
     public async Task Handle(AssignPermissionsToRoleCommand request, CancellationToken cancellationToken)
     {
         var role = await _context.Roles
-            .Include(r => r.Permissions)
+            .Include(r => r.RolePermissions)
             .FirstOrDefaultAsync(r => r.Id == request.RoleId, cancellationToken);
 
         if (role is null)
@@ -35,10 +36,15 @@ public class AssignPermissionsToRoleCommandHandler : IRequestHandler<AssignPermi
             throw new InvalidOperationException("Uno o más permisos no existen.");
         }
 
-        role.Permissions.Clear();
+        role.RolePermissions.Clear();
         foreach (var permission in permissions)
         {
-            role.Permissions.Add(permission);
+            role.RolePermissions.Add(new RolePermission
+            {
+                RoleId = role.Id,
+                PermissionId = permission.Id,
+                IsGranted = true
+            });
         }
 
         await _context.SaveChangesAsync(cancellationToken);

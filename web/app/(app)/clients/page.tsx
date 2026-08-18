@@ -45,13 +45,13 @@ function FilterSelect({
 }) {
   return (
     <RadixSelect.Root value={value} onValueChange={onValueChange}>
-      <RadixSelect.Trigger className="inline-flex h-8 items-center gap-1.5 rounded-input border border-[#E3E6EC] bg-white px-3 text-[13px] text-[#3A3F4B] shadow-dp1 hover:border-[#5BAEBC] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5BAEBC]">
+      <RadixSelect.Trigger className="inline-flex h-8 items-center gap-1.5 rounded-input border border-border bg-surface px-3 text-[13px] text-foreground-secondary shadow-dp1 hover:border-action focus:outline-none focus-visible:ring-2 focus-visible:ring-action">
         <RadixSelect.Value placeholder={label} />
-        <ChevronDown className="h-3 w-3 text-[#5B6472]" />
+        <ChevronDown className="h-3 w-3 text-muted" />
       </RadixSelect.Trigger>
       <RadixSelect.Portal>
         <RadixSelect.Content
-          className="z-50 min-w-[160px] overflow-hidden rounded-table border border-[#E3E6EC] bg-white shadow-dp2"
+          className="z-50 min-w-[160px] overflow-hidden rounded-table border border-border bg-surface shadow-dp2"
           position="popper"
           sideOffset={4}
         >
@@ -68,7 +68,7 @@ function FilterItem({ value, children }: { value: string; children: React.ReactN
   return (
     <RadixSelect.Item
       value={value}
-      className="flex cursor-pointer items-center justify-between rounded px-3 py-1.5 text-[13px] text-[#3A3F4B] hover:bg-[#F7F8FA] focus:bg-[#F7F8FA] focus:outline-none data-[state=checked]:text-[#0F5C6B] data-[state=checked]:font-600"
+      className="flex cursor-pointer items-center justify-between rounded px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle focus:bg-surface-subtle focus:outline-none data-[state=checked]:text-action data-[state=checked]:font-semibold"
     >
       <RadixSelect.ItemText>{children}</RadixSelect.ItemText>
       <RadixSelect.ItemIndicator>
@@ -88,6 +88,13 @@ export default function ClientsPage() {
   const [tagFilter, setTagFilter] = useState("");
   const [formOpen, setFormOpen] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const status = new URLSearchParams(window.location.search).get("status");
+    if (status === "Active" || status === "Inactive" || status === "Prospective") {
+      setStatusFilter(status);
+    }
+  }, []);
 
   const { data: categories = [] } = useClientCategories();
   const { data: allTags = [] } = useClientTags();
@@ -134,13 +141,13 @@ export default function ClientsPage() {
         const c = row.original;
         return (
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-card bg-[#EFF9F9] text-[#0F5C6B]">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-card bg-action-soft text-action">
               <Building2 className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <p className="truncate font-600 text-[#16181D]">{c.name}</p>
+              <p className="truncate font-semibold text-foreground">{c.name}</p>
               {c.tradeName && (
-                <p className="truncate text-[11px] text-[#5B6472]">{c.tradeName}</p>
+                <p className="truncate text-[11px] text-muted">{c.tradeName}</p>
               )}
             </div>
           </div>
@@ -152,7 +159,7 @@ export default function ClientsPage() {
       header: "Código",
       size: 90,
       cell: ({ getValue }) => (
-        <span className="font-mono text-[12px] text-[#5B6472]">{getValue() as string}</span>
+        <span className="font-mono text-[12px] text-muted">{getValue() as string}</span>
       ),
     },
     {
@@ -166,14 +173,14 @@ export default function ClientsPage() {
       header: "Categoría",
       size: 130,
       cell: ({ getValue }) => (
-        <span className="text-[13px] text-[#5B6472]">{(getValue() as string | null) ?? "—"}</span>
+        <span className="text-[13px] text-muted">{(getValue() as string | null) ?? "—"}</span>
       ),
     },
     {
       accessorKey: "primaryContactName",
       header: "Contacto principal",
       cell: ({ getValue }) => (
-        <span className="text-[13px] text-[#3A3F4B]">{(getValue() as string | null) ?? "—"}</span>
+        <span className="text-[13px] text-foreground-secondary">{(getValue() as string | null) ?? "—"}</span>
       ),
     },
     {
@@ -182,7 +189,7 @@ export default function ClientsPage() {
       cell: ({ getValue }) => {
         const tags = getValue() as ClientListDto["tags"];
         return tags.length === 0 ? (
-          <span className="text-[#5B6472]">—</span>
+          <span className="text-muted">—</span>
         ) : (
           <div className="flex flex-wrap gap-1">
             {tags.map((t) => <TagChip key={t.id} tag={t} />)}
@@ -200,7 +207,7 @@ export default function ClientsPage() {
           <Can permission="ManageClients">
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
-                <Button
+                <Button controlKey="ui.app.app.clients.page.button.1"
                   variant="ghost"
                   size="icon"
                   aria-label="Más acciones"
@@ -211,27 +218,27 @@ export default function ClientsPage() {
               </DropdownMenu.Trigger>
               <DropdownMenu.Portal>
                 <DropdownMenu.Content
-                  className="z-50 min-w-[160px] overflow-hidden rounded-table border border-[#E3E6EC] bg-white shadow-dp2"
+                  className="z-50 min-w-[160px] overflow-hidden rounded-table border border-border bg-surface shadow-dp2"
                   align="end"
                   sideOffset={4}
                 >
                   <DropdownMenu.Item
                     onSelect={() => router.push(`/clients/${client.id}`)}
-                    className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-[#3A3F4B] hover:bg-[#F7F8FA] cursor-pointer focus:outline-none"
+                    className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle cursor-pointer focus:outline-none"
                   >
                     Ver detalle
                   </DropdownMenu.Item>
-                  <DropdownMenu.Separator className="my-1 h-px bg-[#F7F8FA]" />
+                  <DropdownMenu.Separator className="my-1 h-px bg-surface-subtle" />
                   <DropdownMenu.Item
                     onSelect={() =>
                       toggleStatus.mutate({ id: client.id, active: !isActive })
                     }
-                    className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-[#3A3F4B] hover:bg-[#F7F8FA] cursor-pointer focus:outline-none"
+                    className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle cursor-pointer focus:outline-none"
                   >
                     {isActive ? (
-                      <><UserX className="h-3.5 w-3.5 text-[#B7791F]" /> Desactivar</>
+                      <><UserX className="h-3.5 w-3.5 text-warning" /> Desactivar</>
                     ) : (
-                      <><UserCheck className="h-3.5 w-3.5 text-[#0E9F6E]" /> Activar</>
+                      <><UserCheck className="h-3.5 w-3.5 text-success" /> Activar</>
                     )}
                   </DropdownMenu.Item>
                   <DropdownMenu.Item
@@ -240,7 +247,7 @@ export default function ClientsPage() {
                         deleteClient.mutate(client.id);
                       }
                     }}
-                    className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-[#B6452C] hover:bg-[#FFF6F1] cursor-pointer focus:outline-none"
+                    className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-danger hover:bg-danger-soft cursor-pointer focus:outline-none"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                     Eliminar
@@ -261,16 +268,16 @@ export default function ClientsPage() {
       {/* Header */}
       <div className="mb-5 flex items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-[22px] font-700 text-[#16181D]">Clientes</h1>
-          <p className="mt-0.5 text-[13px] text-[#5B6472]">
+          <h1 className="font-display text-[22px] font-bold text-foreground">Clientes</h1>
+          <p className="mt-0.5 text-[13px] text-muted">
             {data ? `${data.totalCount} registro${data.totalCount !== 1 ? "s" : ""}` : "Cargando…"}
           </p>
         </div>
         <Can permission="ManageClients">
-          <Button onClick={() => setFormOpen(true)} size="md">
+          <Button controlKey="ui.app.app.clients.page.button.2" onClick={() => setFormOpen(true)} size="md">
             <Plus className="h-4 w-4" />
             Nuevo
-            <kbd className="ml-1 rounded bg-white/20 px-1 text-[10px]">N</kbd>
+            <kbd className="ml-1 rounded bg-surface/20 px-1 text-[10px]">N</kbd>
           </Button>
         </Can>
       </div>
@@ -278,7 +285,7 @@ export default function ClientsPage() {
       {/* Filtros */}
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <div className="w-72">
-          <Input
+          <Input controlKey="ui.app.app.clients.page.input.1"
             ref={searchRef}
             placeholder="Buscar cliente…"
             value={search}
@@ -286,7 +293,7 @@ export default function ClientsPage() {
             leftIcon={<Search className="h-3.5 w-3.5" />}
           />
         </div>
-        <kbd className="rounded bg-[#E3E6EC] px-1.5 py-0.5 text-[10px] font-600 text-[#5B6472]">/</kbd>
+        <kbd className="rounded bg-border px-1.5 py-0.5 text-[10px] font-semibold text-muted">/</kbd>
 
         <FilterSelect
           label="Estado"
@@ -334,14 +341,14 @@ export default function ClientsPage() {
         )}
 
         {hasFilters && (
-          <button
+          <button data-ui-control="ui.app.app.clients.page.button.3"
             onClick={() => {
               setSearch("");
               setStatusFilter("");
               setCategoryFilter("");
               setTagFilter("");
             }}
-            className="text-[12px] text-[#5B6472] hover:text-[#0F5C6B] underline"
+            className="text-[12px] text-muted hover:text-action underline"
           >
             Limpiar filtros
           </button>

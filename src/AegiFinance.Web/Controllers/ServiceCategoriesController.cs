@@ -35,6 +35,7 @@ public class ServiceCategoriesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "ManageServices")]
     public async Task<ActionResult<ServiceCategoryDto>> Create(CreateServiceCategoryCommand command, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(command, cancellationToken);
@@ -42,6 +43,7 @@ public class ServiceCategoriesController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [Authorize(Policy = "ManageServices")]
     public async Task<ActionResult<ServiceCategoryDto>> Update(Guid id, UpdateServiceCategoryCommand command, CancellationToken cancellationToken)
     {
         command.Id = id;
@@ -49,6 +51,7 @@ public class ServiceCategoriesController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Policy = "ManageServices")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         await _mediator.Send(new DeleteServiceCategoryCommand(id), cancellationToken);

@@ -67,16 +67,16 @@ export function SubscriptionActionDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent title={cfg.title} size="sm">
-        <p className="mb-4 text-[13px] text-[#5B6472]">{cfg.description}</p>
+        <p className="mb-4 text-[13px] text-muted">{cfg.description}</p>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {showEffectiveDate && (
-            <Input
+            <Input controlKey="ui.components.modules.subscriptions.subscription.action.dialog.input.1"
               {...register("effectiveDate")}
               label="Fecha efectiva"
               type="date"
             />
           )}
-          <Textarea
+          <Textarea controlKey="ui.components.modules.subscriptions.subscription.action.dialog.textarea.1"
             {...register("reason")}
             label="Motivo (opcional)"
             placeholder="Ej. Solicitud del cliente"
@@ -84,9 +84,9 @@ export function SubscriptionActionDialog({
           />
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="secondary">Cancelar</Button>
+              <Button controlKey="ui.components.modules.subscriptions.subscription.action.dialog.button.1" type="button" variant="secondary">Cancelar</Button>
             </DialogClose>
-            <Button
+            <Button controlKey="ui.components.modules.subscriptions.subscription.action.dialog.button.2"
               type="submit"
               variant={cfg.variant}
               loading={isSubmitting}

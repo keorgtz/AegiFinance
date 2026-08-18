@@ -172,9 +172,9 @@ export function SubscriptionForm({
         footer={
           <>
             <DrawerClose asChild>
-              <Button type="button" variant="secondary" onClick={handleClose}>Cancelar</Button>
+              <Button controlKey="ui.components.modules.subscriptions.subscription.form.button.1" type="button" variant="secondary" onClick={handleClose}>Cancelar</Button>
             </DrawerClose>
-            <Button form="subscription-form" type="submit" loading={isSubmitting}>
+            <Button controlKey="ui.components.modules.subscriptions.subscription.form.button.2" form="subscription-form" type="submit" loading={isSubmitting}>
               {isEdit ? "Guardar cambios" : "Crear suscripción"}
             </Button>
           </>
@@ -201,14 +201,14 @@ export function SubscriptionForm({
             error={errors.serviceId?.message}
           />
 
-          <hr className="border-[#F7F8FA]" />
+          <hr className="border-surface-subtle" />
 
           {/* Facturación */}
-          <p className="text-[11px] font-700 uppercase tracking-wider text-[#5B6472]">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-muted">
             Facturación
           </p>
           <div className="grid grid-cols-2 gap-3">
-            <Select
+            <Select controlKey="ui.components.modules.subscriptions.subscription.form.select.1"
               label="Tipo *"
               value={billingType}
               onValueChange={(v) => setValue("billingType", v as BillingType)}
@@ -217,7 +217,7 @@ export function SubscriptionForm({
                 <SelectItem key={bt.value} value={bt.value}>{bt.label}</SelectItem>
               ))}
             </Select>
-            <Input
+            <Input controlKey="ui.components.modules.subscriptions.subscription.form.input.1"
               {...register("billingDay")}
               label="Día de facturación *"
               type="number"
@@ -228,7 +228,7 @@ export function SubscriptionForm({
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <Input
+            <Input controlKey="ui.components.modules.subscriptions.subscription.form.input.2"
               {...register("price")}
               label="Precio *"
               type="number"
@@ -237,7 +237,7 @@ export function SubscriptionForm({
               inputMode="decimal"
               error={errors.price?.message}
             />
-            <Input
+            <Input controlKey="ui.components.modules.subscriptions.subscription.form.input.3"
               {...register("currency")}
               label="Moneda *"
               placeholder="MXN"
@@ -245,20 +245,20 @@ export function SubscriptionForm({
             />
           </div>
 
-          <hr className="border-[#F7F8FA]" />
+          <hr className="border-surface-subtle" />
 
           {/* Fechas */}
-          <p className="text-[11px] font-700 uppercase tracking-wider text-[#5B6472]">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-muted">
             Período
           </p>
           <div className="grid grid-cols-2 gap-3">
-            <Input
+            <Input controlKey="ui.components.modules.subscriptions.subscription.form.input.4"
               {...register("startDate")}
               label="Inicio *"
               type="date"
               error={errors.startDate?.message}
             />
-            <Input
+            <Input controlKey="ui.components.modules.subscriptions.subscription.form.input.5"
               {...register("endDate")}
               label="Fin (opcional)"
               type="date"
@@ -266,10 +266,10 @@ export function SubscriptionForm({
           </div>
 
           {/* Auto renovar */}
-          <div className="flex items-center justify-between rounded-input border border-[#E3E6EC] px-3 py-2.5">
+          <div className="flex items-center justify-between rounded-input border border-border px-3 py-2.5">
             <label htmlFor="auto-renew" className="cursor-pointer">
-              <p className="text-[13px] font-500 text-[#3A3F4B]">Renovación automática</p>
-              <p className="text-[11px] text-[#5B6472]">
+              <p className="text-[13px] font-medium text-foreground-secondary">Renovación automática</p>
+              <p className="text-[11px] text-muted">
                 Renovar automáticamente al vencer
               </p>
             </label>
@@ -277,15 +277,15 @@ export function SubscriptionForm({
               id="auto-renew"
               checked={autoRenew}
               onCheckedChange={(v) => setValue("autoRenew", v)}
-              className="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors data-[state=checked]:bg-[#0F5C6B] data-[state=unchecked]:bg-[#E3E6EC]"
+              className="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors data-[state=checked]:bg-action data-[state=unchecked]:bg-border"
             >
-              <RadixSwitch.Thumb className="block h-4 w-4 rounded-full bg-white shadow-dp1 transition-transform data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0.5" />
+              <RadixSwitch.Thumb className="block h-4 w-4 rounded-full bg-surface shadow-dp1 transition-transform data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0.5" />
             </RadixSwitch.Root>
           </div>
 
-          <hr className="border-[#F7F8FA]" />
+          <hr className="border-surface-subtle" />
 
-          <Textarea
+          <Textarea controlKey="ui.components.modules.subscriptions.subscription.form.textarea.1"
             {...register("notes")}
             label="Notas internas"
             placeholder="Observaciones sobre esta suscripción…"

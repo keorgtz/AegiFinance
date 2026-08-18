@@ -152,6 +152,68 @@ namespace AegiFinance.Infrastructure.Migrations
                     b.ToTable("BankAccounts");
                 });
 
+            modelBuilder.Entity("AegiFinance.Domain.Entities.BankImportAttempt", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("AttemptedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("BankAccountId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Error")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(260)
+                        .HasColumnType("nvarchar(260)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("RecordsImported")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BankAccountId");
+
+                    b.HasIndex("Status", "AttemptedAt");
+
+                    b.ToTable("BankImportAttempts");
+                });
+
             modelBuilder.Entity("AegiFinance.Domain.Entities.BankStatement", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1018,11 +1080,16 @@ namespace AegiFinance.Infrastructure.Migrations
                     b.ToTable("LedgerEntries");
                 });
 
-            modelBuilder.Entity("AegiFinance.Domain.Entities.Permission", b =>
+            modelBuilder.Entity("AegiFinance.Domain.Entities.PermissionDefinition", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -1045,8 +1112,25 @@ namespace AegiFinance.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<bool>("IsSystemGenerated")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Module")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1064,7 +1148,7 @@ namespace AegiFinance.Infrastructure.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("Permissions");
+                    b.ToTable("Permissions", (string)null);
                 });
 
             modelBuilder.Entity("AegiFinance.Domain.Entities.Role", b =>
@@ -1112,6 +1196,26 @@ namespace AegiFinance.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Roles");
+                });
+
+            modelBuilder.Entity("AegiFinance.Domain.Entities.RolePermission", b =>
+                {
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PermissionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsGranted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.HasKey("RoleId", "PermissionId");
+
+                    b.HasIndex("PermissionId");
+
+                    b.ToTable("RolePermissions", (string)null);
                 });
 
             modelBuilder.Entity("AegiFinance.Domain.Entities.Service", b =>
@@ -1522,6 +1626,8 @@ namespace AegiFinance.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("SubscriptionId");
+
                     b.ToTable("SubscriptionPermissions");
                 });
 
@@ -1630,6 +1736,145 @@ namespace AegiFinance.Infrastructure.Migrations
                     b.ToTable("TransferGroups");
                 });
 
+            modelBuilder.Entity("AegiFinance.Domain.Entities.UiControlDefinition", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ControlKey")
+                        .IsRequired()
+                        .HasMaxLength(240)
+                        .HasColumnType("nvarchar(240)");
+
+                    b.Property<string>("ControlType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSystemRequired")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Module")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("RequiredPermissionCode")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ControlKey")
+                        .IsUnique();
+
+                    b.ToTable("UiControlDefinitions");
+                });
+
+            modelBuilder.Entity("AegiFinance.Domain.Entities.UiControlPolicy", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AccessMode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ClientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("SubscriptionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UiControlDefinitionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UiControlDefinitionId", "RoleId")
+                        .IsUnique()
+                        .HasFilter("[RoleId] IS NOT NULL AND [UserId] IS NULL AND [ClientId] IS NULL AND [SubscriptionId] IS NULL AND [IsDeleted] = 0");
+
+                    b.HasIndex("UiControlDefinitionId", "UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL AND [RoleId] IS NULL AND [ClientId] IS NULL AND [SubscriptionId] IS NULL AND [IsDeleted] = 0");
+
+                    b.HasIndex("UiControlDefinitionId", "RoleId", "ClientId", "SubscriptionId")
+                        .IsUnique()
+                        .HasFilter("[RoleId] IS NOT NULL AND [UserId] IS NULL AND ([ClientId] IS NOT NULL OR [SubscriptionId] IS NOT NULL) AND [IsDeleted] = 0");
+
+                    b.HasIndex("UiControlDefinitionId", "UserId", "ClientId", "SubscriptionId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL AND [RoleId] IS NULL AND ([ClientId] IS NOT NULL OR [SubscriptionId] IS NOT NULL) AND [IsDeleted] = 0");
+
+                    b.ToTable("UiControlPolicies");
+                });
+
             modelBuilder.Entity("AegiFinance.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1659,6 +1904,9 @@ namespace AegiFinance.Infrastructure.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<int>("FailedLoginAttempts")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -1668,20 +1916,23 @@ namespace AegiFinance.Infrastructure.Migrations
                     b.Property<DateTime?>("LastLoginAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("LockoutEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("MustChangePassword")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<DateTime?>("PasswordChangedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RefreshToken")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("RefreshTokenExpiry")
-                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -1709,7 +1960,71 @@ namespace AegiFinance.Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("AegiFinance.Domain.Entities.UserPermission", b =>
+            modelBuilder.Entity("AegiFinance.Domain.Entities.UserPermissionOverride", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ClientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsGranted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("PermissionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("SubscriptionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PermissionId");
+
+                    b.HasIndex("UserId", "PermissionId")
+                        .IsUnique()
+                        .HasFilter("[ClientId] IS NULL AND [SubscriptionId] IS NULL AND [IsDeleted] = 0");
+
+                    b.HasIndex("UserId", "PermissionId", "ClientId")
+                        .IsUnique()
+                        .HasFilter("[ClientId] IS NOT NULL AND [SubscriptionId] IS NULL AND [IsDeleted] = 0");
+
+                    b.HasIndex("UserId", "PermissionId", "SubscriptionId")
+                        .IsUnique()
+                        .HasFilter("[SubscriptionId] IS NOT NULL AND [IsDeleted] = 0");
+
+                    b.ToTable("UserPermissions", (string)null);
+                });
+
+            modelBuilder.Entity("AegiFinance.Domain.Entities.UserSession", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1727,14 +2042,37 @@ namespace AegiFinance.Infrastructure.Migrations
                     b.Property<Guid?>("DeletedBy")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("DeviceName")
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("IpAddress")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsGranted")
-                        .HasColumnType("bit");
+                    b.Property<DateTime>("LastSeenAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<Guid>("PermissionId")
+                    b.Property<string>("RefreshTokenHash")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("RevokedBy")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RevokedReason")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -1742,17 +2080,18 @@ namespace AegiFinance.Infrastructure.Migrations
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("UserAgent")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PermissionId");
+                    b.HasIndex("UserId", "ExpiresAt");
 
-                    b.HasIndex("UserId", "PermissionId")
-                        .IsUnique();
-
-                    b.ToTable("UserPermissions");
+                    b.ToTable("UserSessions");
                 });
 
             modelBuilder.Entity("ClientClientTag", b =>
@@ -1770,21 +2109,6 @@ namespace AegiFinance.Infrastructure.Migrations
                     b.ToTable("ClientClientTag", (string)null);
                 });
 
-            modelBuilder.Entity("RolePermission", b =>
-                {
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("PermissionId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("RoleId", "PermissionId");
-
-                    b.HasIndex("PermissionId");
-
-                    b.ToTable("RolePermissions", (string)null);
-                });
-
             modelBuilder.Entity("UserRole", b =>
                 {
                     b.Property<Guid>("UserId")
@@ -1798,6 +2122,17 @@ namespace AegiFinance.Infrastructure.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("UserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("AegiFinance.Domain.Entities.BankImportAttempt", b =>
+                {
+                    b.HasOne("AegiFinance.Domain.Entities.BankAccount", "BankAccount")
+                        .WithMany()
+                        .HasForeignKey("BankAccountId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("BankAccount");
                 });
 
             modelBuilder.Entity("AegiFinance.Domain.Entities.BankStatement", b =>
@@ -1918,6 +2253,25 @@ namespace AegiFinance.Infrastructure.Migrations
                     b.Navigation("Client");
                 });
 
+            modelBuilder.Entity("AegiFinance.Domain.Entities.RolePermission", b =>
+                {
+                    b.HasOne("AegiFinance.Domain.Entities.PermissionDefinition", "Permission")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AegiFinance.Domain.Entities.Role", "Role")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Permission");
+
+                    b.Navigation("Role");
+                });
+
             modelBuilder.Entity("AegiFinance.Domain.Entities.Service", b =>
                 {
                     b.HasOne("AegiFinance.Domain.Entities.ServiceCategory", "Category")
@@ -1987,6 +2341,17 @@ namespace AegiFinance.Infrastructure.Migrations
                     b.Navigation("Subscription");
                 });
 
+            modelBuilder.Entity("AegiFinance.Domain.Entities.SubscriptionPermission", b =>
+                {
+                    b.HasOne("AegiFinance.Domain.Entities.Subscription", "Subscription")
+                        .WithMany()
+                        .HasForeignKey("SubscriptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Subscription");
+                });
+
             modelBuilder.Entity("AegiFinance.Domain.Entities.SubscriptionPriceHistory", b =>
                 {
                     b.HasOne("AegiFinance.Domain.Entities.Subscription", "Subscription")
@@ -2017,19 +2382,59 @@ namespace AegiFinance.Infrastructure.Migrations
                     b.Navigation("ToEntry");
                 });
 
-            modelBuilder.Entity("AegiFinance.Domain.Entities.UserPermission", b =>
+            modelBuilder.Entity("AegiFinance.Domain.Entities.UiControlPolicy", b =>
                 {
-                    b.HasOne("AegiFinance.Domain.Entities.Permission", null)
-                        .WithMany("UserPermissions")
+                    b.HasOne("AegiFinance.Domain.Entities.Role", "Role")
+                        .WithMany("UiControlPolicies")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AegiFinance.Domain.Entities.UiControlDefinition", "UiControlDefinition")
+                        .WithMany("Policies")
+                        .HasForeignKey("UiControlDefinitionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AegiFinance.Domain.Entities.User", "User")
+                        .WithMany("UiControlPolicies")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Role");
+
+                    b.Navigation("UiControlDefinition");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("AegiFinance.Domain.Entities.UserPermissionOverride", b =>
+                {
+                    b.HasOne("AegiFinance.Domain.Entities.PermissionDefinition", "Permission")
+                        .WithMany("UserPermissionOverrides")
                         .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AegiFinance.Domain.Entities.User", null)
-                        .WithMany("UserPermissions")
+                    b.HasOne("AegiFinance.Domain.Entities.User", "User")
+                        .WithMany("PermissionOverrides")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Permission");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("AegiFinance.Domain.Entities.UserSession", b =>
+                {
+                    b.HasOne("AegiFinance.Domain.Entities.User", "User")
+                        .WithMany("Sessions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ClientClientTag", b =>
@@ -2043,21 +2448,6 @@ namespace AegiFinance.Infrastructure.Migrations
                     b.HasOne("AegiFinance.Domain.Entities.ClientTag", null)
                         .WithMany()
                         .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("RolePermission", b =>
-                {
-                    b.HasOne("AegiFinance.Domain.Entities.Permission", null)
-                        .WithMany()
-                        .HasForeignKey("PermissionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AegiFinance.Domain.Entities.Role", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -2094,9 +2484,18 @@ namespace AegiFinance.Infrastructure.Migrations
                     b.Navigation("Clients");
                 });
 
-            modelBuilder.Entity("AegiFinance.Domain.Entities.Permission", b =>
+            modelBuilder.Entity("AegiFinance.Domain.Entities.PermissionDefinition", b =>
                 {
-                    b.Navigation("UserPermissions");
+                    b.Navigation("RolePermissions");
+
+                    b.Navigation("UserPermissionOverrides");
+                });
+
+            modelBuilder.Entity("AegiFinance.Domain.Entities.Role", b =>
+                {
+                    b.Navigation("RolePermissions");
+
+                    b.Navigation("UiControlPolicies");
                 });
 
             modelBuilder.Entity("AegiFinance.Domain.Entities.Service", b =>
@@ -2116,9 +2515,18 @@ namespace AegiFinance.Infrastructure.Migrations
                     b.Navigation("PriceHistory");
                 });
 
+            modelBuilder.Entity("AegiFinance.Domain.Entities.UiControlDefinition", b =>
+                {
+                    b.Navigation("Policies");
+                });
+
             modelBuilder.Entity("AegiFinance.Domain.Entities.User", b =>
                 {
-                    b.Navigation("UserPermissions");
+                    b.Navigation("PermissionOverrides");
+
+                    b.Navigation("Sessions");
+
+                    b.Navigation("UiControlPolicies");
                 });
 #pragma warning restore 612, 618
         }

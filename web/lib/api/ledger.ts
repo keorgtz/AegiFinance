@@ -22,23 +22,23 @@ function qs(params: object): string {
 
 export const ledgerApi = {
   getEntries: (params: GetLedgerEntriesParams = {}) =>
-    api.get<PaginatedList<LedgerEntryListDto>>(`/api/ledger${qs(params)}`),
+    api.get<PaginatedList<LedgerEntryListDto>>(`/ledger${qs(params)}`),
 
   registerIncome: (data: RegisterIncomeRequest) =>
-    api.post<LedgerEntryDto>("/api/ledger/income", data),
+    api.post<LedgerEntryDto>("/ledger/income", data),
 
   registerExpense: (data: RegisterExpenseRequest) =>
-    api.post<LedgerEntryDto>("/api/ledger/expense", data),
+    api.post<LedgerEntryDto>("/ledger/expense", data),
 
   registerTransfer: (data: RegisterTransferRequest) =>
-    api.post<TransferGroupDto>("/api/ledger/transfer", data),
+    api.post<TransferGroupDto>("/ledger/transfer", data),
 
   registerAdjustment: (data: RegisterAdjustmentRequest) =>
-    api.post<LedgerEntryDto>("/api/ledger/adjustment", data),
+    api.post<LedgerEntryDto>("/ledger/adjustment", data),
 
   reconcile: (id: string) =>
-    api.post<void>(`/api/ledger/${id}/reconcile`, {}),
+    api.post<void>(`/ledger/${id}/reconcile`, {}),
 
   unreconcile: (id: string) =>
-    api.post<void>(`/api/ledger/${id}/unreconcile`, {}),
+    api.post<void>(`/ledger/${id}/unreconcile`, {}),
 };

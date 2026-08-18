@@ -15,6 +15,7 @@ public class LoginWithPinCommandHandler : IRequestHandler<LoginWithPinCommand, A
 
     public Task<AuthResult> Handle(LoginWithPinCommand request, CancellationToken cancellationToken)
     {
-        return _authService.LoginWithPinAsync(request.UserName, request.Pin, cancellationToken);
+        return _authService.LoginWithPinAsync(request.UserName, request.Pin,
+            new AuthSessionContext(request.IpAddress, request.UserAgent, request.DeviceName), cancellationToken);
     }
 }

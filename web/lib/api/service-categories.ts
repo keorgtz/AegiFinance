@@ -7,14 +7,14 @@ import type {
 
 export const serviceCategoriesApi = {
   list: () =>
-    api.get<ServiceCategoryDto[]>("/api/service-categories"),
+    api.get<ServiceCategoryDto[]>("/service-categories"),
 
   create: (data: CreateServiceCategoryRequest) =>
-    api.post<ServiceCategoryDto>("/api/service-categories", data),
+    api.post<ServiceCategoryDto>("/service-categories", data),
 
   update: (id: string, data: UpdateServiceCategoryRequest) =>
-    api.put<ServiceCategoryDto>(`/api/service-categories/${id}`, data),
+    api.put<ServiceCategoryDto>(`/service-categories/${id}`, data),
 
   delete: (id: string) =>
-    api.delete<void>(`/api/service-categories/${id}`),
+    api.delete<void>(`/service-categories/${id}`),
 };

@@ -54,7 +54,7 @@ export default function ClientDetailPage() {
   if (isLoading) {
     return (
       <div className="flex h-40 items-center justify-center">
-        <Spinner className="text-[#0F5C6B]" />
+        <Spinner className="text-action" />
       </div>
     );
   }
@@ -62,8 +62,8 @@ export default function ClientDetailPage() {
   if (!client) {
     return (
       <div className="flex h-40 flex-col items-center justify-center gap-3">
-        <p className="text-[14px] text-[#5B6472]">Cliente no encontrado.</p>
-        <Button variant="ghost" onClick={() => router.back()}>
+        <p className="text-[14px] text-muted">Cliente no encontrado.</p>
+        <Button controlKey="ui.app.app.clients.id.page.button.1" variant="ghost" onClick={() => router.back()}>
           <ArrowLeft className="h-4 w-4" />
           Volver
         </Button>
@@ -83,9 +83,9 @@ export default function ClientDetailPage() {
     <div>
       {/* Back + header */}
       <div className="mb-5">
-        <button
+        <button data-ui-control="ui.app.app.clients.id.page.button.2"
           onClick={() => router.back()}
-          className="mb-3 inline-flex items-center gap-1.5 text-[12px] text-[#5B6472] hover:text-[#0F5C6B] transition-colors"
+          className="mb-3 inline-flex items-center gap-1.5 text-[12px] text-muted hover:text-action transition-colors"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Clientes
@@ -93,23 +93,23 @@ export default function ClientDetailPage() {
 
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-card bg-[#EFF9F9] text-[#0F5C6B]">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-card bg-action-soft text-action">
               <Building2 className="h-6 w-6" />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="font-display text-[22px] font-700 text-[#16181D] truncate">
+                <h1 className="font-display text-[22px] font-bold text-foreground truncate">
                   {client.name}
                 </h1>
                 <ClientStatusBadge status={client.status} />
               </div>
               <div className="mt-0.5 flex items-center gap-2 flex-wrap">
-                <span className="font-mono text-[12px] text-[#5B6472]">{client.code}</span>
+                <span className="font-mono text-[12px] text-muted">{client.code}</span>
                 {client.tradeName && (
-                  <span className="text-[12px] text-[#5B6472]">· {client.tradeName}</span>
+                  <span className="text-[12px] text-muted">· {client.tradeName}</span>
                 )}
                 {client.categoryName && (
-                  <span className="text-[12px] text-[#5B6472]">· {client.categoryName}</span>
+                  <span className="text-[12px] text-muted">· {client.categoryName}</span>
                 )}
               </div>
               {client.tags.length > 0 && (
@@ -121,7 +121,7 @@ export default function ClientDetailPage() {
           </div>
 
           <Can permission="ManageClients">
-            <Button variant="secondary" size="sm" onClick={() => setEditOpen(true)}>
+            <Button controlKey="ui.app.app.clients.id.page.button.3" variant="secondary" size="sm" onClick={() => setEditOpen(true)}>
               <Pencil className="h-3.5 w-3.5" />
               Editar
             </Button>
@@ -132,24 +132,24 @@ export default function ClientDetailPage() {
       {/* Tabs */}
       <Tabs defaultTab="info">
         <TabList>
-          <Tab id="info">Información general</Tab>
-          <Tab id="contacts">
+          <Tab controlKey="ui.app.app.clients.id.page.tab.1" id="info">Información general</Tab>
+          <Tab controlKey="ui.app.app.clients.id.page.tab.2" id="contacts">
             Contactos
             {contacts.length > 0 && (
-              <span className="ml-1.5 rounded-full bg-[#E3E6EC] px-1.5 py-0.5 text-[10px] font-700 text-[#5B6472]">
+              <span className="ml-1.5 rounded-full bg-border px-1.5 py-0.5 text-[10px] font-bold text-muted">
                 {contacts.length}
               </span>
             )}
           </Tab>
-          <Tab id="notes">
+          <Tab controlKey="ui.app.app.clients.id.page.tab.3" id="notes">
             Notas
             {notes.length > 0 && (
-              <span className="ml-1.5 rounded-full bg-[#E3E6EC] px-1.5 py-0.5 text-[10px] font-700 text-[#5B6472]">
+              <span className="ml-1.5 rounded-full bg-border px-1.5 py-0.5 text-[10px] font-bold text-muted">
                 {notes.length}
               </span>
             )}
           </Tab>
-          <Tab id="history">Historial</Tab>
+          <Tab controlKey="ui.app.app.clients.id.page.tab.4" id="history">Historial</Tab>
         </TabList>
 
         {/* ── TAB: Información general ── */}
@@ -176,14 +176,14 @@ export default function ClientDetailPage() {
                 <InfoRow icon={<MapPin className="h-4 w-4" />} label="Dirección" value={client.billingAddress} />
               )}
               {!client.billingEmail && !client.phone && !client.billingAddress && (
-                <p className="text-[13px] text-[#5B6472]">Sin datos de contacto registrados.</p>
+                <p className="text-[13px] text-muted">Sin datos de contacto registrados.</p>
               )}
             </InfoCard>
 
             {client.notes && (
               <div className="col-span-full">
                 <InfoCard title="Notas internas">
-                  <p className="whitespace-pre-wrap text-[13px] text-[#3A3F4B]">{client.notes}</p>
+                  <p className="whitespace-pre-wrap text-[13px] text-foreground-secondary">{client.notes}</p>
                 </InfoCard>
               </div>
             )}
@@ -193,11 +193,11 @@ export default function ClientDetailPage() {
         {/* ── TAB: Contactos ── */}
         <TabPanel id="contacts">
           <div className="mb-4 flex items-center justify-between">
-            <p className="text-[13px] text-[#5B6472]">
+            <p className="text-[13px] text-muted">
               {contacts.length === 0 ? "Sin contactos registrados." : `${contacts.length} contacto${contacts.length !== 1 ? "s" : ""}`}
             </p>
             <Can permission="ManageClients">
-              <Button
+              <Button controlKey="ui.app.app.clients.id.page.button.4"
                 size="sm"
                 onClick={() => { setEditingContact(null); setContactFormOpen(true); }}
               >
@@ -208,38 +208,38 @@ export default function ClientDetailPage() {
           </div>
 
           {contactsLoading ? (
-            <Spinner className="text-[#0F5C6B]" />
+            <Spinner className="text-action" />
           ) : (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {contacts.map((contact) => (
                 <div
                   key={contact.id}
                   className={cn(
-                    "rounded-card border bg-white p-4 shadow-dp1",
-                    contact.isPrimary ? "border-[#0F5C6B]/30" : "border-[#E3E6EC]"
+                    "rounded-card border bg-surface p-4 shadow-dp1",
+                    contact.isPrimary ? "border-action/30" : "border-border"
                   )}
                 >
                   <div className="mb-2 flex items-start justify-between gap-2">
                     <div className="flex items-center gap-1.5 min-w-0">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#EFF9F9] text-[#0F5C6B] text-[12px] font-700">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-action-soft text-action text-[12px] font-bold">
                         {contact.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="min-w-0">
-                        <p className="truncate font-600 text-[#16181D]">{contact.name}</p>
+                        <p className="truncate font-semibold text-foreground">{contact.name}</p>
                         {contact.position && (
-                          <p className="truncate text-[11px] text-[#5B6472]">{contact.position}</p>
+                          <p className="truncate text-[11px] text-muted">{contact.position}</p>
                         )}
                       </div>
                     </div>
                     {contact.isPrimary && (
-                      <Star className="h-3.5 w-3.5 shrink-0 fill-[#B7791F] text-[#B7791F]" />
+                      <Star className="h-3.5 w-3.5 shrink-0 fill-warning text-warning" />
                     )}
                   </div>
                   <div className="space-y-1">
                     {contact.email && (
                       <a
                         href={`mailto:${contact.email}`}
-                        className="flex items-center gap-1.5 text-[12px] text-[#0F5C6B] hover:underline"
+                        className="flex items-center gap-1.5 text-[12px] text-action hover:underline"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <Mail className="h-3 w-3 shrink-0" />
@@ -249,7 +249,7 @@ export default function ClientDetailPage() {
                     {contact.phone && (
                       <a
                         href={`tel:${contact.phone}`}
-                        className="flex items-center gap-1.5 text-[12px] text-[#3A3F4B] hover:underline"
+                        className="flex items-center gap-1.5 text-[12px] text-foreground-secondary hover:underline"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <Phone className="h-3 w-3 shrink-0" />
@@ -258,17 +258,17 @@ export default function ClientDetailPage() {
                     )}
                   </div>
                   <Can permission="ManageClients">
-                    <div className="mt-3 flex items-center gap-1.5 border-t border-[#F7F8FA] pt-2">
+                    <div className="mt-3 flex items-center gap-1.5 border-t border-surface-subtle pt-2">
                       {!contact.isPrimary && (
-                        <button
+                        <button data-ui-control="ui.app.app.clients.id.page.button.5"
                           onClick={() => setPrimary.mutate({ clientId: params.id, contactId: contact.id })}
-                          className="text-[11px] text-[#5B6472] hover:text-[#0F5C6B] transition-colors"
+                          className="text-[11px] text-muted hover:text-action transition-colors"
                         >
                           Marcar principal
                         </button>
                       )}
                       <div className="ml-auto flex gap-1">
-                        <Button
+                        <Button controlKey="ui.app.app.clients.id.page.button.6"
                           variant="ghost"
                           size="icon"
                           onClick={() => openEditContact(contact)}
@@ -276,7 +276,7 @@ export default function ClientDetailPage() {
                         >
                           <Pencil className="h-3.5 w-3.5" />
                         </Button>
-                        <Button
+                        <Button controlKey="ui.app.app.clients.id.page.button.7"
                           variant="ghost"
                           size="icon"
                           onClick={() => {
@@ -286,7 +286,7 @@ export default function ClientDetailPage() {
                           }}
                           aria-label="Eliminar contacto"
                         >
-                          <Trash2 className="h-3.5 w-3.5 text-[#B6452C]" />
+                          <Trash2 className="h-3.5 w-3.5 text-danger" />
                         </Button>
                       </div>
                     </div>
@@ -300,11 +300,11 @@ export default function ClientDetailPage() {
         {/* ── TAB: Notas ── */}
         <TabPanel id="notes">
           <div className="mb-4 flex items-center justify-between">
-            <p className="text-[13px] text-[#5B6472]">
+            <p className="text-[13px] text-muted">
               {notes.length === 0 ? "Sin notas." : `${notes.length} nota${notes.length !== 1 ? "s" : ""}`}
             </p>
             <Can permission="ManageClients">
-              <Button size="sm" onClick={() => setNoteFormOpen(true)}>
+              <Button controlKey="ui.app.app.clients.id.page.button.8" size="sm" onClick={() => setNoteFormOpen(true)}>
                 <Plus className="h-3.5 w-3.5" />
                 Nueva nota
               </Button>
@@ -312,12 +312,12 @@ export default function ClientDetailPage() {
           </div>
 
           {notesLoading ? (
-            <Spinner className="text-[#0F5C6B]" />
+            <Spinner className="text-action" />
           ) : (
             <div className="space-y-3">
               {pinnedNotes.length > 0 && (
                 <div className="space-y-2">
-                  <p className="flex items-center gap-1.5 text-[10px] font-700 uppercase tracking-wider text-[#5B6472]">
+                  <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted">
                     <Pin className="h-3 w-3" />
                     Fijadas
                   </p>
@@ -329,7 +329,7 @@ export default function ClientDetailPage() {
               {regularNotes.length > 0 && (
                 <div className="space-y-2">
                   {pinnedNotes.length > 0 && (
-                    <p className="text-[10px] font-700 uppercase tracking-wider text-[#5B6472]">Otras notas</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted">Otras notas</p>
                   )}
                   {regularNotes.map((note) => (
                     <NoteCard key={note.id} content={note.content} createdAt={note.createdAt} />
@@ -337,8 +337,8 @@ export default function ClientDetailPage() {
                 </div>
               )}
               {notes.length === 0 && (
-                <div className="rounded-card border border-dashed border-[#E3E6EC] py-10 text-center">
-                  <p className="text-[13px] text-[#5B6472]">Sin notas registradas.</p>
+                <div className="rounded-card border border-dashed border-border py-10 text-center">
+                  <p className="text-[13px] text-muted">Sin notas registradas.</p>
                 </div>
               )}
             </div>
@@ -347,8 +347,8 @@ export default function ClientDetailPage() {
 
         {/* ── TAB: Historial ── */}
         <TabPanel id="history">
-          <div className="rounded-card border border-dashed border-[#E3E6EC] py-12 text-center">
-            <p className="text-[13px] text-[#5B6472]">
+          <div className="rounded-card border border-dashed border-border py-12 text-center">
+            <p className="text-[13px] text-muted">
               El historial de cambios estará disponible próximamente.
             </p>
           </div>
@@ -372,8 +372,8 @@ export default function ClientDetailPage() {
 
 function InfoCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-card border border-[#E3E6EC] bg-white p-4 shadow-dp1">
-      <p className="mb-3 text-[11px] font-700 uppercase tracking-wider text-[#5B6472]">{title}</p>
+    <div className="rounded-card border border-border bg-surface p-4 shadow-dp1">
+      <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-muted">{title}</p>
       <div className="space-y-2">{children}</div>
     </div>
   );
@@ -392,10 +392,10 @@ function InfoRow({
 }) {
   return (
     <div className="flex items-start gap-2.5">
-      <span className="mt-0.5 shrink-0 text-[#5B6472]">{icon}</span>
+      <span className="mt-0.5 shrink-0 text-muted">{icon}</span>
       <div className="min-w-0">
-        <p className="text-[10px] uppercase tracking-wider text-[#5B6472]">{label}</p>
-        <p className={cn("mt-0.5 text-[13px] text-[#16181D]", mono && "font-mono")}>{value}</p>
+        <p className="text-[10px] uppercase tracking-wider text-muted">{label}</p>
+        <p className={cn("mt-0.5 text-[13px] text-foreground", mono && "font-mono")}>{value}</p>
       </div>
     </div>
   );
@@ -413,12 +413,12 @@ function NoteCard({
   return (
     <div
       className={cn(
-        "rounded-card border bg-white p-4 shadow-dp1",
-        pinned ? "border-[#0F5C6B]/20 bg-[#EFF9F9]/40" : "border-[#E3E6EC]"
+        "rounded-card border bg-surface p-4 shadow-dp1",
+        pinned ? "border-action/20 bg-action-soft/40" : "border-border"
       )}
     >
-      <p className="whitespace-pre-wrap text-[13px] text-[#3A3F4B]">{content}</p>
-      <p className="mt-2 text-[11px] text-[#5B6472]">{formatDateTime(createdAt)}</p>
+      <p className="whitespace-pre-wrap text-[13px] text-foreground-secondary">{content}</p>
+      <p className="mt-2 text-[11px] text-muted">{formatDateTime(createdAt)}</p>
     </div>
   );
 }

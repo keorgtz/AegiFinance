@@ -10,15 +10,18 @@ public class GetCurrentUserQueryHandler : IRequestHandler<GetCurrentUserQuery, U
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUserService;
     private readonly IPermissionService _permissionService;
+    private readonly IUiPermissionService _uiPermissionService;
 
     public GetCurrentUserQueryHandler(
         IApplicationDbContext context,
         ICurrentUserService currentUserService,
-        IPermissionService permissionService)
+        IPermissionService permissionService,
+        IUiPermissionService uiPermissionService)
     {
         _context = context;
         _currentUserService = currentUserService;
         _permissionService = permissionService;
+        _uiPermissionService = uiPermissionService;
     }
 
     public async Task<UserDto> Handle(GetCurrentUserQuery request, CancellationToken cancellationToken)
@@ -39,6 +42,7 @@ public class GetCurrentUserQueryHandler : IRequestHandler<GetCurrentUserQuery, U
         }
 
         var permissions = await _permissionService.GetEffectivePermissionsAsync(user.Id, cancellationToken);
+        var uiPolicies = await _uiPermissionService.GetEffectivePoliciesAsync(user.Id, user.ClientId, null, cancellationToken);
 
         return new UserDto
         {
@@ -51,8 +55,12 @@ public class GetCurrentUserQueryHandler : IRequestHandler<GetCurrentUserQuery, U
             IsActive = user.IsActive,
             EmailConfirmed = user.EmailConfirmed,
             LastLoginAt = user.LastLoginAt,
+            LockoutEnd = user.LockoutEnd,
+            MustChangePassword = user.MustChangePassword,
+            ActiveSessionCount = await _context.UserSessions.CountAsync(session => session.UserId == user.Id && session.RevokedAt == null && session.ExpiresAt > DateTime.UtcNow, cancellationToken),
             Roles = user.Roles.Select(r => r.Name).ToList(),
-            Permissions = permissions.ToList()
+            Permissions = permissions.ToList(),
+            UiPolicies = new Dictionary<string, string>(uiPolicies, StringComparer.OrdinalIgnoreCase)
         };
     }
 }

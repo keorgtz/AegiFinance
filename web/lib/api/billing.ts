@@ -25,32 +25,32 @@ function qs(params: object): string {
 export const billingApi = {
   // Cycles
   getCycles: (params: GetBillingCyclesParams = {}) =>
-    api.get<BillingCycleDto[]>(`/api/billing/cycles${qs(params)}`),
+    api.get<BillingCycleDto[]>(`/billing/cycles${qs(params)}`),
 
   getCycleItems: (cycleId: string) =>
-    api.get<PaginatedList<BillingItemListDto>>(`/api/billing/cycles/${cycleId}/items`),
+    api.get<PaginatedList<BillingItemListDto>>(`/billing/cycles/${cycleId}/items`),
 
   closeCycle: (cycleId: string) =>
-    api.post<void>(`/api/billing/close-cycle/${cycleId}`, {}),
+    api.post<void>(`/billing/close-cycle/${cycleId}`, {}),
 
   reprocessCycle: (cycleId: string, onlyPending = true) =>
-    api.post<BillingGenerationResult>(`/api/billing/reprocess/${cycleId}?onlyPending=${onlyPending}`, {}),
+    api.post<BillingGenerationResult>(`/billing/reprocess/${cycleId}?onlyPending=${onlyPending}`, {}),
 
   // Items
   getItems: (params: GetBillingItemsParams = {}) =>
-    api.get<PaginatedList<BillingItemListDto>>(`/api/billing/items${qs(params)}`),
+    api.get<PaginatedList<BillingItemListDto>>(`/billing/items${qs(params)}`),
 
   cancelItem: (itemId: string, data: CancelBillingItemRequest) =>
-    api.post<void>(`/api/billing/cancel-item/${itemId}`, data),
+    api.post<void>(`/billing/cancel-item/${itemId}`, data),
 
   // Generation
   generate: (data: GenerateBillingRequest) =>
-    api.post<BillingGenerationResult>("/api/billing/generate", data),
+    api.post<BillingGenerationResult>("/billing/generate", data),
 
   generateForSubscription: (data: GenerateForSubscriptionRequest) =>
-    api.post<BillingGenerationResult>("/api/billing/generate-for-subscription", data),
+    api.post<BillingGenerationResult>("/billing/generate-for-subscription", data),
 
   // Logs
   getLogs: (params: GetBillingLogsParams = {}) =>
-    api.get<BillingGenerationLogDto[]>(`/api/billing/generation-logs${qs(params)}`),
+    api.get<BillingGenerationLogDto[]>(`/billing/generation-logs${qs(params)}`),
 };

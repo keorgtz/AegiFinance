@@ -16,6 +16,7 @@ interface AuthContextValue extends AuthState {
   login: (usernameOrEmail: string, password: string) => Promise<void>;
   loginWithPin: (userName: string, pin: string) => Promise<void>;
   logout: () => Promise<void>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -91,8 +92,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [router, setUser]);
 
+  const changePassword = useCallback(async (currentPassword: string, newPassword: string) => {
+    await authApi.changePassword(currentPassword, newPassword);
+    setAccessToken(null);
+    setUser(null);
+    router.push("/login");
+  }, [router, setUser]);
+
   return (
-    <AuthContext.Provider value={{ ...state, login, loginWithPin, logout }}>
+    <AuthContext.Provider value={{ ...state, login, loginWithPin, logout, changePassword }}>
       {children}
     </AuthContext.Provider>
   );

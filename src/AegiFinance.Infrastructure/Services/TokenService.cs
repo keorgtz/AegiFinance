@@ -18,7 +18,7 @@ public class TokenService : ITokenService
         _configuration = configuration;
     }
 
-    public string GenerateAccessToken(User user, IEnumerable<string> permissions)
+    public string GenerateAccessToken(User user, IEnumerable<string> permissions, Guid sessionId)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
         var secret = jwtSettings["Secret"] ?? throw new InvalidOperationException("JWT Secret no está configurado.");
@@ -34,7 +34,8 @@ public class TokenService : ITokenService
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Name, user.UserName),
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            new Claim("userType", user.UserType.ToString())
+            new Claim("userType", user.UserType.ToString()),
+            new Claim("sessionId", sessionId.ToString())
         };
 
         if (user.ClientId.HasValue)

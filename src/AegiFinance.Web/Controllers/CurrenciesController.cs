@@ -28,7 +28,7 @@ public class CurrenciesController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Policy = "ManageBilling")]
+    [Authorize(Policy = "ManageCurrencies")]
     public async Task<ActionResult<CurrencyConfigDto>> Create(CreateCurrencyConfigCommand command, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(command, cancellationToken);
@@ -36,7 +36,7 @@ public class CurrenciesController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
-    [Authorize(Policy = "ManageBilling")]
+    [Authorize(Policy = "ManageCurrencies")]
     public async Task<ActionResult<CurrencyConfigDto>> Update(Guid id, UpdateCurrencyConfigCommand command, CancellationToken cancellationToken)
     {
         command.Id = id;
@@ -44,7 +44,7 @@ public class CurrenciesController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
-    [Authorize(Policy = "ManageBilling")]
+    [Authorize(Policy = "ManageCurrencies")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         await _mediator.Send(new DeleteCurrencyConfigCommand(id), cancellationToken);

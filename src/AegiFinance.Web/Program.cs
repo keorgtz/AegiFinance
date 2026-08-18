@@ -4,6 +4,7 @@ using AegiFinance.Web.Middleware;
 using AegiFinance.Web.Seed;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -71,22 +72,27 @@ app.MapGet("/health", () => Results.Ok(new { status = "ok", service = "AegiFinan
 
 app.MapControllers();
 
+// Every authorization policy declared by an endpoint becomes a manageable
+// permission automatically. This prevents policy codes from drifting away
+// from the role-permission catalog.
+var discoveredPermissionCodes = ((IEndpointRouteBuilder)app).DataSources
+    .SelectMany(source => source.Endpoints)
+    .SelectMany(endpoint => endpoint.Metadata.GetOrderedMetadata<IAuthorizeData>())
+    .Select(metadata => metadata.Policy)
+    .Where(policy => !string.IsNullOrWhiteSpace(policy))
+    .Cast<string>()
+    .Distinct(StringComparer.Ordinal)
+    .ToArray();
+
 // Seed data
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AegiFinance.Infrastructure.Data.ApplicationDbContext>();
-    try
-    {
-        Log.Information("Applying database migrations...");
-        await context.Database.MigrateAsync();
-        Log.Information("Database migrations applied successfully.");
-    }
-    catch (Exception ex)
-    {
-        Log.Error(ex, "An error occurred while applying database migrations.");
-    }
+    Log.Information("Applying database migrations...");
+    await context.Database.MigrateAsync();
+    Log.Information("Database migrations applied successfully.");
 
-    await SeedData.InitializeAsync(scope.ServiceProvider);
+    await SeedData.InitializeAsync(scope.ServiceProvider, discoveredPermissionCodes);
 }
 
 app.Run();

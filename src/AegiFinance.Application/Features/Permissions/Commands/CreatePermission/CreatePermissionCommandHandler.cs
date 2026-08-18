@@ -26,12 +26,15 @@ public class CreatePermissionCommandHandler : IRequestHandler<CreatePermissionCo
             throw new InvalidOperationException("Ya existe un permiso con el mismo código.");
         }
 
-        var permission = new Permission
+        var permission = new PermissionDefinition
         {
             Id = Guid.NewGuid(),
             Code = request.Code,
             Name = request.Name,
-            Description = request.Description
+            Description = request.Description,
+            Module = request.Module,
+            Action = request.Action,
+            IsActive = true
         };
 
         _context.Permissions.Add(permission);
@@ -42,7 +45,12 @@ public class CreatePermissionCommandHandler : IRequestHandler<CreatePermissionCo
             Id = permission.Id,
             Code = permission.Code,
             Name = permission.Name,
-            Description = permission.Description
+            Description = permission.Description,
+            Module = permission.Module,
+            Action = permission.Action,
+            Kind = permission.Kind.ToString(),
+            IsSystemGenerated = permission.IsSystemGenerated,
+            IsActive = permission.IsActive
         };
     }
 }

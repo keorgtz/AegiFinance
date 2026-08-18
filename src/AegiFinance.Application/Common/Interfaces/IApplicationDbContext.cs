@@ -6,9 +6,13 @@ namespace AegiFinance.Application.Common.Interfaces;
 public interface IApplicationDbContext
 {
     DbSet<User> Users { get; }
+    DbSet<UserSession> UserSessions { get; }
     DbSet<Role> Roles { get; }
-    DbSet<Permission> Permissions { get; }
-    DbSet<UserPermission> UserPermissions { get; }
+    DbSet<PermissionDefinition> Permissions { get; }
+    DbSet<RolePermission> RolePermissions { get; }
+    DbSet<UserPermissionOverride> UserPermissionOverrides { get; }
+    DbSet<UiControlDefinition> UiControlDefinitions { get; }
+    DbSet<UiControlPolicy> UiControlPolicies { get; }
     DbSet<ClientUser> ClientUsers { get; }
     DbSet<ClientPinCredential> ClientPinCredentials { get; }
     DbSet<SubscriptionPermission> SubscriptionPermissions { get; }
@@ -35,6 +39,7 @@ public interface IApplicationDbContext
     DbSet<SubscriptionAllocation> SubscriptionAllocations { get; }
     DbSet<BankStatement> BankStatements { get; }
     DbSet<BankStatementLine> BankStatementLines { get; }
+    DbSet<BankImportAttempt> BankImportAttempts { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

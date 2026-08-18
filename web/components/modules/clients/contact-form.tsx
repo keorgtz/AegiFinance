@@ -84,51 +84,51 @@ export function ContactForm({ open, onOpenChange, clientId, editingContact }: Co
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent title={isEdit ? "Editar contacto" : "Nuevo contacto"} size="sm">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <Input
+          <Input controlKey="ui.components.modules.clients.contact.form.input.1"
             {...register("name")}
             label="Nombre *"
             placeholder="Ej. María García"
             autoFocus
             error={errors.name?.message}
           />
-          <Input
+          <Input controlKey="ui.components.modules.clients.contact.form.input.2"
             {...register("position")}
             label="Cargo"
             placeholder="Ej. Gerente General"
           />
-          <Input
+          <Input controlKey="ui.components.modules.clients.contact.form.input.3"
             {...register("email")}
             label="Correo"
             type="email"
             placeholder="contacto@empresa.com"
             error={errors.email?.message}
           />
-          <Input
+          <Input controlKey="ui.components.modules.clients.contact.form.input.4"
             {...register("phone")}
             label="Teléfono"
             placeholder="+52 33 0000 0000"
             inputMode="tel"
           />
 
-          <div className="flex items-center justify-between rounded-input border border-[#E3E6EC] px-3 py-2">
-            <label htmlFor="is-primary" className="text-[13px] font-500 text-[#3A3F4B]">
+          <div className="flex items-center justify-between rounded-input border border-border px-3 py-2">
+            <label htmlFor="is-primary" className="text-[13px] font-medium text-foreground-secondary">
               Contacto principal
             </label>
             <RadixSwitch.Root
               id="is-primary"
               checked={isPrimary ?? false}
               onCheckedChange={(v) => setValue("isPrimary", v)}
-              className="relative inline-flex h-5 w-9 items-center rounded-full transition-colors data-[state=checked]:bg-[#0F5C6B] data-[state=unchecked]:bg-[#E3E6EC]"
+              className="relative inline-flex h-5 w-9 items-center rounded-full transition-colors data-[state=checked]:bg-action data-[state=unchecked]:bg-border"
             >
-              <RadixSwitch.Thumb className="block h-4 w-4 rounded-full bg-white shadow-dp1 transition-transform data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0.5" />
+              <RadixSwitch.Thumb className="block h-4 w-4 rounded-full bg-surface shadow-dp1 transition-transform data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0.5" />
             </RadixSwitch.Root>
           </div>
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="secondary">Cancelar</Button>
+              <Button controlKey="ui.components.modules.clients.contact.form.button.1" type="button" variant="secondary">Cancelar</Button>
             </DialogClose>
-            <Button type="submit" loading={isSubmitting}>
+            <Button controlKey="ui.components.modules.clients.contact.form.button.2" type="submit" loading={isSubmitting}>
               {isEdit ? "Guardar" : "Agregar contacto"}
             </Button>
           </DialogFooter>

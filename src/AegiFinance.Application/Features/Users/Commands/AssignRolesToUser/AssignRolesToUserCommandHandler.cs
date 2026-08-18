@@ -1,16 +1,20 @@
 using AegiFinance.Application.Common.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using AegiFinance.Domain.Entities;
 
 namespace AegiFinance.Application.Features.Users.Commands.AssignRolesToUser;
 
 public class AssignRolesToUserCommandHandler : IRequestHandler<AssignRolesToUserCommand>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUser;
 
-    public AssignRolesToUserCommandHandler(IApplicationDbContext context)
+    public AssignRolesToUserCommandHandler(IApplicationDbContext context, ICurrentUserService currentUser)
     {
         _context = context;
+        _currentUser = currentUser;
     }
 
     public async Task Handle(AssignRolesToUserCommand request, CancellationToken cancellationToken)
@@ -35,11 +39,24 @@ public class AssignRolesToUserCommandHandler : IRequestHandler<AssignRolesToUser
             throw new InvalidOperationException("Uno o más roles no existen.");
         }
 
+        if (roles.Any(role => role.UserType.HasValue && role.UserType.Value != user.UserType))
+        {
+            throw new InvalidOperationException("El tipo de uno o más roles no corresponde al tipo de usuario.");
+        }
+
+        var previousRoles = user.Roles.Select(role => role.Name).OrderBy(name => name).ToList();
         user.Roles.Clear();
         foreach (var role in roles)
         {
             user.Roles.Add(role);
         }
+
+        _context.AuditLogs.Add(new AuditLog
+        {
+            Id = Guid.NewGuid(), EntityType = "UserRoles", EntityId = user.Id.ToString(), Action = "Assigned",
+            Changes = JsonSerializer.Serialize(new { Previous = previousRoles, Current = roles.Select(role => role.Name).OrderBy(name => name) }),
+            UserId = _currentUser.UserId, Timestamp = DateTime.UtcNow
+        });
 
         await _context.SaveChangesAsync(cancellationToken);
     }

@@ -23,7 +23,7 @@ export function Pagination({
 
   return (
     <div className="flex items-center justify-between px-1 py-2">
-      <p className="text-[12px] text-[#5B6472]">
+      <p className="text-[12px] text-muted">
         {from}–{to} de {totalCount} registros
       </p>
       <div className="flex items-center gap-1">
@@ -36,7 +36,7 @@ export function Pagination({
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
-        <span className="min-w-[4rem] text-center text-[12px] text-[#5B6472]">
+        <span className="min-w-[4rem] text-center text-[12px] text-muted">
           {page} / {totalPages}
         </span>
         <Button

@@ -62,12 +62,12 @@ function FilterSelect({
 }) {
   return (
     <RadixSelect.Root value={value} onValueChange={onValueChange}>
-      <RadixSelect.Trigger className="inline-flex h-8 items-center gap-1.5 rounded-input border border-[#E3E6EC] bg-white px-3 text-[13px] text-[#3A3F4B] shadow-dp1 hover:border-[#5BAEBC] focus:outline-none">
+      <RadixSelect.Trigger className="inline-flex h-8 items-center gap-1.5 rounded-input border border-border bg-surface px-3 text-[13px] text-foreground-secondary shadow-dp1 hover:border-action focus:outline-none">
         <RadixSelect.Value placeholder={label} />
-        <ChevronDown className="h-3 w-3 text-[#5B6472]" />
+        <ChevronDown className="h-3 w-3 text-muted" />
       </RadixSelect.Trigger>
       <RadixSelect.Portal>
-        <RadixSelect.Content className="z-50 min-w-[180px] overflow-hidden rounded-table border border-[#E3E6EC] bg-white shadow-dp2" position="popper" sideOffset={4}>
+        <RadixSelect.Content className="z-50 min-w-[180px] overflow-hidden rounded-table border border-border bg-surface shadow-dp2" position="popper" sideOffset={4}>
           <RadixSelect.Viewport className="p-1">{children}</RadixSelect.Viewport>
         </RadixSelect.Content>
       </RadixSelect.Portal>
@@ -77,7 +77,7 @@ function FilterSelect({
 
 function FilterItem({ value, children }: { value: string; children: React.ReactNode }) {
   return (
-    <RadixSelect.Item value={value} className="flex cursor-pointer items-center justify-between rounded px-3 py-1.5 text-[13px] text-[#3A3F4B] hover:bg-[#F7F8FA] focus:bg-[#F7F8FA] focus:outline-none data-[state=checked]:text-[#0F5C6B] data-[state=checked]:font-600">
+    <RadixSelect.Item value={value} className="flex cursor-pointer items-center justify-between rounded px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle focus:bg-surface-subtle focus:outline-none data-[state=checked]:text-action data-[state=checked]:font-semibold">
       <RadixSelect.ItemText>{children}</RadixSelect.ItemText>
       <RadixSelect.ItemIndicator><Check className="h-3.5 w-3.5" /></RadixSelect.ItemIndicator>
     </RadixSelect.Item>
@@ -133,12 +133,12 @@ export default function SubscriptionsPage() {
         const s = row.original;
         return (
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-card bg-[#EFF1F7] text-[#4A5568]">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-card bg-canvas text-muted">
               <Layers className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <p className="truncate font-600 text-[#16181D]">{s.serviceName}</p>
-              <p className="truncate text-[11px] text-[#5B6472]">{s.clientName}</p>
+              <p className="truncate font-semibold text-foreground">{s.serviceName}</p>
+              <p className="truncate text-[11px] text-muted">{s.clientName}</p>
             </div>
           </div>
         );
@@ -149,7 +149,7 @@ export default function SubscriptionsPage() {
       header: "Código",
       size: 110,
       cell: ({ getValue }) => (
-        <span className="font-mono text-[12px] text-[#5B6472]">{getValue() as string}</span>
+        <span className="font-mono text-[12px] text-muted">{getValue() as string}</span>
       ),
     },
     {
@@ -169,7 +169,7 @@ export default function SubscriptionsPage() {
       header: "Precio",
       size: 130,
       cell: ({ row }) => (
-        <span className="font-600 text-[#16181D]">
+        <span className="font-semibold text-foreground">
           {formatAmount(row.original.price, row.original.currency)}
         </span>
       ),
@@ -179,7 +179,7 @@ export default function SubscriptionsPage() {
       header: "Próx. cargo",
       size: 120,
       cell: ({ getValue }) => (
-        <span className="text-[13px] text-[#5B6472]">
+        <span className="text-[13px] text-muted">
           {(getValue() as string | null) ? formatDate(getValue() as string) : "—"}
         </span>
       ),
@@ -207,44 +207,44 @@ export default function SubscriptionsPage() {
         return (
           <DropdownMenu.Root>
             <DropdownMenu.Trigger asChild>
-              <Button variant="ghost" size="icon" aria-label="Más acciones" onClick={(e) => e.stopPropagation()}>
+              <Button controlKey="ui.app.app.subscriptions.page.button.1" variant="ghost" size="icon" aria-label="Más acciones" onClick={(e) => e.stopPropagation()}>
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenu.Trigger>
             <DropdownMenu.Portal>
-              <DropdownMenu.Content className="z-50 min-w-[170px] overflow-hidden rounded-table border border-[#E3E6EC] bg-white shadow-dp2" align="end" sideOffset={4}>
-                <DropdownMenu.Item onSelect={() => router.push(`/subscriptions/${s.id}`)} className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-[#3A3F4B] hover:bg-[#F7F8FA] cursor-pointer focus:outline-none">
+              <DropdownMenu.Content className="z-50 min-w-[170px] overflow-hidden rounded-table border border-border bg-surface shadow-dp2" align="end" sideOffset={4}>
+                <DropdownMenu.Item onSelect={() => router.push(`/subscriptions/${s.id}`)} className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle cursor-pointer focus:outline-none">
                   Ver detalle
                 </DropdownMenu.Item>
-                <DropdownMenu.Separator className="my-1 h-px bg-[#F7F8FA]" />
+                <DropdownMenu.Separator className="my-1 h-px bg-surface-subtle" />
                 {canSuspend && (
-                  <DropdownMenu.Item onSelect={() => setActionTarget({ id: s.id, action: "suspend" })} className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-[#B7791F] hover:bg-[#FFFBEB] cursor-pointer focus:outline-none">
+                  <DropdownMenu.Item onSelect={() => setActionTarget({ id: s.id, action: "suspend" })} className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-warning hover:bg-warning-soft cursor-pointer focus:outline-none">
                     Suspender
                   </DropdownMenu.Item>
                 )}
                 {canReactivate && (
-                  <DropdownMenu.Item onSelect={() => setActionTarget({ id: s.id, action: "reactivate" })} className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-[#0E9F6E] hover:bg-[#F0FFF4] cursor-pointer focus:outline-none">
+                  <DropdownMenu.Item onSelect={() => setActionTarget({ id: s.id, action: "reactivate" })} className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-success hover:bg-success-soft cursor-pointer focus:outline-none">
                     <RefreshCw className="h-3.5 w-3.5" /> Reactivar
                   </DropdownMenu.Item>
                 )}
                 {canRenew && (
-                  <DropdownMenu.Item onSelect={() => setActionTarget({ id: s.id, action: "renew" })} className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-[#0F5C6B] hover:bg-[#EFF9F9] cursor-pointer focus:outline-none">
+                  <DropdownMenu.Item onSelect={() => setActionTarget({ id: s.id, action: "renew" })} className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-action hover:bg-action-soft cursor-pointer focus:outline-none">
                     <RefreshCw className="h-3.5 w-3.5" /> Renovar
                   </DropdownMenu.Item>
                 )}
                 {canCancel && (
-                  <DropdownMenu.Item onSelect={() => setActionTarget({ id: s.id, action: "cancel" })} className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-[#B6452C] hover:bg-[#FFF6F1] cursor-pointer focus:outline-none">
+                  <DropdownMenu.Item onSelect={() => setActionTarget({ id: s.id, action: "cancel" })} className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-danger hover:bg-danger-soft cursor-pointer focus:outline-none">
                     <XCircle className="h-3.5 w-3.5" /> Cancelar
                   </DropdownMenu.Item>
                 )}
-                <DropdownMenu.Separator className="my-1 h-px bg-[#F7F8FA]" />
+                <DropdownMenu.Separator className="my-1 h-px bg-surface-subtle" />
                 <DropdownMenu.Item
                   onSelect={() => {
                     if (confirm(`¿Eliminar la suscripción "${s.code}"?`)) {
                       deleteSubscription.mutate(s.id);
                     }
                   }}
-                  className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-[#B6452C] hover:bg-[#FFF6F1] cursor-pointer focus:outline-none"
+                  className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-danger hover:bg-danger-soft cursor-pointer focus:outline-none"
                 >
                   <Trash2 className="h-3.5 w-3.5" /> Eliminar
                 </DropdownMenu.Item>
@@ -260,16 +260,16 @@ export default function SubscriptionsPage() {
     <div>
       <div className="mb-5 flex items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-[22px] font-700 text-[#16181D]">Suscripciones</h1>
-          <p className="mt-0.5 text-[13px] text-[#5B6472]">
+          <h1 className="font-display text-[22px] font-bold text-foreground">Suscripciones</h1>
+          <p className="mt-0.5 text-[13px] text-muted">
             {data ? `${data.totalCount} suscripción${data.totalCount !== 1 ? "es" : ""}` : "Cargando…"}
           </p>
         </div>
         <Can permission="ViewSubscriptions">
-          <Button onClick={() => setFormOpen(true)} size="md">
+          <Button controlKey="ui.app.app.subscriptions.page.button.2" onClick={() => setFormOpen(true)} size="md">
             <Plus className="h-4 w-4" />
             Nueva
-            <kbd className="ml-1 rounded bg-white/20 px-1 text-[10px]">N</kbd>
+            <kbd className="ml-1 rounded bg-surface/20 px-1 text-[10px]">N</kbd>
           </Button>
         </Can>
       </div>
@@ -281,7 +281,7 @@ export default function SubscriptionsPage() {
           ))}
         </FilterSelect>
         {statusFilter && (
-          <button onClick={() => setStatusFilter("")} className="text-[12px] text-[#5B6472] hover:text-[#0F5C6B] underline">
+          <button data-ui-control="ui.app.app.subscriptions.page.button.3" onClick={() => setStatusFilter("")} className="text-[12px] text-muted hover:text-action underline">
             Limpiar
           </button>
         )}

@@ -94,6 +94,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "CreateClients")]
     public async Task<ActionResult<ClientDto>> Create(CreateClientCommand command, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(command, cancellationToken);
@@ -101,6 +102,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [Authorize(Policy = "UpdateClients")]
     public async Task<ActionResult<ClientDto>> Update(Guid id, UpdateClientCommand command, CancellationToken cancellationToken)
     {
         command.Id = id;
@@ -108,6 +110,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Policy = "DeleteClients")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         await _mediator.Send(new DeleteClientCommand(id), cancellationToken);
@@ -115,6 +118,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/activate")]
+    [Authorize(Policy = "UpdateClients")]
     public async Task<IActionResult> Activate(Guid id, CancellationToken cancellationToken)
     {
         await _mediator.Send(new ActivateClientCommand(id), cancellationToken);
@@ -122,6 +126,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/deactivate")]
+    [Authorize(Policy = "UpdateClients")]
     public async Task<IActionResult> Deactivate(Guid id, CancellationToken cancellationToken)
     {
         await _mediator.Send(new DeactivateClientCommand(id), cancellationToken);
@@ -129,6 +134,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/tags")]
+    [Authorize(Policy = "UpdateClients")]
     public async Task<IActionResult> AssignTags(Guid id, AssignTagsToClientCommand command, CancellationToken cancellationToken)
     {
         command.ClientId = id;
@@ -137,6 +143,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/notes")]
+    [Authorize(Policy = "UpdateClients")]
     public async Task<ActionResult<ClientNoteDto>> AddNote(Guid id, AddClientNoteCommand command, CancellationToken cancellationToken)
     {
         command.ClientId = id;
@@ -144,6 +151,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/contacts")]
+    [Authorize(Policy = "UpdateClients")]
     public async Task<ActionResult<ClientContactDto>> AddContact(Guid id, AddClientContactCommand command, CancellationToken cancellationToken)
     {
         command.ClientId = id;
@@ -151,6 +159,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpPut("{id:guid}/contacts/{contactId:guid}")]
+    [Authorize(Policy = "UpdateClients")]
     public async Task<ActionResult<ClientContactDto>> UpdateContact(Guid id, Guid contactId, UpdateClientContactCommand command, CancellationToken cancellationToken)
     {
         command.ClientId = id;
@@ -159,6 +168,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpDelete("{id:guid}/contacts/{contactId:guid}")]
+    [Authorize(Policy = "UpdateClients")]
     public async Task<IActionResult> DeleteContact(Guid id, Guid contactId, CancellationToken cancellationToken)
     {
         await _mediator.Send(new DeleteClientContactCommand(id, contactId), cancellationToken);
@@ -166,6 +176,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/contacts/{contactId:guid}/primary")]
+    [Authorize(Policy = "UpdateClients")]
     public async Task<IActionResult> SetPrimaryContact(Guid id, Guid contactId, CancellationToken cancellationToken)
     {
         await _mediator.Send(new SetPrimaryContactCommand(id, contactId), cancellationToken);

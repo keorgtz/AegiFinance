@@ -1,11 +1,14 @@
+"use client";
+
 import { cn } from "@/lib/utils/cn";
+import { useUiControl, type UiControlPermissionProps } from "@/lib/auth/ui-control";
 import { Loader2 } from "lucide-react";
 import React from "react";
 
 type Variant = "primary" | "secondary" | "ghost" | "danger" | "outline";
 type Size = "sm" | "md" | "lg" | "icon";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, UiControlPermissionProps {
   variant?: Variant;
   size?: Size;
   loading?: boolean;
@@ -13,22 +16,22 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    "bg-[#0F5C6B] text-white hover:bg-[#16798C] active:bg-[#0F5C6B] shadow-dp1",
+    "bg-action text-on-action hover:bg-action-hover active:scale-[0.98] shadow-dp1",
   secondary:
-    "bg-[#EFF1F7] text-[#16181D] hover:bg-[#E3E6EC] active:bg-[#d8dbe4]",
+    "border border-border bg-action-soft text-action hover:border-border-strong active:scale-[0.98]",
   ghost:
-    "bg-transparent text-[#5B6472] hover:bg-[#EFF1F7] hover:text-[#16181D]",
+    "bg-transparent text-muted hover:bg-surface-subtle hover:text-foreground active:scale-[0.98]",
   danger:
-    "bg-[#B6452C] text-white hover:bg-[#D06A4A] active:bg-[#B6452C] shadow-dp1",
+    "bg-danger-soft text-danger hover:bg-danger hover:text-on-action active:scale-[0.98]",
   outline:
-    "border border-[#E3E6EC] bg-white text-[#16181D] hover:bg-[#F7F8FA]",
+    "border border-border-strong bg-surface text-foreground hover:bg-surface-subtle active:scale-[0.98]",
 };
 
 const sizeClasses: Record<Size, string> = {
-  sm: "h-7 px-3 text-xs",
-  md: "h-8 px-4 text-xs",
-  lg: "h-10 px-5 text-sm",
-  icon: "h-8 w-8 p-0",
+  sm: "min-h-11 px-4 text-xs",
+  md: "min-h-11 px-5 text-sm",
+  lg: "min-h-12 px-6 text-sm",
+  icon: "h-11 w-11 p-0",
 };
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -40,18 +43,26 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       disabled,
       className,
       children,
+      controlKey,
+      permission,
+      systemRequired,
       ...props
     },
     ref
   ) => {
+    const access = useUiControl({ controlKey, permission, systemRequired });
+    if (access.hidden) return null;
+
     return (
       <button
         ref={ref}
-        disabled={disabled || loading}
+        disabled={disabled || loading || access.disabled || access.readOnly}
+        aria-readonly={access.readOnly || undefined}
+        {...access.dataAttributes}
         className={cn(
-          "inline-flex items-center justify-center gap-1.5 font-semibold rounded-button",
-          "transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2",
-          "focus-visible:ring-[#5BAEBC] focus-visible:ring-offset-1",
+          "inline-flex items-center justify-center gap-2 rounded-full font-semibold",
+          "transition-ui focus-visible:outline-none focus-visible:ring-2",
+          "focus-visible:ring-action focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
           "disabled:opacity-50 disabled:cursor-not-allowed",
           variantClasses[variant],
           sizeClasses[size],
