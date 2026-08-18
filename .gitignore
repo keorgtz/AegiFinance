@@ -1,5 +1,5 @@
-# ── Secretos ──────────────────────────────────────────────────────────────────
-.env
+# ── Secretos locales ──────────────────────────────────────────────────────────
+# `.env` is intentionally versioned for this project's current deployment.
 *.env.local
 *.env.production
 
