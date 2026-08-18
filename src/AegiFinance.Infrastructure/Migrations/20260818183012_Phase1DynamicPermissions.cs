@@ -216,7 +216,7 @@ namespace AegiFinance.Infrastructure.Migrations
                 table: "UiControlPolicies",
                 columns: new[] { "UiControlDefinitionId", "RoleId", "ClientId", "SubscriptionId" },
                 unique: true,
-                filter: "[RoleId] IS NOT NULL AND [UserId] IS NULL AND ([ClientId] IS NOT NULL OR [SubscriptionId] IS NOT NULL) AND [IsDeleted] = 0");
+                filter: "[RoleId] IS NOT NULL AND [UserId] IS NULL AND [IsDeleted] = 0");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UiControlPolicies_UiControlDefinitionId_UserId",
@@ -230,7 +230,7 @@ namespace AegiFinance.Infrastructure.Migrations
                 table: "UiControlPolicies",
                 columns: new[] { "UiControlDefinitionId", "UserId", "ClientId", "SubscriptionId" },
                 unique: true,
-                filter: "[UserId] IS NOT NULL AND [RoleId] IS NULL AND ([ClientId] IS NOT NULL OR [SubscriptionId] IS NOT NULL) AND [IsDeleted] = 0");
+                filter: "[UserId] IS NOT NULL AND [RoleId] IS NULL AND [IsDeleted] = 0");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UiControlPolicies_UserId",

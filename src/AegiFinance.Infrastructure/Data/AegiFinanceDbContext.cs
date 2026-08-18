@@ -306,9 +306,9 @@ public class AegiFinanceDbContext : DbContext
             entity.HasIndex(e => new { e.UiControlDefinitionId, e.UserId })
                 .IsUnique().HasFilter("[UserId] IS NOT NULL AND [RoleId] IS NULL AND [ClientId] IS NULL AND [SubscriptionId] IS NULL AND [IsDeleted] = 0");
             entity.HasIndex(e => new { e.UiControlDefinitionId, e.RoleId, e.ClientId, e.SubscriptionId })
-                .IsUnique().HasFilter("[RoleId] IS NOT NULL AND [UserId] IS NULL AND ([ClientId] IS NOT NULL OR [SubscriptionId] IS NOT NULL) AND [IsDeleted] = 0");
+                .IsUnique().HasFilter("[RoleId] IS NOT NULL AND [UserId] IS NULL AND [IsDeleted] = 0");
             entity.HasIndex(e => new { e.UiControlDefinitionId, e.UserId, e.ClientId, e.SubscriptionId })
-                .IsUnique().HasFilter("[UserId] IS NOT NULL AND [RoleId] IS NULL AND ([ClientId] IS NOT NULL OR [SubscriptionId] IS NOT NULL) AND [IsDeleted] = 0");
+                .IsUnique().HasFilter("[UserId] IS NOT NULL AND [RoleId] IS NULL AND [IsDeleted] = 0");
         });
     }
 

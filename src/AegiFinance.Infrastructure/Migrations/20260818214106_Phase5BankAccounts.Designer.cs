@@ -2194,11 +2194,11 @@ namespace AegiFinance.Infrastructure.Migrations
 
                     b.HasIndex("UiControlDefinitionId", "RoleId", "ClientId", "SubscriptionId")
                         .IsUnique()
-                        .HasFilter("[RoleId] IS NOT NULL AND [UserId] IS NULL AND ([ClientId] IS NOT NULL OR [SubscriptionId] IS NOT NULL) AND [IsDeleted] = 0");
+                        .HasFilter("[RoleId] IS NOT NULL AND [UserId] IS NULL AND [IsDeleted] = 0");
 
                     b.HasIndex("UiControlDefinitionId", "UserId", "ClientId", "SubscriptionId")
                         .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL AND [RoleId] IS NULL AND ([ClientId] IS NOT NULL OR [SubscriptionId] IS NOT NULL) AND [IsDeleted] = 0");
+                        .HasFilter("[UserId] IS NOT NULL AND [RoleId] IS NULL AND [IsDeleted] = 0");
 
                     b.ToTable("UiControlPolicies");
                 });
