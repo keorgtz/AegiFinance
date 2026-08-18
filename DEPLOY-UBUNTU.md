@@ -14,16 +14,10 @@ Esta instalación publica únicamente el frontend. Next.js envía internamente `
 ```bash
 git clone <repositorio> /opt/aegifinance
 cd /opt/aegifinance
-cp .env.example .env
-chmod 600 .env
-nano .env
+AEGI_BOOTSTRAP_PASSWORD='contraseña-temporal' ./scripts/bootstrap-env.sh https://finance.example.com
 ```
 
-Reemplazá todos los valores `CambiaEsto_*`. Podés generar secretos con:
-
-```bash
-openssl rand -base64 48
-```
+El script crea el `.env` ignorado por Git con permisos `600`, genera un JWT criptográfico nuevo y configura el origen público de CORS. No subas `.env` al repositorio. Si necesitás API de tipo de cambio, editá después `EXCHANGE_RATE_API_KEY` y activá `EXCHANGE_RATE_ENABLED=true`.
 
 Antes de iniciar:
 

@@ -21,6 +21,8 @@ Require-Text "web/.dockerignore" 'node_modules/' "Frontend Docker context includ
 Require-Text "src/AegiFinance.Web/Seed/SeedData.cs" 'AdminSeed:Password' "Production still has an implicit administrator password."
 Require-Text "src/AegiFinance.Web/Program.cs" 'Database.CanConnectAsync' "API health does not verify database connectivity."
 Require-Text "DEPLOY-UBUNTU.md" 'docker compose config --quiet' "Ubuntu deployment procedure is missing Compose validation."
+Require-Text "scripts/bootstrap-env.sh" 'openssl rand -base64 64' "Ubuntu environment bootstrap does not generate a strong JWT secret."
+Require-Text "scripts/bootstrap-env.sh" 'chmod 600' "Generated deployment secrets are not restricted to the owner."
 
 if (Get-Command docker -ErrorAction SilentlyContinue) {
     Push-Location $root
