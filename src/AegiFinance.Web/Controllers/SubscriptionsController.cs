@@ -2,6 +2,7 @@ using AegiFinance.Application.Common.Models;
 using AegiFinance.Application.Dtos;
 using AegiFinance.Application.Features.Subscriptions.Commands.CancelSubscription;
 using AegiFinance.Application.Features.Subscriptions.Commands.ChangeSubscriptionPrice;
+using AegiFinance.Application.Features.Subscriptions.Commands.ChangeSubscriptionPlan;
 using AegiFinance.Application.Features.Subscriptions.Commands.CreateSubscription;
 using AegiFinance.Application.Features.Subscriptions.Commands.DeleteSubscription;
 using AegiFinance.Application.Features.Subscriptions.Commands.ReactivateSubscription;
@@ -116,6 +117,15 @@ public class SubscriptionsController : ControllerBase
         return Ok(await _mediator.Send(command, cancellationToken));
     }
 
+    [HttpPost("{id:guid}/change-plan")]
+    [Authorize(Policy = "UpdateSubscriptions")]
+    public async Task<IActionResult> ChangePlan(Guid id, ChangeSubscriptionPlanCommand command, CancellationToken cancellationToken)
+    {
+        command.Id = id;
+        await _mediator.Send(command, cancellationToken);
+        return NoContent();
+    }
+
     [HttpGet("{id:guid}/price-history")]
     [Authorize(Policy = "ViewSubscriptions")]
     public async Task<ActionResult<List<SubscriptionPriceHistoryDto>>> GetPriceHistory(Guid id, CancellationToken cancellationToken)
@@ -138,14 +148,14 @@ public class SubscriptionsController : ControllerBase
     }
 
     [HttpGet("{id:guid}/permissions")]
-    [Authorize(Policy = "ManageUsers")]
+    [Authorize(Policy = "ManageSubscriptionAccess")]
     public async Task<ActionResult<List<SubscriptionPermissionDto>>> GetPermissions(Guid id, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(new GetSubscriptionPermissionsBySubscriptionQuery(id), cancellationToken));
     }
 
     [HttpPost("{id:guid}/permissions")]
-    [Authorize(Policy = "ManageUsers")]
+    [Authorize(Policy = "ManageSubscriptionAccess")]
     public async Task<ActionResult<SubscriptionPermissionDto>> CreatePermission(Guid id, CreateSubscriptionPermissionCommand command, CancellationToken cancellationToken)
     {
         command.SubscriptionId = id;
@@ -153,7 +163,7 @@ public class SubscriptionsController : ControllerBase
     }
 
     [HttpDelete("{id:guid}/permissions/{permissionId:guid}")]
-    [Authorize(Policy = "ManageUsers")]
+    [Authorize(Policy = "ManageSubscriptionAccess")]
     public async Task<IActionResult> DeletePermission(Guid id, Guid permissionId, CancellationToken cancellationToken)
     {
         await _mediator.Send(new DeleteSubscriptionPermissionCommand(permissionId), cancellationToken);

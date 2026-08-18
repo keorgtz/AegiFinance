@@ -26,6 +26,12 @@ public class RenewSubscriptionCommandHandler : IRequestHandler<RenewSubscription
             throw new UnauthorizedAccessException("No se permite renovar suscripciones desde el portal.");
         }
 
+        if (string.IsNullOrWhiteSpace(request.IdempotencyKey))
+            throw new InvalidOperationException("La renovación requiere una clave de idempotencia.");
+        if (await _context.SubscriptionRenewals.AnyAsync(r => r.SubscriptionId == request.Id && r.IdempotencyKey == request.IdempotencyKey, cancellationToken))
+            return;
+
+        await using var transaction = await _context.BeginTransactionAsync(cancellationToken);
         var subscription = await _context.Subscriptions
             .FirstOrDefaultAsync(s => s.Id == request.Id, cancellationToken);
 
@@ -40,20 +46,25 @@ public class RenewSubscriptionCommandHandler : IRequestHandler<RenewSubscription
         }
 
         var baseDate = subscription.NextBillingDate ?? subscription.StartDate;
+        var previousEndDate = subscription.EndDate;
+        var previousNextBillingDate = subscription.NextBillingDate;
         subscription.LastBillingDate = baseDate;
 
-        if (subscription.BillingType == BillingType.Monthly || subscription.BillingType == BillingType.Yearly)
+        if (subscription.BillingType is BillingType.Monthly or BillingType.Yearly or BillingType.Custom)
         {
             subscription.NextBillingDate = SubscriptionDateCalculator.CalculateNextBillingDate(
                 baseDate,
                 subscription.BillingType,
-                subscription.BillingDay);
+                subscription.BillingDay,
+                subscription.CustomIntervalDays);
 
             if (subscription.EndDate.HasValue)
             {
                 subscription.EndDate = subscription.BillingType == BillingType.Yearly
                     ? subscription.EndDate.Value.AddYears(1)
-                    : subscription.EndDate.Value.AddMonths(1);
+                    : subscription.BillingType == BillingType.Custom
+                        ? subscription.EndDate.Value.AddDays(subscription.CustomIntervalDays!.Value)
+                        : subscription.EndDate.Value.AddMonths(1);
             }
         }
 
@@ -72,6 +83,15 @@ public class RenewSubscriptionCommandHandler : IRequestHandler<RenewSubscription
             Reason = request.Reason
         });
 
+        subscription.Renewals.Add(new SubscriptionRenewal
+        {
+            Id = Guid.NewGuid(), SubscriptionId = subscription.Id, Subscription = subscription,
+            IdempotencyKey = request.IdempotencyKey.Trim(), PreviousEndDate = previousEndDate,
+            NewEndDate = subscription.EndDate, PreviousNextBillingDate = previousNextBillingDate,
+            NewNextBillingDate = subscription.NextBillingDate, RenewedAt = DateTime.UtcNow, Reason = request.Reason
+        });
+
         await _context.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
     }
 }

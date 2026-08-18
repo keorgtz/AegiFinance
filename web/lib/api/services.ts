@@ -9,6 +9,8 @@ import type {
   CreateServiceRequest,
   UpdateServiceRequest,
   AddPriceHistoryRequest,
+  ServiceVersionDto,
+  CreateServiceVersionRequest,
 } from "@/types/api";
 
 function toQuery(params: GetServicesParams): string {
@@ -50,4 +52,10 @@ export const servicesApi = {
 
   addPriceHistory: (id: string, data: AddPriceHistoryRequest) =>
     api.post<ServicePriceHistoryDto>(`/services/${id}/price-history`, data),
+
+  getVersions: (id: string) =>
+    api.get<ServiceVersionDto[]>(`/services/${id}/versions`),
+
+  createVersion: (id: string, data: CreateServiceVersionRequest) =>
+    api.post<ServiceVersionDto>(`/services/${id}/versions`, data),
 };

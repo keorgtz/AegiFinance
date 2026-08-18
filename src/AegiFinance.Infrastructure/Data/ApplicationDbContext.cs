@@ -1,5 +1,6 @@
 using AegiFinance.Application.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace AegiFinance.Infrastructure.Data;
 
@@ -22,9 +23,13 @@ public class ApplicationDbContext : AegiFinanceDbContext, IApplicationDbContext
 
     protected override bool IsClientScope => _currentUserService?.UserType == "Client";
     protected override Guid? CurrentClientId => _currentUserService?.ClientId;
+    protected override Guid? CurrentOrganizationId => _currentUserService?.OrganizationId;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
     }
+
+    public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+        => Database.BeginTransactionAsync(cancellationToken);
 }

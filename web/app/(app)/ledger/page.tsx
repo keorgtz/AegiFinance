@@ -10,7 +10,6 @@ import {
 } from "@/hooks/use-ledger";
 import {
   useBankAccounts,
-  useDeleteBankAccount,
 } from "@/hooks/use-bank-accounts";
 import { Tabs, TabList, Tab, TabPanel } from "@/components/ui/tabs";
 import { DataTable } from "@/components/ui/data-table";
@@ -20,10 +19,13 @@ import { Pagination } from "@/components/ui/pagination";
 import { Select, SelectItem } from "@/components/ui/select";
 import { EntryTypeBadge } from "@/components/modules/ledger/entry-type-badge";
 import { BankAccountForm } from "@/components/modules/ledger/bank-account-form";
+import { BankBalanceForm } from "@/components/modules/ledger/bank-balance-form";
 import { IncomeForm } from "@/components/modules/ledger/income-form";
 import { ExpenseForm } from "@/components/modules/ledger/expense-form";
 import { TransferForm } from "@/components/modules/ledger/transfer-form";
 import { AdjustmentForm } from "@/components/modules/ledger/adjustment-form";
+import { MajorLedgerPanel } from "@/components/modules/ledger/major-ledger-panel";
+import { PermissionMenuItem } from "@/components/ui/permission-dropdown-item";
 import { Can } from "@/lib/auth/can";
 import { dashboardApi } from "@/lib/api/dashboard";
 import { formatAmount, formatDate, formatDateTime } from "@/lib/utils/format";
@@ -42,11 +44,12 @@ import {
   MoreHorizontal,
   Plus,
   RefreshCw,
-  Trash2,
   TrendingDown,
   TrendingUp,
   Wallet,
   FileWarning,
+  Landmark,
+  Scale,
 } from "lucide-react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { cn } from "@/lib/utils/cn";
@@ -82,6 +85,8 @@ export default function LedgerPage() {
   const [accountStatusFilter, setAccountStatusFilter] = useState<"" | "true" | "false">("");
   const [editingAccount, setEditingAccount] = useState<BankAccountDto | null>(null);
   const [accountFormOpen, setAccountFormOpen] = useState(false);
+  const [balanceAccount, setBalanceAccount] = useState<BankAccountListDto | null>(null);
+  const [balanceFormOpen, setBalanceFormOpen] = useState(false);
 
   // ── Register dialogs ───────────────────────────────────────────────────────
   const [openAction, setOpenAction] = useState<EntryAction | null>(null);
@@ -129,7 +134,7 @@ export default function LedgerPage() {
     pageSize: PAGE_SIZE,
   });
 
-  const { data: accountsPage_data, isLoading: accountsLoading } = useBankAccounts({
+  const { data: accountsPage_data, isLoading: accountsLoading, isError: accountsError, refetch: refetchAccounts } = useBankAccounts({
     isActive: accountStatusFilter === "" ? undefined : accountStatusFilter === "true",
     pageNumber: accountsPage,
     pageSize: 15,
@@ -159,13 +164,11 @@ export default function LedgerPage() {
   });
 
   // Also load all active accounts for filter dropdowns + form defaults
-  const { data: allAccountsPage } = useBankAccounts({ isActive: true, pageSize: 100 });
+  const { data: allAccountsPage } = useBankAccounts({ isActive: true, includeBalances: false, pageSize: 100 });
   const allAccounts: BankAccountListDto[] = allAccountsPage?.items ?? [];
 
   const reconcile = useReconcileLedgerEntry();
   const unreconcile = useUnreconcileLedgerEntry();
-  const deleteAccount = useDeleteBankAccount();
-
   const hasEntryFilters = !!entryTypeFilter || !!accountFilter || !!dateFromFilter || !!dateToFilter || !!clientIdFilter || !!currencyFilter || !!reconciledFilter || hasUnappliedBalance;
 
   const openActionDialog = useCallback((action: EntryAction, accountId = "") => {
@@ -316,12 +319,37 @@ export default function LedgerPage() {
       ),
     },
     {
-      accessorKey: "openingBalance",
-      header: "Saldo inicial",
-      size: 130,
+      accessorKey: "ledgerBalance",
+      header: "Saldo contable",
+      size: 140,
       cell: ({ row }) => (
         <span className="font-semibold text-foreground">
-          {formatAmount(row.original.openingBalance, row.original.currency)}
+          {formatAmount(row.original.ledgerBalance, row.original.currency)}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "bankBalance",
+      header: "Saldo bancario",
+      size: 140,
+      cell: ({ row }) => row.original.bankBalance == null ? (
+        <span className="text-xs text-muted">Sin estado de cuenta</span>
+      ) : (
+        <div>
+          <span className="font-semibold text-foreground">{formatAmount(row.original.bankBalance, row.original.currency)}</span>
+          {row.original.bankBalanceAsOfDate && <p className="text-[11px] text-muted">al {formatDate(row.original.bankBalanceAsOfDate)}</p>}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "difference",
+      header: "Diferencia al corte",
+      size: 130,
+      cell: ({ row }) => row.original.difference == null ? (
+        <span className="text-muted">—</span>
+      ) : (
+        <span className={cn("font-semibold", row.original.difference === 0 ? "text-success" : "text-warning")}>
+          {formatAmount(row.original.difference, row.original.currency)}
         </span>
       ),
     },
@@ -341,10 +369,9 @@ export default function LedgerPage() {
       cell: ({ row }) => {
         const a = row.original;
         return (
-          <Can permission="ManageBilling">
-            <DropdownMenu.Root>
+          <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
-                <Button controlKey="ui.app.app.ledger.page.button.2" variant="ghost" size="icon" aria-label="Opciones">
+                <Button controlKey="ledger.bankAccounts.table.actions" permission="ViewBankAccounts" variant="ghost" size="icon" aria-label={`Opciones de ${a.name}`}>
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenu.Trigger>
@@ -354,30 +381,32 @@ export default function LedgerPage() {
                   sideOffset={4}
                   align="end"
                 >
-                  <DropdownMenu.Item
-                    className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle focus:outline-none"
+                  <PermissionMenuItem controlKey="ledger.bankAccounts.table.income" permission="CreateLedgerIncome" disabled={!a.isActive}
                     onSelect={() => openActionDialog("income", a.id)}
                   >
                     <ArrowDownLeft className="h-3.5 w-3.5 text-success" />
                     Registrar ingreso
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item
-                    className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle focus:outline-none"
+                  </PermissionMenuItem>
+                  <PermissionMenuItem controlKey="ledger.bankAccounts.table.expense" permission="CreateLedgerExpense" disabled={!a.isActive}
                     onSelect={() => openActionDialog("expense", a.id)}
                   >
                     <ArrowUpRight className="h-3.5 w-3.5 text-danger" />
                     Registrar egreso
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item
-                    className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle focus:outline-none"
+                  </PermissionMenuItem>
+                  <PermissionMenuItem controlKey="ledger.bankAccounts.table.transfer" permission="CreateLedgerTransfers" disabled={!a.isActive}
                     onSelect={() => openActionDialog("transfer", a.id)}
                   >
                     <RefreshCw className="h-3.5 w-3.5" />
                     Transferencia
-                  </DropdownMenu.Item>
+                  </PermissionMenuItem>
+                  <PermissionMenuItem controlKey="ledger.bankAccounts.table.bankBalance" permission="UpdateBankAccountBalances"
+                    onSelect={() => { setBalanceAccount(a); setBalanceFormOpen(true); }}
+                  >
+                    <Wallet className="h-3.5 w-3.5 text-action" />
+                    Registrar saldo bancario
+                  </PermissionMenuItem>
                   <DropdownMenu.Separator className="my-1 h-px bg-border" />
-                  <DropdownMenu.Item
-                    className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle focus:outline-none"
+                  <PermissionMenuItem controlKey="ledger.bankAccounts.table.edit" permission="UpdateBankAccounts"
                     onSelect={() => {
                       setEditingAccount(a as BankAccountDto);
                       setAccountFormOpen(true);
@@ -385,22 +414,10 @@ export default function LedgerPage() {
                   >
                     <Edit2 className="h-3.5 w-3.5" />
                     Editar
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item
-                    className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-danger hover:bg-danger-soft focus:outline-none"
-                    onSelect={() => {
-                      if (confirm(`¿Eliminar la cuenta "${a.name}"?`)) {
-                        deleteAccount.mutate(a.id);
-                      }
-                    }}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                    Eliminar
-                  </DropdownMenu.Item>
+                  </PermissionMenuItem>
                 </DropdownMenu.Content>
               </DropdownMenu.Portal>
             </DropdownMenu.Root>
-          </Can>
         );
       },
     },
@@ -550,7 +567,7 @@ export default function LedgerPage() {
               </span>
             )}
           </Tab>
-          <Tab controlKey="ui.app.app.ledger.page.tab.2" id="accounts">
+          <Tab controlKey="ledger.bankAccounts.tabs.accounts" permission="ViewBankAccounts" id="accounts">
             Cuentas bancarias
             {accountsPage_data && accountsPage_data.totalCount > 0 && (
               <span className="ml-1.5 rounded-full bg-border px-1.5 py-0.5 text-[10px] font-bold text-muted">
@@ -558,6 +575,10 @@ export default function LedgerPage() {
               </span>
             )}
           </Tab>
+          <Tab controlKey="ledger.major.tabs.journal" permission="ViewMajorLedger" id="journal">Libro diario</Tab>
+          <Tab controlKey="ledger.major.tabs.chart" permission="ViewMajorLedger" id="chart">Catálogo contable</Tab>
+          <Tab controlKey="ledger.major.tabs.trial" permission="ViewMajorLedger" id="trial">Balanza</Tab>
+          <Tab controlKey="ledger.major.tabs.periods" permission="ViewMajorLedger" id="periods">Periodos</Tab>
         </TabList>
 
         {/* ── MOVIMIENTOS ── */}
@@ -655,8 +676,26 @@ export default function LedgerPage() {
 
         {/* ── CUENTAS BANCARIAS ── */}
         <TabPanel id="accounts">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <Select controlKey="ui.app.app.ledger.page.select.4"
+          <div className="mb-5 grid gap-3 sm:grid-cols-3">
+            <div className="rounded-card border border-border bg-surface p-4 shadow-dp1">
+              <div className="flex items-center gap-2 text-muted"><Landmark className="h-4 w-4" /><span className="text-xs font-semibold uppercase tracking-wide">Cuentas visibles</span></div>
+              <p className="mt-2 text-2xl font-bold text-foreground">{accountsPage_data?.items.length ?? 0}</p>
+              <p className="mt-1 text-xs text-muted">{accountsPage_data?.items.filter((account) => account.isActive).length ?? 0} activas</p>
+            </div>
+            <div className="rounded-card border border-border bg-surface p-4 shadow-dp1">
+              <div className="flex items-center gap-2 text-muted"><Scale className="h-4 w-4" /><span className="text-xs font-semibold uppercase tracking-wide">Conciliación</span></div>
+              <p className="mt-2 text-2xl font-bold text-foreground">{accountsPage_data?.items.filter((account) => account.bankBalance != null).length ?? 0}</p>
+              <p className="mt-1 text-xs text-muted">con saldo bancario disponible</p>
+            </div>
+            <div className="rounded-card border border-border bg-surface p-4 shadow-dp1">
+              <div className="flex items-center gap-2 text-muted"><FileWarning className="h-4 w-4" /><span className="text-xs font-semibold uppercase tracking-wide">Por revisar</span></div>
+              <p className="mt-2 text-2xl font-bold text-foreground">{accountsPage_data?.items.filter((account) => account.difference != null && account.difference !== 0).length ?? 0}</p>
+              <p className="mt-1 text-xs text-muted">con diferencia entre saldos</p>
+            </div>
+          </div>
+
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <Select controlKey="ledger.bankAccounts.filters.status" permission="ViewBankAccounts"
               label=""
               value={accountStatusFilter}
               onValueChange={(v) => {
@@ -669,8 +708,9 @@ export default function LedgerPage() {
               <SelectItem value="false">Inactivas</SelectItem>
             </Select>
 
-            <Can permission="ManageBilling">
-              <Button controlKey="ui.app.app.ledger.page.button.9"
+            <Can permission="CreateBankAccounts">
+              <Button controlKey="ledger.bankAccounts.create"
+                permission="CreateBankAccounts"
                 size="sm"
                 onClick={() => {
                   setEditingAccount(null);
@@ -683,13 +723,56 @@ export default function LedgerPage() {
             </Can>
           </div>
 
-          <DataTable
-            columns={accountColumns}
-            data={accountsPage_data?.items ?? []}
-            isLoading={accountsLoading}
-            emptyMessage="Sin cuentas bancarias registradas."
-            getRowId={(r) => r.id}
-          />
+          {accountsError ? (
+            <div role="alert" className="rounded-card border border-danger/30 bg-danger-soft p-5">
+              <p className="font-semibold text-danger">No se pudieron cargar las cuentas bancarias.</p>
+              <p className="mt-1 text-sm text-foreground-secondary">Comprueba tu conexión y vuelve a intentarlo.</p>
+              <Button controlKey="ledger.bankAccounts.retry" permission="ViewBankAccounts" className="mt-4" variant="outline" onClick={() => refetchAccounts()}>Reintentar</Button>
+            </div>
+          ) : (
+            <>
+              {(accountsPage_data?.items.some((account) => account.bankBalance == null) ?? false) && (
+                <div className="mb-4 rounded-card bg-warning-soft p-4 text-sm text-foreground-secondary">
+                  Algunas cuentas aún no tienen un estado bancario cargado. El saldo contable sigue disponible; la diferencia aparecerá cuando exista un cierre bancario.
+                </div>
+              )}
+
+              <div className="hidden md:block">
+                <DataTable
+                  columns={accountColumns}
+                  data={accountsPage_data?.items ?? []}
+                  isLoading={accountsLoading}
+                  emptyMessage="Sin cuentas bancarias registradas."
+                  getRowId={(r) => r.id}
+                />
+              </div>
+
+              <div className="grid gap-3 md:hidden" aria-live="polite">
+                {accountsLoading ? (
+                  <div className="rounded-card border border-border bg-surface p-5 text-sm text-muted">Cargando cuentas…</div>
+                ) : accountsPage_data?.items.length ? accountsPage_data.items.map((account) => (
+                  <article key={account.id} className="rounded-card border border-border bg-surface p-4 shadow-dp1">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0"><h3 className="truncate font-semibold text-foreground">{account.name}</h3><p className="mt-1 text-xs text-muted">{account.bankName ?? "Banco no indicado"}{account.maskedAccountNumber ? ` · ${account.maskedAccountNumber}` : ""}</p></div>
+                      <Badge variant={account.isActive ? "jade" : "muted"}>{account.isActive ? "Activa" : "Inactiva"}</Badge>
+                    </div>
+                    <dl className="mt-4 grid grid-cols-2 gap-3 rounded-input bg-surface-subtle p-3">
+                      <div><dt className="text-[11px] font-semibold uppercase tracking-wide text-muted">Contable</dt><dd className="mt-1 font-bold text-foreground">{formatAmount(account.ledgerBalance, account.currency)}</dd></div>
+                      <div><dt className="text-[11px] font-semibold uppercase tracking-wide text-muted">Bancario</dt><dd className="mt-1 font-bold text-foreground">{account.bankBalance == null ? "Pendiente" : formatAmount(account.bankBalance, account.currency)}</dd></div>
+                      <div className="col-span-2"><dt className="text-[11px] font-semibold uppercase tracking-wide text-muted">Diferencia al corte</dt><dd className={cn("mt-1 font-bold", account.difference == null ? "text-muted" : account.difference === 0 ? "text-success" : "text-warning")}>{account.difference == null ? "Sin comparar" : formatAmount(account.difference, account.currency)}</dd>{account.bankBalanceAsOfDate && account.comparisonLedgerBalance != null && <p className="mt-1 text-[11px] text-muted">Contable al corte: {formatAmount(account.comparisonLedgerBalance, account.currency)}</p>}</div>
+                    </dl>
+                    <div className="mt-4 grid grid-cols-2 gap-2">
+                      <Button controlKey="ledger.bankAccounts.card.transfer" permission="CreateLedgerTransfers" variant="secondary" disabled={!account.isActive} onClick={() => openActionDialog("transfer", account.id)}><RefreshCw className="h-4 w-4" />Transferir</Button>
+                      <Button controlKey="ledger.bankAccounts.card.edit" permission="UpdateBankAccounts" variant="outline" onClick={() => { setEditingAccount(account as BankAccountDto); setAccountFormOpen(true); }}><Edit2 className="h-4 w-4" />Editar</Button>
+                      <Button controlKey="ledger.bankAccounts.card.bankBalance" permission="UpdateBankAccountBalances" className="col-span-2" variant="ghost" onClick={() => { setBalanceAccount(account); setBalanceFormOpen(true); }}><Wallet className="h-4 w-4" />Registrar saldo bancario</Button>
+                    </div>
+                  </article>
+                )) : (
+                  <div className="rounded-card border border-dashed border-border-strong bg-surface p-8 text-center"><Landmark className="mx-auto h-8 w-8 text-muted" /><p className="mt-3 font-semibold text-foreground">Aún no hay cuentas bancarias</p><p className="mt-1 text-sm text-muted">Crea la primera para registrar su apertura y comenzar a mover fondos.</p></div>
+                )}
+              </div>
+            </>
+          )}
 
           {accountsPage_data && accountsPage_data.totalCount > 15 && (
             <Pagination
@@ -701,6 +784,10 @@ export default function LedgerPage() {
             />
           )}
         </TabPanel>
+        <TabPanel id="journal"><MajorLedgerPanel view="journal" /></TabPanel>
+        <TabPanel id="chart"><MajorLedgerPanel view="chart" /></TabPanel>
+        <TabPanel id="trial"><MajorLedgerPanel view="trial" /></TabPanel>
+        <TabPanel id="periods"><MajorLedgerPanel view="periods" /></TabPanel>
       </Tabs>
 
       {/* Bank Account Form */}
@@ -711,6 +798,11 @@ export default function LedgerPage() {
           if (!v) setEditingAccount(null);
         }}
         account={editingAccount}
+      />
+      <BankBalanceForm
+        open={balanceFormOpen}
+        onOpenChange={(open) => { setBalanceFormOpen(open); if (!open) setBalanceAccount(null); }}
+        account={balanceAccount}
       />
 
       {/* Entry registration dialogs */}

@@ -42,6 +42,10 @@ public class TokenService : ITokenService
         {
             claims.Add(new Claim("clientId", user.ClientId.Value.ToString()));
         }
+        if (user.OrganizationId.HasValue)
+        {
+            claims.Add(new Claim("organizationId", user.OrganizationId.Value.ToString()));
+        }
 
         claims.AddRange(permissions.Select(p => new Claim("permissions", p)));
 

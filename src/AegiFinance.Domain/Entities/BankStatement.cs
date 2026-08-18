@@ -9,6 +9,7 @@ public class BankStatement : AuditableEntity
     public DateTime EndDate { get; set; }
     public decimal OpeningBalance { get; set; }
     public decimal ClosingBalance { get; set; }
+    public bool IsBalanceVerified { get; set; }
     public string? FileUrl { get; set; }
     
     // Navigation property

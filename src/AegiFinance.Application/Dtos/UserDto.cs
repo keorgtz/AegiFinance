@@ -8,6 +8,7 @@ public class UserDto
     public string Name { get; set; } = string.Empty;
     public string UserType { get; set; } = string.Empty;
     public Guid? ClientId { get; set; }
+    public Guid? OrganizationId { get; set; }
     public bool IsActive { get; set; }
     public bool EmailConfirmed { get; set; }
     public DateTime? LastLoginAt { get; set; }

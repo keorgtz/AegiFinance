@@ -4,6 +4,7 @@ using AegiFinance.Application.Dtos;
 using AegiFinance.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using AegiFinance.Domain.Accounting;
 
 namespace AegiFinance.Application.Features.Clients.Commands.CreateClient;
 
@@ -26,6 +27,29 @@ public class CreateClientCommandHandler : IRequestHandler<CreateClientCommand, C
         {
             throw new UnauthorizedAccessException("No tiene permiso para crear clientes.");
         }
+        var organizationId = _currentUserService.OrganizationId
+            ?? throw new InvalidOperationException("El usuario no tiene una organización asignada.");
+        var normalizedName = ClientIdentityRules.Normalize(request.Name);
+        var normalizedTaxId = ClientIdentityRules.NormalizeOptional(request.TaxId);
+        var normalizedEmail = ClientIdentityRules.NormalizeOptional(request.BillingEmail);
+        var duplicateRule = await _context.ClientDuplicateRules.AsNoTracking()
+            .FirstOrDefaultAsync(rule => rule.OrganizationId == organizationId, cancellationToken);
+        var matchTax = duplicateRule?.MatchTaxId ?? true;
+        var matchName = duplicateRule?.MatchName ?? true;
+        var matchEmail = duplicateRule?.MatchBillingEmail ?? true;
+        var duplicate = await _context.Clients.AsNoTracking().FirstOrDefaultAsync(client =>
+            client.OrganizationId == organizationId &&
+            ((matchTax && normalizedTaxId != null && client.NormalizedTaxId == normalizedTaxId) ||
+             (matchName && client.NormalizedName == normalizedName) ||
+             (matchEmail && normalizedEmail != null && client.NormalizedBillingEmail == normalizedEmail)), cancellationToken);
+        if (duplicate is not null && (duplicateRule?.BlockOnMatch ?? true))
+            throw new InvalidOperationException($"Posible cliente duplicado: {duplicate.Code} · {duplicate.Name}.");
+
+        if (!await _context.CurrencyConfigs.AsNoTracking().AnyAsync(currency => currency.Code == request.PresentationCurrency && currency.IsActive, cancellationToken))
+            throw new InvalidOperationException("La moneda de presentación no está activa.");
+        if (request.AccountManagerUserId.HasValue && !await _context.Users.AsNoTracking().AnyAsync(user =>
+                user.Id == request.AccountManagerUserId && user.OrganizationId == organizationId && user.IsActive, cancellationToken))
+            throw new InvalidOperationException("El responsable seleccionado no pertenece a la organización.");
 
         ClientCategory? category = null;
         if (request.CategoryId.HasValue)
@@ -57,6 +81,7 @@ public class CreateClientCommandHandler : IRequestHandler<CreateClientCommand, C
         var client = new Client
         {
             Id = Guid.NewGuid(),
+            OrganizationId = organizationId,
             Code = code,
             Name = request.Name,
             TradeName = request.TradeName,
@@ -68,7 +93,15 @@ public class CreateClientCommandHandler : IRequestHandler<CreateClientCommand, C
             Notes = request.Notes,
             CategoryId = request.CategoryId,
             Category = category,
-            Tags = tags
+            Tags = tags,
+            PresentationCurrency = request.PresentationCurrency.ToUpperInvariant(),
+            PaymentTermsDays = request.PaymentTermsDays,
+            CreditLimit = request.CreditLimit,
+            CommercialTerms = request.CommercialTerms,
+            AccountManagerUserId = request.AccountManagerUserId,
+            NormalizedName = normalizedName,
+            NormalizedTaxId = normalizedTaxId,
+            NormalizedBillingEmail = normalizedEmail
         };
 
         _context.Clients.Add(client);
@@ -98,7 +131,13 @@ public class CreateClientCommandHandler : IRequestHandler<CreateClientCommand, C
                 Id = t.Id,
                 Name = t.Name,
                 Color = t.Color
-            }).ToList()
+            }).ToList(),
+            PresentationCurrency = client.PresentationCurrency,
+            PaymentTermsDays = client.PaymentTermsDays,
+            CreditLimit = client.CreditLimit,
+            CommercialTerms = client.CommercialTerms,
+            AccountManagerUserId = client.AccountManagerUserId,
+            AccountManagerName = client.AccountManagerUser?.Name
         };
     }
 }

@@ -23,14 +23,19 @@ public static class DependencyInjection
         services.AddHttpContextAccessor();
         services.AddScoped<AuditInterceptor>();
         services.AddScoped<TenantSessionContextInterceptor>();
+        services.AddScoped<MajorLedgerInvariantInterceptor>();
 
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
-            options.UseSqlServer(connectionString);
+            options.UseSqlServer(connectionString, sql => sql.EnableRetryOnFailure(
+                maxRetryCount: 5,
+                maxRetryDelay: TimeSpan.FromSeconds(15),
+                errorNumbersToAdd: null));
             options.AddInterceptors(
                 sp.GetRequiredService<AuditInterceptor>(),
-                sp.GetRequiredService<TenantSessionContextInterceptor>());
+                sp.GetRequiredService<TenantSessionContextInterceptor>(),
+                sp.GetRequiredService<MajorLedgerInvariantInterceptor>());
         });
 
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
@@ -48,7 +53,10 @@ public static class DependencyInjection
         services.AddScoped<ISubscriptionCodeGenerator, SubscriptionCodeGenerator>();
         services.AddScoped<IBillingGenerationService, BillingGenerationService>();
         services.AddScoped<IAccountBalanceCalculator, AccountBalanceCalculator>();
+        services.AddScoped<IClientDocumentService, ClientDocumentService>();
+        services.AddScoped<IClientGovernanceService, ClientGovernanceService>();
         services.AddScoped<ILedgerService, LedgerService>();
+        services.AddScoped<IMajorLedgerService, MajorLedgerService>();
         services.AddScoped<IAllocationService, AllocationService>();
         services.AddScoped<IAccountNumberProtector, AccountNumberProtector>();
 
@@ -65,6 +73,8 @@ public static class DependencyInjection
             .AddJwtBearer(options =>
             {
                 var secret = configuration["JwtSettings:Secret"] ?? throw new InvalidOperationException("JWT Secret no está configurado.");
+                if (secret.Length < 32)
+                    throw new InvalidOperationException("JWT Secret debe tener al menos 32 caracteres.");
                 var issuer = configuration["JwtSettings:Issuer"];
                 var audience = configuration["JwtSettings:Audience"];
 

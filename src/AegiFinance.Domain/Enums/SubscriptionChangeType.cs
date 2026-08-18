@@ -6,5 +6,7 @@ public enum SubscriptionChangeType
     Reactivate,
     Cancel,
     Renew,
-    PriceChange
+    PriceChange,
+    PlanChange,
+    TermsChange
 }

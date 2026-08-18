@@ -4,6 +4,7 @@ using AegiFinance.Application.Dtos;
 using AegiFinance.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using AegiFinance.Domain.Accounting;
 
 namespace AegiFinance.Application.Features.Clients.Commands.UpdateClient;
 
@@ -28,12 +29,30 @@ public class UpdateClientCommandHandler : IRequestHandler<UpdateClientCommand, C
         var client = await _context.Clients
             .Include(c => c.Tags)
             .Include(c => c.Category)
+            .Include(c => c.AccountManagerUser)
             .FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
 
         if (client is null)
         {
             throw new InvalidOperationException("El cliente no existe.");
         }
+        var normalizedName = ClientIdentityRules.Normalize(request.Name);
+        var normalizedTaxId = ClientIdentityRules.NormalizeOptional(request.TaxId);
+        var normalizedEmail = ClientIdentityRules.NormalizeOptional(request.BillingEmail);
+        var duplicateRule = await _context.ClientDuplicateRules.AsNoTracking()
+            .FirstOrDefaultAsync(rule => rule.OrganizationId == client.OrganizationId, cancellationToken);
+        var duplicate = await _context.Clients.AsNoTracking().FirstOrDefaultAsync(other => other.Id != client.Id &&
+            other.OrganizationId == client.OrganizationId &&
+            (((duplicateRule == null || duplicateRule.MatchTaxId) && normalizedTaxId != null && other.NormalizedTaxId == normalizedTaxId) ||
+             ((duplicateRule == null || duplicateRule.MatchName) && other.NormalizedName == normalizedName) ||
+             ((duplicateRule == null || duplicateRule.MatchBillingEmail) && normalizedEmail != null && other.NormalizedBillingEmail == normalizedEmail)), cancellationToken);
+        if (duplicate is not null && (duplicateRule?.BlockOnMatch ?? true))
+            throw new InvalidOperationException($"Posible cliente duplicado: {duplicate.Code} · {duplicate.Name}.");
+        if (!await _context.CurrencyConfigs.AsNoTracking().AnyAsync(currency => currency.Code == request.PresentationCurrency && currency.IsActive, cancellationToken))
+            throw new InvalidOperationException("La moneda de presentación no está activa.");
+        if (request.AccountManagerUserId.HasValue && !await _context.Users.AsNoTracking().AnyAsync(user =>
+                user.Id == request.AccountManagerUserId && user.OrganizationId == client.OrganizationId && user.IsActive, cancellationToken))
+            throw new InvalidOperationException("El responsable seleccionado no pertenece a la organización.");
 
         if (request.CategoryId.HasValue)
         {
@@ -56,6 +75,14 @@ public class UpdateClientCommandHandler : IRequestHandler<UpdateClientCommand, C
         client.Status = request.Status;
         client.Notes = request.Notes;
         client.CategoryId = request.CategoryId;
+        client.PresentationCurrency = request.PresentationCurrency.ToUpperInvariant();
+        client.PaymentTermsDays = request.PaymentTermsDays;
+        client.CreditLimit = request.CreditLimit;
+        client.CommercialTerms = request.CommercialTerms;
+        client.AccountManagerUserId = request.AccountManagerUserId;
+        client.NormalizedName = normalizedName;
+        client.NormalizedTaxId = normalizedTaxId;
+        client.NormalizedBillingEmail = normalizedEmail;
 
         if (request.TagIds is not null)
         {
@@ -76,6 +103,8 @@ public class UpdateClientCommandHandler : IRequestHandler<UpdateClientCommand, C
         }
 
         await _context.SaveChangesAsync(cancellationToken);
+        if (client.AccountManagerUserId.HasValue)
+            client.AccountManagerUser = await _context.Users.AsNoTracking().FirstOrDefaultAsync(user => user.Id == client.AccountManagerUserId, cancellationToken);
 
         return MapToDto(client);
     }
@@ -101,7 +130,13 @@ public class UpdateClientCommandHandler : IRequestHandler<UpdateClientCommand, C
                 Id = t.Id,
                 Name = t.Name,
                 Color = t.Color
-            }).ToList()
+            }).ToList(),
+            PresentationCurrency = client.PresentationCurrency,
+            PaymentTermsDays = client.PaymentTermsDays,
+            CreditLimit = client.CreditLimit,
+            CommercialTerms = client.CommercialTerms,
+            AccountManagerUserId = client.AccountManagerUserId,
+            AccountManagerName = client.AccountManagerUser?.Name
         };
     }
 }

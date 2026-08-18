@@ -26,12 +26,14 @@ public class ClientUsersController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "ViewClientUsers")]
     public async Task<ActionResult<List<ClientUserDto>>> GetAll([FromQuery] Guid? clientId, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(new GetClientUsersQuery { ClientId = clientId }, cancellationToken));
     }
 
     [HttpGet("{id:guid}")]
+    [Authorize(Policy = "ViewClientUsers")]
     public async Task<ActionResult<ClientUserDto>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetClientUserByIdQuery(id), cancellationToken);

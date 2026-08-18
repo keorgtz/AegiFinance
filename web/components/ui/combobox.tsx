@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import * as Popover from "@radix-ui/react-popover";
 import { Check, ChevronDown, Search } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { useUiControl, type UiControlPermissionProps } from "@/lib/auth/ui-control";
 
 export interface ComboOption {
   value: string;
@@ -11,7 +12,7 @@ export interface ComboOption {
   description?: string;
 }
 
-interface ComboboxProps {
+interface ComboboxProps extends UiControlPermissionProps {
   value: string;
   onValueChange: (value: string) => void;
   options: ComboOption[];
@@ -31,12 +32,17 @@ export function Combobox({
   label,
   error,
   disabled,
+  controlKey,
+  permission,
+  systemRequired,
 }: ComboboxProps) {
+  const access = useUiControl({ controlKey, permission, systemRequired });
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   const selected = options.find((o) => o.value === value);
+  if (access.hidden) return null;
 
   const filtered =
     query.trim() === ""
@@ -71,9 +77,10 @@ export function Combobox({
         <Popover.Trigger asChild>
           <button
             type="button"
-            disabled={disabled}
+            disabled={disabled || access.disabled || access.readOnly}
+            {...access.dataAttributes}
             className={cn(
-              "flex h-9 w-full items-center justify-between rounded-input border px-3 text-[13px] transition-colors",
+              "flex min-h-11 w-full items-center justify-between rounded-input border px-3 text-[13px] transition-colors",
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-action",
               "disabled:cursor-not-allowed disabled:bg-surface-subtle",
               error

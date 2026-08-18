@@ -40,7 +40,7 @@ public sealed class TenantSessionContextInterceptor : DbConnectionInterceptor
     private DbCommand CreateCommand(DbConnection connection)
     {
         var command = connection.CreateCommand();
-        command.CommandText = "EXEC sys.sp_set_session_context @key=N'AegiFinance.IsClient', @value=@isClient; EXEC sys.sp_set_session_context @key=N'AegiFinance.ClientId', @value=@clientId;";
+        command.CommandText = "EXEC sys.sp_set_session_context @key=N'AegiFinance.IsClient', @value=@isClient; EXEC sys.sp_set_session_context @key=N'AegiFinance.ClientId', @value=@clientId; EXEC sys.sp_set_session_context @key=N'AegiFinance.OrganizationId', @value=@organizationId;";
         var isClient = command.CreateParameter();
         isClient.ParameterName = "@isClient";
         isClient.Value = string.Equals(_currentUser.UserType, "Client", StringComparison.OrdinalIgnoreCase);
@@ -49,6 +49,10 @@ public sealed class TenantSessionContextInterceptor : DbConnectionInterceptor
         clientId.ParameterName = "@clientId";
         clientId.Value = _currentUser.ClientId?.ToString() ?? (object)DBNull.Value;
         command.Parameters.Add(clientId);
+        var organizationId = command.CreateParameter();
+        organizationId.ParameterName = "@organizationId";
+        organizationId.Value = _currentUser.OrganizationId?.ToString() ?? (object)DBNull.Value;
+        command.Parameters.Add(organizationId);
         return command;
     }
 }

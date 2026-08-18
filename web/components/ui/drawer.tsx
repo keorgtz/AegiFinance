@@ -53,6 +53,8 @@ export function DrawerContent({
             )}
           </div>
           <RadixDialog.Close
+            data-ui-control="ui.drawer.close"
+            data-ui-system-required="true"
             className="rounded-button p-1.5 text-muted hover:bg-canvas hover:text-foreground transition-colors"
             aria-label="Cerrar"
           >

@@ -33,6 +33,8 @@ public class GetClientByIdQueryHandler : IRequestHandler<GetClientByIdQuery, Cli
             .Include(c => c.Tags)
             .Include(c => c.Contacts)
             .Include(c => c.NotesList)
+            .Include(c => c.Documents)
+            .Include(c => c.AccountManagerUser)
             .FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
 
         if (client is null)
@@ -77,7 +79,16 @@ public class GetClientByIdQueryHandler : IRequestHandler<GetClientByIdQuery, Cli
                 Content = n.Content,
                 IsPinned = n.IsPinned,
                 CreatedAt = n.CreatedAt
-            }).OrderByDescending(n => n.IsPinned).ThenByDescending(n => n.CreatedAt).ToList()
+            }).OrderByDescending(n => n.IsPinned).ThenByDescending(n => n.CreatedAt).ToList(),
+            Documents = client.Documents.OrderByDescending(document => document.CreatedAt).Select(document =>
+                new ClientDocumentDto(document.Id, document.ClientId, document.Name, document.ContentType,
+                    document.SizeBytes, document.Description, document.CreatedAt)).ToList(),
+            PresentationCurrency = client.PresentationCurrency,
+            PaymentTermsDays = client.PaymentTermsDays,
+            CreditLimit = client.CreditLimit,
+            CommercialTerms = client.CommercialTerms,
+            AccountManagerUserId = client.AccountManagerUserId,
+            AccountManagerName = client.AccountManagerUser?.Name
         };
     }
 }

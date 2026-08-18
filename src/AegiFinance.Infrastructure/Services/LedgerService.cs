@@ -1,6 +1,7 @@
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Domain.Entities;
 using AegiFinance.Domain.Enums;
+using AegiFinance.Domain.Accounting;
 using AegiFinance.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,15 +10,18 @@ namespace AegiFinance.Infrastructure.Services;
 public class LedgerService : ILedgerService
 {
     private readonly ApplicationDbContext _context;
+    private readonly IMajorLedgerService _majorLedger;
 
-    public LedgerService(ApplicationDbContext context)
+    public LedgerService(ApplicationDbContext context, IMajorLedgerService majorLedger)
     {
         _context = context;
+        _majorLedger = majorLedger;
     }
 
     public async Task<LedgerEntry> RegisterIncomeAsync(RegisterIncomeRequest request, CancellationToken cancellationToken = default)
     {
-        await ValidateBankAccountAsync(request.BankAccountId, cancellationToken);
+        await ValidateBankAccountAsync(request.BankAccountId, request.Currency, cancellationToken);
+        await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
         var entry = new LedgerEntry
         {
@@ -36,13 +40,16 @@ public class LedgerService : ILedgerService
 
         _context.LedgerEntries.Add(entry);
         await _context.SaveChangesAsync(cancellationToken);
+        await _majorLedger.PostLegacyEntryAsync(entry, cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
 
         return entry;
     }
 
     public async Task<LedgerEntry> RegisterExpenseAsync(RegisterExpenseRequest request, CancellationToken cancellationToken = default)
     {
-        await ValidateBankAccountAsync(request.BankAccountId, cancellationToken);
+        await ValidateBankAccountAsync(request.BankAccountId, request.Currency, cancellationToken);
+        await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
         var entry = new LedgerEntry
         {
@@ -59,19 +66,17 @@ public class LedgerService : ILedgerService
 
         _context.LedgerEntries.Add(entry);
         await _context.SaveChangesAsync(cancellationToken);
+        await _majorLedger.PostLegacyEntryAsync(entry, cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
 
         return entry;
     }
 
     public async Task<TransferGroup> RegisterTransferAsync(RegisterTransferRequest request, CancellationToken cancellationToken = default)
     {
-        if (request.FromBankAccountId == request.ToBankAccountId)
-        {
-            throw new InvalidOperationException("La cuenta de origen y destino deben ser diferentes.");
-        }
-
-        await ValidateBankAccountAsync(request.FromBankAccountId, cancellationToken);
-        await ValidateBankAccountAsync(request.ToBankAccountId, cancellationToken);
+        var sourceAccount = await GetBankAccountAsync(request.FromBankAccountId, cancellationToken);
+        var destinationAccount = await GetBankAccountAsync(request.ToBankAccountId, cancellationToken);
+        BankAccountRules.ValidateTransfer(sourceAccount, destinationAccount, request.Amount, request.Currency);
 
         await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
@@ -119,6 +124,7 @@ public class LedgerService : ILedgerService
 
             _context.TransferGroups.Add(transferGroup);
             await _context.SaveChangesAsync(cancellationToken);
+            await _majorLedger.PostTransferAsync(fromEntry, toEntry, cancellationToken);
 
             await transaction.CommitAsync(cancellationToken);
 
@@ -133,7 +139,8 @@ public class LedgerService : ILedgerService
 
     public async Task<LedgerEntry> RegisterAdjustmentAsync(RegisterAdjustmentRequest request, CancellationToken cancellationToken = default)
     {
-        await ValidateBankAccountAsync(request.BankAccountId, cancellationToken);
+        await ValidateBankAccountAsync(request.BankAccountId, request.Currency, cancellationToken);
+        await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
         var entry = new LedgerEntry
         {
@@ -149,6 +156,8 @@ public class LedgerService : ILedgerService
 
         _context.LedgerEntries.Add(entry);
         await _context.SaveChangesAsync(cancellationToken);
+        await _majorLedger.PostLegacyEntryAsync(entry, cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
 
         return entry;
     }
@@ -195,15 +204,19 @@ public class LedgerService : ILedgerService
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    private async Task ValidateBankAccountAsync(Guid bankAccountId, CancellationToken cancellationToken)
+    private async Task ValidateBankAccountAsync(Guid bankAccountId, string currency, CancellationToken cancellationToken)
     {
-        var exists = await _context.BankAccounts
-            .AsNoTracking()
-            .AnyAsync(ba => ba.Id == bankAccountId, cancellationToken);
+        var account = await GetBankAccountAsync(bankAccountId, cancellationToken);
+        BankAccountRules.ValidateMovement(account, currency);
+    }
 
-        if (!exists)
-        {
+    private async Task<BankAccount> GetBankAccountAsync(Guid bankAccountId, CancellationToken cancellationToken)
+    {
+        var account = await _context.BankAccounts.AsNoTracking()
+            .FirstOrDefaultAsync(ba => ba.Id == bankAccountId, cancellationToken);
+
+        if (account is null)
             throw new InvalidOperationException("La cuenta bancaria no existe.");
-        }
+        return account;
     }
 }

@@ -25,6 +25,7 @@ public class GetSubscriptionByIdQueryHandler : IRequestHandler<GetSubscriptionBy
             .Include(s => s.Service)
             .Include(s => s.PriceHistory)
             .Include(s => s.ChangeLogs)
+            .Include(s => s.TermsVersions)
             .FirstOrDefaultAsync(s => s.Id == request.Id, cancellationToken);
 
         if (subscription is null)
@@ -73,6 +74,17 @@ public class GetSubscriptionByIdQueryHandler : IRequestHandler<GetSubscriptionBy
             StartDate = subscription.StartDate,
             EndDate = subscription.EndDate,
             BillingDay = subscription.BillingDay,
+            ServiceVersionId = subscription.ServiceVersionId,
+            CustomIntervalDays = subscription.CustomIntervalDays,
+            DiscountPercent = subscription.DiscountPercent,
+            TaxPercent = subscription.TaxPercent,
+            ProrationPolicy = subscription.ProrationPolicy.ToString(),
+            ContractTerms = subscription.ContractTerms,
+            TermsVersions = subscription.TermsVersions.OrderByDescending(t => t.EffectiveFrom).Select(t => new SubscriptionTermsVersionDto(
+                t.Id, t.VersionNumber, t.ServiceVersionId, t.EffectiveFrom, t.EffectiveTo, t.BillingType.ToString(),
+                t.BasePrice, t.Currency, t.DiscountPercent, t.TaxPercent, t.BillingDay, t.CustomIntervalDays,
+                t.ProrationPolicy.ToString(), t.Terms, t.Reason,
+                Domain.Accounting.SubscriptionPricingRules.Calculate(t.BasePrice, t.DiscountPercent, t.TaxPercent).Total)).ToList(),
             Status = subscription.Status.ToString(),
             AutoRenew = subscription.AutoRenew,
             Notes = subscription.Notes,

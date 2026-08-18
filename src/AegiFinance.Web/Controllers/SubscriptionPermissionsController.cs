@@ -21,20 +21,21 @@ public class SubscriptionPermissionsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "ManageSubscriptionAccess")]
     public async Task<ActionResult<List<SubscriptionPermissionDto>>> GetAll([FromQuery] Guid userId, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(new GetSubscriptionPermissionsQuery(userId), cancellationToken));
     }
 
     [HttpPost]
-    [Authorize(Policy = "ManageUsers")]
+    [Authorize(Policy = "ManageSubscriptionAccess")]
     public async Task<ActionResult<SubscriptionPermissionDto>> Create(CreateSubscriptionPermissionCommand command, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(command, cancellationToken));
     }
 
     [HttpDelete("{id:guid}")]
-    [Authorize(Policy = "ManageUsers")]
+    [Authorize(Policy = "ManageSubscriptionAccess")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         await _mediator.Send(new DeleteSubscriptionPermissionCommand(id), cancellationToken);

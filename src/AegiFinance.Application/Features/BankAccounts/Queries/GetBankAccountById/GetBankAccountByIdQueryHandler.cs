@@ -11,12 +11,15 @@ public class GetBankAccountByIdQueryHandler : IRequestHandler<GetBankAccountById
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUserService;
     private readonly IAccountNumberProtector _accountNumberProtector;
+    private readonly IAccountBalanceCalculator _balanceCalculator;
 
-    public GetBankAccountByIdQueryHandler(IApplicationDbContext context, ICurrentUserService currentUserService, IAccountNumberProtector accountNumberProtector)
+    public GetBankAccountByIdQueryHandler(IApplicationDbContext context, ICurrentUserService currentUserService,
+        IAccountNumberProtector accountNumberProtector, IAccountBalanceCalculator balanceCalculator)
     {
         _context = context;
         _currentUserService = currentUserService;
         _accountNumberProtector = accountNumberProtector;
+        _balanceCalculator = balanceCalculator;
     }
 
     public async Task<BankAccountDto> Handle(GetBankAccountByIdQuery request, CancellationToken cancellationToken)
@@ -35,6 +38,7 @@ public class GetBankAccountByIdQueryHandler : IRequestHandler<GetBankAccountById
             throw new InvalidOperationException("La cuenta bancaria no existe.");
         }
 
+        var balances = await _balanceCalculator.CalculateBalancesAsync(account.Id, null, cancellationToken);
         return new BankAccountDto
         {
             Id = account.Id,
@@ -44,6 +48,11 @@ public class GetBankAccountByIdQueryHandler : IRequestHandler<GetBankAccountById
             Currency = account.Currency,
             OpeningBalance = account.OpeningBalance,
             OpeningDate = account.OpeningDate,
+            LedgerBalance = balances.LedgerBalance,
+            BankBalance = balances.BankBalance,
+            BankBalanceAsOfDate = balances.BankBalanceAsOfDate,
+            ComparisonLedgerBalance = balances.ComparisonLedgerBalance,
+            Difference = balances.Difference,
             IsActive = account.IsActive
         };
     }

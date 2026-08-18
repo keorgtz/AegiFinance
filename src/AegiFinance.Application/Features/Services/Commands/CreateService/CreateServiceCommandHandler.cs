@@ -41,10 +41,13 @@ public class CreateServiceCommandHandler : IRequestHandler<CreateServiceCommand,
 
         var code = await _codeGenerator.GenerateAsync(cancellationToken);
         var currency = string.IsNullOrWhiteSpace(request.Currency) ? "MXN" : request.Currency.Trim().ToUpper();
+        var organizationId = _currentUserService.OrganizationId
+            ?? throw new UnauthorizedAccessException("No se pudo determinar la organización activa.");
 
         var service = new Service
         {
             Id = Guid.NewGuid(),
+            OrganizationId = organizationId,
             Code = code,
             Name = request.Name,
             Description = request.Description,
@@ -56,6 +59,20 @@ public class CreateServiceCommandHandler : IRequestHandler<CreateServiceCommand,
             IsActive = request.IsActive,
             IsPublic = request.IsPublic
         };
+
+        var version = new ServiceVersion
+        {
+            Id = Guid.NewGuid(), ServiceId = service.Id, Service = service, VersionNumber = 1,
+            Name = service.Name, Description = service.Description, BillingType = service.BillingType,
+            BasePrice = service.DefaultPrice, Currency = service.Currency, EffectiveFrom = DateTime.UtcNow,
+            IsPublished = true
+        };
+        version.Concepts.Add(new ServiceVersionConcept
+        {
+            Id = Guid.NewGuid(), ServiceVersionId = version.Id, ServiceVersion = version,
+            Code = "BASE", Name = service.Name, Quantity = 1, UnitPrice = service.DefaultPrice
+        });
+        service.Versions.Add(version);
 
         if (request.DefaultPrice > 0)
         {

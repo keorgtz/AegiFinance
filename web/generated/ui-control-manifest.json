@@ -192,11 +192,19 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.clients.page.button.2",
-    "label": "Button 2",
+    "controlKey": "clients.duplicate-rules.open",
+    "label": "Configurar detección de duplicados",
     "module": "clients",
     "controlType": "button",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ManageClientDuplicateRules",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "clients.create.open",
+    "label": "Button 3",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": "CreateClients",
     "isSystemRequired": false
   },
   {
@@ -208,8 +216,8 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.clients.page.button.3",
-    "label": "button 3",
+    "controlKey": "ui.app.app.clients.page.button.4",
+    "label": "button 4",
     "module": "clients",
     "controlType": "button",
     "requiredPermissionCode": null,
@@ -240,35 +248,43 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.clients.id.page.tab.1",
+    "controlKey": "clients.detail.tab.overview",
     "label": "Tab 1",
     "module": "clients",
     "controlType": "tab",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ViewClients",
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.clients.id.page.tab.2",
+    "controlKey": "clients.detail.tab.contacts",
     "label": "Tab 2",
     "module": "clients",
     "controlType": "tab",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ViewClients",
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.clients.id.page.tab.3",
+    "controlKey": "clients.detail.tab.notes",
     "label": "Tab 3",
     "module": "clients",
     "controlType": "tab",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ViewClients",
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.clients.id.page.tab.4",
+    "controlKey": "clients.detail.tab.documents",
     "label": "Tab 4",
     "module": "clients",
     "controlType": "tab",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ViewClientDocuments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "clients.detail.tab.timeline",
+    "label": "Tab 5",
+    "module": "clients",
+    "controlType": "tab",
+    "requiredPermissionCode": "ViewClientTimeline",
     "isSystemRequired": false
   },
   {
@@ -384,11 +400,51 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.ledger.page.button.2",
-    "label": "Opciones",
+    "controlKey": "ledger.bankAccounts.table.actions",
+    "label": "Button 2",
     "module": "ledger",
     "controlType": "button",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ViewBankAccounts",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankAccounts.table.income",
+    "label": "PermissionMenuItem 1",
+    "module": "ledger",
+    "controlType": "permissionmenuitem",
+    "requiredPermissionCode": "CreateLedgerIncome",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankAccounts.table.expense",
+    "label": "PermissionMenuItem 2",
+    "module": "ledger",
+    "controlType": "permissionmenuitem",
+    "requiredPermissionCode": "CreateLedgerExpense",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankAccounts.table.transfer",
+    "label": "PermissionMenuItem 3",
+    "module": "ledger",
+    "controlType": "permissionmenuitem",
+    "requiredPermissionCode": "CreateLedgerTransfers",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankAccounts.table.bankBalance",
+    "label": "PermissionMenuItem 4",
+    "module": "ledger",
+    "controlType": "permissionmenuitem",
+    "requiredPermissionCode": "UpdateBankAccountBalances",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankAccounts.table.edit",
+    "label": "PermissionMenuItem 5",
+    "module": "ledger",
+    "controlType": "permissionmenuitem",
+    "requiredPermissionCode": "UpdateBankAccounts",
     "isSystemRequired": false
   },
   {
@@ -440,11 +496,43 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.ledger.page.tab.2",
+    "controlKey": "ledger.bankAccounts.tabs.accounts",
     "label": "Tab 2",
     "module": "ledger",
     "controlType": "tab",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ViewBankAccounts",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.major.tabs.journal",
+    "label": "Tab 3",
+    "module": "ledger",
+    "controlType": "tab",
+    "requiredPermissionCode": "ViewMajorLedger",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.major.tabs.chart",
+    "label": "Tab 4",
+    "module": "ledger",
+    "controlType": "tab",
+    "requiredPermissionCode": "ViewMajorLedger",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.major.tabs.trial",
+    "label": "Tab 5",
+    "module": "ledger",
+    "controlType": "tab",
+    "requiredPermissionCode": "ViewMajorLedger",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.major.tabs.periods",
+    "label": "Tab 6",
+    "module": "ledger",
+    "controlType": "tab",
+    "requiredPermissionCode": "ViewMajorLedger",
     "isSystemRequired": false
   },
   {
@@ -496,19 +584,51 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.ledger.page.select.4",
+    "controlKey": "ledger.bankAccounts.filters.status",
     "label": "Select 4",
     "module": "ledger",
     "controlType": "select",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ViewBankAccounts",
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.ledger.page.button.9",
+    "controlKey": "ledger.bankAccounts.create",
     "label": "Button 9",
     "module": "ledger",
     "controlType": "button",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateBankAccounts",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankAccounts.retry",
+    "label": "Button 10",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewBankAccounts",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankAccounts.card.transfer",
+    "label": "Button 11",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "CreateLedgerTransfers",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankAccounts.card.edit",
+    "label": "Button 12",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "UpdateBankAccounts",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankAccounts.card.bankBalance",
+    "label": "Button 13",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "UpdateBankAccountBalances",
     "isSystemRequired": false
   },
   {
@@ -632,7 +752,7 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.services.id.page.button.2",
+    "controlKey": "services.detail.back",
     "label": "button 2",
     "module": "services",
     "controlType": "button",
@@ -640,7 +760,7 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.services.id.page.button.3",
+    "controlKey": "services.detail.toggle-status",
     "label": "Button 3",
     "module": "services",
     "controlType": "button",
@@ -648,7 +768,7 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.services.id.page.button.4",
+    "controlKey": "services.detail.edit",
     "label": "Button 4",
     "module": "services",
     "controlType": "button",
@@ -656,7 +776,7 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.services.id.page.tab.1",
+    "controlKey": "services.detail.tab.info",
     "label": "Tab 1",
     "module": "services",
     "controlType": "tab",
@@ -664,7 +784,7 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.services.id.page.tab.2",
+    "controlKey": "services.detail.tab.versions",
     "label": "Tab 2",
     "module": "services",
     "controlType": "tab",
@@ -672,8 +792,24 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.services.id.page.button.5",
+    "controlKey": "services.detail.tab.prices",
+    "label": "Tab 3",
+    "module": "services",
+    "controlType": "tab",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "services.version.open-create",
     "label": "Button 5",
+    "module": "services",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.services.id.page.button.6",
+    "label": "Button 6",
     "module": "services",
     "controlType": "button",
     "requiredPermissionCode": null,
@@ -776,7 +912,7 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.subscriptions.id.page.tab.2",
+    "controlKey": "subscriptions.detail.tab.terms",
     "label": "Tab 2",
     "module": "subscriptions",
     "controlType": "tab",
@@ -800,7 +936,15 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.subscriptions.id.page.button.9",
+    "controlKey": "subscriptions.detail.tab.access",
+    "label": "Tab 5",
+    "module": "subscriptions",
+    "controlType": "tab",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.detail.change-plan",
     "label": "Button 9",
     "module": "subscriptions",
     "controlType": "button",
@@ -808,8 +952,16 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.subscriptions.id.page.button.10",
+    "controlKey": "subscriptions.detail.change-price",
     "label": "Button 10",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.subscriptions.id.page.button.11",
+    "label": "Button 11",
     "module": "subscriptions",
     "controlType": "button",
     "requiredPermissionCode": null,
@@ -1080,7 +1232,79 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.clients.client.form.button.1",
+    "controlKey": "clients.documents.file",
+    "label": "Archivo",
+    "module": "clients",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageClientDocuments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "clients.documents.description",
+    "label": "Descripción",
+    "module": "clients",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageClientDocuments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "clients.documents.upload",
+    "label": "Button 1",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageClientDocuments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "clients.documents.download",
+    "label": "Button 2",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewClientDocuments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "clients.documents.delete",
+    "label": "Button 3",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageClientDocuments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "clients.duplicate-rules.tax-id",
+    "label": "RFC / ID fiscal",
+    "module": "clients",
+    "controlType": "ruletoggle",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "clients.duplicate-rules.name",
+    "label": "Nombre normalizado",
+    "module": "clients",
+    "controlType": "ruletoggle",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "clients.duplicate-rules.email",
+    "label": "Correo de facturación",
+    "module": "clients",
+    "controlType": "ruletoggle",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "clients.duplicate-rules.block",
+    "label": "Bloquear el alta cuando exista coincidencia",
+    "module": "clients",
+    "controlType": "ruletoggle",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "clients.duplicate-rules.cancel",
     "label": "Button 1",
     "module": "clients",
     "controlType": "button",
@@ -1088,7 +1312,23 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.clients.client.form.button.2",
+    "controlKey": "clients.duplicate-rules.save",
+    "label": "Button 2",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageClientDuplicateRules",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "clients.form.cancel",
+    "label": "Button 1",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "clients.form.submit",
     "label": "Button 2",
     "module": "clients",
     "controlType": "button",
@@ -1096,7 +1336,7 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.clients.client.form.input.1",
+    "controlKey": "clients.form.name",
     "label": "Nombre / Razón social *",
     "module": "clients",
     "controlType": "input",
@@ -1104,7 +1344,7 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.clients.client.form.input.2",
+    "controlKey": "clients.form.trade-name",
     "label": "Nombre comercial",
     "module": "clients",
     "controlType": "input",
@@ -1112,7 +1352,7 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.clients.client.form.input.3",
+    "controlKey": "clients.form.tax-id",
     "label": "RFC / ID Fiscal",
     "module": "clients",
     "controlType": "input",
@@ -1120,7 +1360,7 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.clients.client.form.select.1",
+    "controlKey": "clients.form.category",
     "label": "Categoría",
     "module": "clients",
     "controlType": "select",
@@ -1128,7 +1368,7 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.clients.client.form.select.2",
+    "controlKey": "clients.form.status",
     "label": "Estado",
     "module": "clients",
     "controlType": "select",
@@ -1136,7 +1376,7 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.clients.client.form.button.3",
+    "controlKey": "clients.form.tags.toggle",
     "label": "button 3",
     "module": "clients",
     "controlType": "button",
@@ -1144,7 +1384,7 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.clients.client.form.button.4",
+    "controlKey": "clients.form.tags.option",
     "label": "button 4",
     "module": "clients",
     "controlType": "button",
@@ -1152,7 +1392,7 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.clients.client.form.input.4",
+    "controlKey": "clients.form.billing-email",
     "label": "Correo de facturación",
     "module": "clients",
     "controlType": "input",
@@ -1160,7 +1400,7 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.clients.client.form.input.5",
+    "controlKey": "clients.form.phone",
     "label": "Teléfono",
     "module": "clients",
     "controlType": "input",
@@ -1168,7 +1408,7 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.clients.client.form.input.6",
+    "controlKey": "clients.form.billing-address",
     "label": "Dirección de facturación",
     "module": "clients",
     "controlType": "input",
@@ -1176,7 +1416,47 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.clients.client.form.textarea.1",
+    "controlKey": "clients.form.presentation-currency",
+    "label": "Moneda de presentación",
+    "module": "clients",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "clients.form.payment-terms-days",
+    "label": "Días de crédito",
+    "module": "clients",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "clients.form.credit-limit",
+    "label": "Límite de crédito",
+    "module": "clients",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "clients.form.account-manager",
+    "label": "Responsable",
+    "module": "clients",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "clients.form.commercial-terms",
+    "label": "Condiciones comerciales",
+    "module": "clients",
+    "controlType": "textarea",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "clients.form.internal-notes",
     "label": "Notas internas",
     "module": "clients",
     "controlType": "textarea",
@@ -1320,7 +1600,7 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.ledger.bank.account.form.input.1",
+    "controlKey": "ledger.bankAccounts.form.name",
     "label": "Nombre *",
     "module": "ledger",
     "controlType": "input",
@@ -1328,7 +1608,7 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.ledger.bank.account.form.input.2",
+    "controlKey": "ledger.bankAccounts.form.bankName",
     "label": "Banco",
     "module": "ledger",
     "controlType": "input",
@@ -1336,7 +1616,7 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.ledger.bank.account.form.input.3",
+    "controlKey": "ledger.bankAccounts.form.accountNumber",
     "label": "Número de cuenta",
     "module": "ledger",
     "controlType": "input",
@@ -1344,15 +1624,15 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.ledger.bank.account.form.input.4",
+    "controlKey": "ledger.bankAccounts.form.currency",
     "label": "Moneda *",
     "module": "ledger",
-    "controlType": "input",
+    "controlType": "select",
     "requiredPermissionCode": null,
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.ledger.bank.account.form.input.5",
+    "controlKey": "ledger.bankAccounts.form.openingBalance",
     "label": "Saldo inicial *",
     "module": "ledger",
     "controlType": "input",
@@ -1360,7 +1640,7 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.ledger.bank.account.form.input.6",
+    "controlKey": "ledger.bankAccounts.form.openingDate",
     "label": "Fecha de apertura *",
     "module": "ledger",
     "controlType": "input",
@@ -1368,7 +1648,15 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.ledger.bank.account.form.button.1",
+    "controlKey": "ledger.bankAccounts.form.isActive",
+    "label": "Cuenta activa",
+    "module": "ledger",
+    "controlType": "permissionswitch",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankAccounts.form.cancel",
     "label": "Button 1",
     "module": "ledger",
     "controlType": "button",
@@ -1376,11 +1664,43 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.ledger.bank.account.form.button.2",
+    "controlKey": "ledger.bankAccounts.form.submit",
     "label": "Button 2",
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankBalances.form.balance",
+    "label": "Saldo mostrado por el banco *",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": "UpdateBankAccountBalances",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankBalances.form.asOfDate",
+    "label": "Fecha del saldo *",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": "UpdateBankAccountBalances",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankBalances.form.cancel",
+    "label": "Button 1",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankBalances.form.submit",
+    "label": "Button 2",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "UpdateBankAccountBalances",
     "isSystemRequired": false
   },
   {
@@ -1512,55 +1832,159 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.ledger.transfer.form.select.1",
+    "controlKey": "ledger.major.state.retry",
+    "label": "Button 1",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewMajorLedger",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.major.migration.run",
+    "label": "Button 2",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "MigrateMajorLedger",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.major.journal.reverse",
+    "label": "Button 3",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "ReverseJournalEntries",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.major.journal.details",
+    "label": "Button 4",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewMajorLedger",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.major.chart.search",
+    "label": "Buscar cuenta",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": "ViewMajorLedger",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.major.trial.asOfDate",
+    "label": "Corte histórico",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": "ViewMajorLedger",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.major.periods.close",
+    "label": "Button 5",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageAccountingPeriods",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.major.periods.cancel",
+    "label": "Button 6",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.major.periods.confirm",
+    "label": "Button 7",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageAccountingPeriods",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.major.reverse.date",
+    "label": "Fecha de reversión",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": "ReverseJournalEntries",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.major.reverse.reason",
+    "label": "Motivo",
+    "module": "ledger",
+    "controlType": "textarea",
+    "requiredPermissionCode": "ReverseJournalEntries",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.major.reverse.cancel",
+    "label": "Button 8",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.major.reverse.confirm",
+    "label": "Button 9",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "ReverseJournalEntries",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.transfers.form.source",
     "label": "Cuenta origen *",
     "module": "ledger",
     "controlType": "select",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerTransfers",
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.ledger.transfer.form.select.2",
+    "controlKey": "ledger.transfers.form.destination",
     "label": "Cuenta destino *",
     "module": "ledger",
     "controlType": "select",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerTransfers",
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.ledger.transfer.form.input.1",
+    "controlKey": "ledger.transfers.form.amount",
     "label": "Importe *",
     "module": "ledger",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerTransfers",
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.ledger.transfer.form.input.2",
+    "controlKey": "ledger.transfers.form.currency",
     "label": "Moneda *",
     "module": "ledger",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerTransfers",
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.ledger.transfer.form.input.3",
+    "controlKey": "ledger.transfers.form.date",
     "label": "Fecha *",
     "module": "ledger",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerTransfers",
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.ledger.transfer.form.input.4",
+    "controlKey": "ledger.transfers.form.description",
     "label": "Descripción",
     "module": "ledger",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerTransfers",
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.ledger.transfer.form.button.1",
+    "controlKey": "ledger.transfers.form.cancel",
     "label": "Button 1",
     "module": "ledger",
     "controlType": "button",
@@ -1568,11 +1992,11 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.ledger.transfer.form.button.2",
+    "controlKey": "ledger.transfers.form.submit",
     "label": "Button 2",
     "module": "ledger",
     "controlType": "button",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerTransfers",
     "isSystemRequired": false
   },
   {
@@ -1832,6 +2256,182 @@
     "isSystemRequired": false
   },
   {
+    "controlKey": "services.version.cancel",
+    "label": "Button 1",
+    "module": "services",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "services.version.publish",
+    "label": "Button 2",
+    "module": "services",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "services.version.name",
+    "label": "Nombre del plan *",
+    "module": "services",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "services.version.effective-from",
+    "label": "Vigente desde *",
+    "module": "services",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "services.version.billing-type",
+    "label": "Periodicidad",
+    "module": "services",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "services.version.custom-interval",
+    "label": "Intervalo (días)",
+    "module": "services",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "services.version.base-price",
+    "label": "Precio base",
+    "module": "services",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "services.version.currency",
+    "label": "Moneda",
+    "module": "services",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "services.version.discount",
+    "label": "Descuento predeterminado (%)",
+    "module": "services",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "services.version.tax",
+    "label": "Impuesto predeterminado (%)",
+    "module": "services",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "services.version.proration",
+    "label": "Prorrateo",
+    "module": "services",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "services.version.description",
+    "label": "Descripción",
+    "module": "services",
+    "controlType": "textarea",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "services.version.concept-code",
+    "label": "Código",
+    "module": "services",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "services.version.concept-name",
+    "label": "Concepto",
+    "module": "services",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "services.version.concept-quantity",
+    "label": "Cantidad",
+    "module": "services",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "services.version.concept-unit-price",
+    "label": "Precio unitario",
+    "module": "services",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "services.version.terms",
+    "label": "Condiciones contractuales",
+    "module": "services",
+    "controlType": "textarea",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.plan-change.cancel",
+    "label": "Button 1",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.plan-change.schedule",
+    "label": "Button 2",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.plan-change.version",
+    "label": "Versión publicada",
+    "module": "subscriptions",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.plan-change.effective-date",
+    "label": "Vigente desde",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.plan-change.reason",
+    "label": "Motivo",
+    "module": "subscriptions",
+    "controlType": "textarea",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
     "controlKey": "ui.components.modules.subscriptions.change.price.form.input.1",
     "label": "Nuevo precio *",
     "module": "subscriptions",
@@ -1944,8 +2544,8 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.subscriptions.subscription.form.input.2",
-    "label": "Precio *",
+    "controlKey": "subscriptions.form.custom-interval",
+    "label": "Intervalo (días) *",
     "module": "subscriptions",
     "controlType": "input",
     "requiredPermissionCode": null,
@@ -1953,7 +2553,7 @@
   },
   {
     "controlKey": "ui.components.modules.subscriptions.subscription.form.input.3",
-    "label": "Moneda *",
+    "label": "Precio *",
     "module": "subscriptions",
     "controlType": "input",
     "requiredPermissionCode": null,
@@ -1961,6 +2561,38 @@
   },
   {
     "controlKey": "ui.components.modules.subscriptions.subscription.form.input.4",
+    "label": "Moneda *",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.form.discount",
+    "label": "Descuento (%)",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.form.tax",
+    "label": "Impuesto (%)",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.form.proration",
+    "label": "Prorrateo",
+    "module": "subscriptions",
+    "controlType": "select",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.subscriptions.subscription.form.input.7",
     "label": "Inicio *",
     "module": "subscriptions",
     "controlType": "input",
@@ -1968,7 +2600,7 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.components.modules.subscriptions.subscription.form.input.5",
+    "controlKey": "ui.components.modules.subscriptions.subscription.form.input.8",
     "label": "Fin (opcional)",
     "module": "subscriptions",
     "controlType": "input",
@@ -1978,6 +2610,14 @@
   {
     "controlKey": "ui.components.modules.subscriptions.subscription.form.textarea.1",
     "label": "Notas internas",
+    "module": "subscriptions",
+    "controlType": "textarea",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.form.contract-terms",
+    "label": "Condiciones contractuales",
     "module": "subscriptions",
     "controlType": "textarea",
     "requiredPermissionCode": null,
@@ -2318,5 +2958,21 @@
     "controlType": "link",
     "requiredPermissionCode": "ManageRoles",
     "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.dialog.close",
+    "label": "Cerrar diálogo",
+    "module": "system",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": true
+  },
+  {
+    "controlKey": "ui.drawer.close",
+    "label": "Cerrar panel",
+    "module": "system",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": true
   }
 ]

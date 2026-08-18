@@ -3,6 +3,7 @@ using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Common.Models;
 using AegiFinance.Domain.Entities;
 using AegiFinance.Domain.Enums;
+using AegiFinance.Domain.Accounting;
 using AegiFinance.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,10 +12,12 @@ namespace AegiFinance.Infrastructure.Services;
 public class BillingGenerationService : IBillingGenerationService
 {
     private readonly ApplicationDbContext _context;
+    private readonly IMajorLedgerService _majorLedger;
 
-    public BillingGenerationService(ApplicationDbContext context)
+    public BillingGenerationService(ApplicationDbContext context, IMajorLedgerService majorLedger)
     {
         _context = context;
+        _majorLedger = majorLedger;
     }
 
     public async Task<BillingGenerationResult> GenerateForCycleAsync(int year, int? month, Guid? triggeredBy = null, CancellationToken cancellationToken = default)
@@ -34,6 +37,7 @@ public class BillingGenerationService : IBillingGenerationService
             var subscriptions = await _context.Subscriptions
                 .AsNoTracking()
                 .Include(s => s.Service)
+                .Include(s => s.TermsVersions)
                 .Where(s => s.Status == SubscriptionStatus.Active
                     && s.NextBillingDate.HasValue
                     && s.NextBillingDate.Value >= startDate
@@ -77,6 +81,7 @@ public class BillingGenerationService : IBillingGenerationService
         var subscription = await _context.Subscriptions
             .AsNoTracking()
             .Include(s => s.Service)
+            .Include(s => s.TermsVersions)
             .FirstOrDefaultAsync(s => s.Id == subscriptionId, cancellationToken);
 
         if (subscription is null)
@@ -158,6 +163,7 @@ public class BillingGenerationService : IBillingGenerationService
             var subscriptions = await _context.Subscriptions
                 .AsNoTracking()
                 .Include(s => s.Service)
+                .Include(s => s.TermsVersions)
                 .Where(s => s.Status == SubscriptionStatus.Active
                     && s.NextBillingDate.HasValue
                     && s.NextBillingDate.Value >= cycle.StartDate
@@ -177,10 +183,25 @@ public class BillingGenerationService : IBillingGenerationService
                     }
                     else if (!onlyPending || existingItem.Status is BillingItemStatus.Pending or BillingItemStatus.Partial or BillingItemStatus.Cancelled)
                     {
-                        existingItem.Amount = subscription.Price;
-                        existingItem.Description = BuildDescription(subscription);
-                        existingItem.DueDate = CalculateDueDate(subscription);
-                        existingItem.Currency = subscription.Currency;
+                        var hasPostedCharge = await _context.JournalEntries.AsNoTracking()
+                            .AnyAsync(entry => entry.IdempotencyKey == $"charge:{existingItem.Id}", cancellationToken);
+                        var effectiveDate = subscription.NextBillingDate ?? subscription.StartDate;
+                        var terms = SubscriptionPricingRules.ResolveTerms(subscription.TermsVersions, effectiveDate);
+                        var pricing = SubscriptionPricingRules.Calculate(terms.BasePrice, terms.DiscountPercent, terms.TaxPercent,
+                            SubscriptionPricingRules.FirstPeriodFactor(subscription, terms));
+                        if (hasPostedCharge && (existingItem.Amount != pricing.Total || existingItem.Currency != terms.Currency))
+                        {
+                            throw new InvalidOperationException("The charge is already posted. Reverse it and issue a new charge instead of changing its financial amount.");
+                        }
+                        existingItem.SubscriptionTermsVersionId = terms.Id;
+                        existingItem.BaseAmount = pricing.BaseAmount;
+                        existingItem.DiscountAmount = pricing.DiscountAmount;
+                        existingItem.TaxAmount = pricing.TaxAmount;
+                        existingItem.ProrationFactor = pricing.ProrationFactor;
+                        existingItem.Amount = pricing.Total;
+                        existingItem.Description = BuildDescription(subscription, terms);
+                        existingItem.DueDate = CalculateDueDate(subscription, terms);
+                        existingItem.Currency = terms.Currency;
                         _context.BillingItems.Update(existingItem);
                     }
                 }
@@ -222,6 +243,7 @@ public class BillingGenerationService : IBillingGenerationService
         }
 
         var trackedSubscription = await _context.Subscriptions
+            .Include(s => s.TermsVersions)
             .FirstOrDefaultAsync(s => s.Id == subscription.Id, cancellationToken);
 
         if (trackedSubscription is null)
@@ -229,16 +251,25 @@ public class BillingGenerationService : IBillingGenerationService
             throw new InvalidOperationException("No se pudo cargar la suscripción para actualizar.");
         }
 
+        var effectiveDate = subscription.NextBillingDate ?? subscription.StartDate;
+        var terms = SubscriptionPricingRules.ResolveTerms(subscription.TermsVersions, effectiveDate);
+        var pricing = SubscriptionPricingRules.Calculate(terms.BasePrice, terms.DiscountPercent, terms.TaxPercent,
+            SubscriptionPricingRules.FirstPeriodFactor(subscription, terms));
         var billingItem = new BillingItem
         {
             Id = Guid.NewGuid(),
             SubscriptionId = subscription.Id,
             BillingCycleId = cycle.Id,
             ClientId = subscription.ClientId,
-            Description = BuildDescription(subscription),
-            Amount = subscription.Price,
-            Currency = subscription.Currency,
-            DueDate = CalculateDueDate(subscription),
+            SubscriptionTermsVersionId = terms.Id,
+            Description = BuildDescription(subscription, terms),
+            BaseAmount = pricing.BaseAmount,
+            DiscountAmount = pricing.DiscountAmount,
+            TaxAmount = pricing.TaxAmount,
+            ProrationFactor = pricing.ProrationFactor,
+            Amount = pricing.Total,
+            Currency = terms.Currency,
+            DueDate = CalculateDueDate(subscription, terms),
             Status = BillingItemStatus.Pending,
             PaidAmount = 0,
             GeneratedAt = DateTime.UtcNow,
@@ -246,30 +277,42 @@ public class BillingGenerationService : IBillingGenerationService
         };
 
         _context.BillingItems.Add(billingItem);
+        await _majorLedger.PostChargeAsync(billingItem, cancellationToken);
 
         var lastBillingDate = subscription.NextBillingDate ?? subscription.StartDate;
         trackedSubscription.LastBillingDate = lastBillingDate;
+        trackedSubscription.ServiceVersionId = terms.ServiceVersionId;
+        trackedSubscription.BillingType = terms.BillingType;
+        trackedSubscription.Price = pricing.Total;
+        trackedSubscription.Currency = terms.Currency;
+        trackedSubscription.DiscountPercent = terms.DiscountPercent;
+        trackedSubscription.TaxPercent = terms.TaxPercent;
+        trackedSubscription.BillingDay = terms.BillingDay;
+        trackedSubscription.CustomIntervalDays = terms.CustomIntervalDays;
+        trackedSubscription.ProrationPolicy = terms.ProrationPolicy;
+        trackedSubscription.ContractTerms = terms.Terms;
 
         if (trackedSubscription.BillingType == BillingType.OneTime)
         {
             trackedSubscription.NextBillingDate = null;
         }
-        else if (trackedSubscription.BillingType == BillingType.Monthly || trackedSubscription.BillingType == BillingType.Yearly)
+        else if (trackedSubscription.BillingType is BillingType.Monthly or BillingType.Yearly or BillingType.Custom)
         {
             trackedSubscription.NextBillingDate = SubscriptionDateCalculator.CalculateNextBillingDate(
                 lastBillingDate,
                 trackedSubscription.BillingType,
-                trackedSubscription.BillingDay);
+                trackedSubscription.BillingDay,
+                trackedSubscription.CustomIntervalDays);
         }
     }
 
-    private static string BuildDescription(Subscription subscription)
+    private static string BuildDescription(Subscription subscription, SubscriptionTermsVersion terms)
     {
         var serviceName = subscription.Service?.Name ?? subscription.ServiceId.ToString();
-        return $"Cargo por servicio {serviceName} - Suscripción {subscription.Code}";
+        return $"Cargo por servicio {serviceName} - Suscripción {subscription.Code} - Condiciones v{terms.VersionNumber}";
     }
 
-    private static DateTime CalculateDueDate(Subscription subscription)
+    private static DateTime CalculateDueDate(Subscription subscription, SubscriptionTermsVersion terms)
     {
         if (!subscription.NextBillingDate.HasValue)
         {
@@ -278,7 +321,7 @@ public class BillingGenerationService : IBillingGenerationService
 
         var date = subscription.NextBillingDate.Value;
         var daysInMonth = DateTime.DaysInMonth(date.Year, date.Month);
-        var day = Math.Min(subscription.BillingDay, daysInMonth);
+        var day = Math.Min(Math.Max(terms.BillingDay, 1), daysInMonth);
 
         return new DateTime(date.Year, date.Month, day, 0, 0, 0, date.Kind);
     }

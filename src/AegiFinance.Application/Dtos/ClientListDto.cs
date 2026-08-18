@@ -11,4 +11,7 @@ public class ClientListDto
     public string? CategoryName { get; set; }
     public string? PrimaryContactName { get; set; }
     public List<ClientTagDto> Tags { get; set; } = new List<ClientTagDto>();
+    public string PresentationCurrency { get; set; } = "MXN";
+    public decimal CreditLimit { get; set; }
+    public string? AccountManagerName { get; set; }
 }

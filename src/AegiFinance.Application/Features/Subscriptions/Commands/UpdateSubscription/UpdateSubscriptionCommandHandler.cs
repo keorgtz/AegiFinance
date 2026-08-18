@@ -37,45 +37,15 @@ public class UpdateSubscriptionCommandHandler : IRequestHandler<UpdateSubscripti
             throw new InvalidOperationException("La suscripción no existe.");
         }
 
-        var clientExists = await _context.Clients
-            .AsNoTracking()
-            .AnyAsync(c => c.Id == request.ClientId, cancellationToken);
+        var currency = string.IsNullOrWhiteSpace(request.Currency) ? "MXN" : request.Currency.Trim().ToUpper();
+        if (request.ClientId != subscription.ClientId || request.ServiceId != subscription.ServiceId ||
+            request.BillingType != subscription.BillingType || request.Price != subscription.Price ||
+            currency != subscription.Currency || request.StartDate != subscription.StartDate || request.BillingDay != subscription.BillingDay)
+            throw new InvalidOperationException("Cliente, plan, precio, periodicidad y fecha inicial se cambian mediante condiciones versionadas, no editando la suscripción.");
 
-        if (!clientExists)
-        {
-            throw new InvalidOperationException("El cliente seleccionado no existe.");
-        }
-
-        var serviceExists = await _context.Services
-            .AsNoTracking()
-            .AnyAsync(s => s.Id == request.ServiceId, cancellationToken);
-
-        if (!serviceExists)
-        {
-            throw new InvalidOperationException("El servicio seleccionado no existe.");
-        }
-
-        subscription.ClientId = request.ClientId;
-        subscription.ServiceId = request.ServiceId;
-        subscription.BillingType = request.BillingType;
-        subscription.Currency = string.IsNullOrWhiteSpace(request.Currency) ? "MXN" : request.Currency.Trim().ToUpper();
-        subscription.StartDate = request.StartDate;
         subscription.EndDate = request.EndDate;
-        subscription.BillingDay = request.BillingDay;
         subscription.AutoRenew = request.AutoRenew;
         subscription.Notes = request.Notes;
-
-        if (subscription.BillingType == BillingType.Monthly || subscription.BillingType == BillingType.Yearly)
-        {
-            subscription.NextBillingDate = SubscriptionDateCalculator.CalculateNextBillingDate(
-                subscription.LastBillingDate ?? subscription.StartDate,
-                subscription.BillingType,
-                subscription.BillingDay);
-        }
-        else
-        {
-            subscription.NextBillingDate = null;
-        }
 
         await _context.SaveChangesAsync(cancellationToken);
 
@@ -98,6 +68,12 @@ public class UpdateSubscriptionCommandHandler : IRequestHandler<UpdateSubscripti
             StartDate = subscription.StartDate,
             EndDate = subscription.EndDate,
             BillingDay = subscription.BillingDay,
+            ServiceVersionId = subscription.ServiceVersionId,
+            CustomIntervalDays = subscription.CustomIntervalDays,
+            DiscountPercent = subscription.DiscountPercent,
+            TaxPercent = subscription.TaxPercent,
+            ProrationPolicy = subscription.ProrationPolicy.ToString(),
+            ContractTerms = subscription.ContractTerms,
             Status = subscription.Status.ToString(),
             AutoRenew = subscription.AutoRenew,
             Notes = subscription.Notes,

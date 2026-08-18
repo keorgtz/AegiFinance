@@ -151,6 +151,8 @@ Convertir el inicio en una cola de decisiones, no en una pared de métricas.
 
 ## Fase 4 — Núcleo contable: Major Ledger
 
+**Estado:** implementada el 18 de agosto de 2026. Incluye catálogo multimoneda, asientos y líneas de partida doble, periodos, contabilización automática de cargos y movimientos bancarios, inmutabilidad, reversión, idempotencia, migración reconciliable, balanza y auxiliares. Compilación .NET Release, pruebas contables, TypeScript, build frontend y catálogo de permisos aprobados. Pendientes de la sesión: inspección visual interactiva y `docker compose config` real por indisponibilidad de ambos runtimes.
+
 ### Objetivo
 
 Evolucionar el registro actual de caja hacia un libro mayor real sin perder trazabilidad.
@@ -177,6 +179,8 @@ Evolucionar el registro actual de caja hacia un libro mayor real sin perder traz
 
 ## Fase 5 — Cuentas bancarias y saldos
 
+**Estado:** implementada el 18 de agosto de 2026. Incluye apertura transaccional contra el Major Ledger, saldos contable/bancario/diferencia separados, registro auditado de saldos bancarios verificados, transferencias neutrales vinculadas, bloqueo de cuentas inactivas, moneda inmutable, protección del número de cuenta y experiencia AegiPulse responsive con permisos declarativos. Gates aprobados: compilación .NET Release, reglas contables/bancarias, TypeScript, build frontend y catálogo UI. `docker compose config` e inspección visual autenticada quedan sujetos a disponer de Docker y SQL Server en el entorno de ejecución.
+
 ### Entregables
 
 - múltiples cuentas por organización, banco y moneda;
@@ -195,6 +199,8 @@ Evolucionar el registro actual de caja hacia un libro mayor real sin perder traz
 
 ## Fase 6 — Clientes, contactos y alcance
 
+**Estado:** implementada el 18 de agosto de 2026. Incluye organización y alcance multiempresa en EF y SQL RLS, ficha comercial completa, responsable, reglas configurables de duplicados, documentos persistentes, timeline de auditoría y experiencia AegiPulse responsive con permisos declarativos. Gates aprobados: compilación .NET Release, pruebas de identidad/contabilidad/permisos, migración sin cambios pendientes, script SQL idempotente, TypeScript, build frontend y catálogo de 341 controles. El contrato de despliegue Ubuntu fue endurecido contra secretos ausentes, credenciales iniciales inseguras, exposición de servicios internos, pérdida de claves/documentos, edición SQL no licenciada y restauraciones Docker incompletas; cuenta con guía y verificador propios. La inspección visual autenticada y `docker compose config` quedan pendientes porque el SQL Server local rechazó la conexión cifrada, el navegador integrado no pudo inicializarse y Docker no está instalado en este entorno.
+
 ### Entregables
 
 - ficha única de cliente, contactos, etiquetas, notas y documentos;
@@ -212,6 +218,8 @@ Evolucionar el registro actual de caja hacia un libro mayor real sin perder traz
 ---
 
 ## Fase 7 — Planes, servicios y suscripciones
+
+**Estado:** implementada el 18 de agosto de 2026. Los servicios quedaron convertidos en planes multiempresa versionados, con conceptos, vigencias, periodicidad mensual, anual, única, por hora y personalizada, precios base, descuentos, impuestos, prorrateo y condiciones contractuales. Las suscripciones conservan versiones propias de sus condiciones, permiten pausa, reactivación, renovación, cancelación, cambios de precio y cambios de plan con fecha efectiva. Cada cargo congela la versión aplicada y su desglose financiero; las renovaciones usan clave de idempotencia protegida por índice único. La administración de visibilidad usa la política dinámica `ManageSubscriptionAccess`, sin roles embebidos. La UI AegiPulse expone versiones y condiciones en layouts recompuestos para teléfono y escritorio, con temas semánticos y controles declarativos. Gates aprobados: compilación .NET Release, pruebas financieras y de permisos, migración sin cambios pendientes, TypeScript, build frontend, catálogo de 372 controles y verificador de despliegue. No fue necesario agregar servicios ni volúmenes a Docker Compose; `docker compose config` queda pendiente en un host con Docker instalado.
 
 ### Entregables
 

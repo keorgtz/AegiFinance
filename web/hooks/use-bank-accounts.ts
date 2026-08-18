@@ -7,6 +7,7 @@ import type {
   CreateBankAccountRequest,
   GetBankAccountsParams,
   UpdateBankAccountRequest,
+  RecordBankBalanceRequest,
 } from "@/types/api";
 
 const ACCOUNTS_KEY = ["bank-accounts"];
@@ -30,6 +31,14 @@ export function useBankAccountBalance(id: string, asOfDate?: string) {
   return useQuery({
     queryKey: [...ACCOUNTS_KEY, id, "balance", asOfDate],
     queryFn: () => bankAccountsApi.getBalance(id, asOfDate),
+    enabled: !!id,
+  });
+}
+
+export function useBankAccountBalances(id: string, asOfDate?: string) {
+  return useQuery({
+    queryKey: [...ACCOUNTS_KEY, id, "balances", asOfDate],
+    queryFn: () => bankAccountsApi.getBalances(id, asOfDate),
     enabled: !!id,
   });
 }
@@ -68,5 +77,18 @@ export function useDeleteBankAccount() {
       toast.success("Cuenta bancaria eliminada");
     },
     onError: () => toast.error("Error al eliminar cuenta bancaria"),
+  });
+}
+
+export function useRecordBankBalance() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: RecordBankBalanceRequest }) =>
+      bankAccountsApi.recordBankBalance(id, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ACCOUNTS_KEY });
+      toast.success("Saldo bancario registrado");
+    },
+    onError: () => toast.error("No se pudo registrar el saldo bancario"),
   });
 }

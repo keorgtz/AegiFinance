@@ -11,12 +11,15 @@ public class UpdateBankAccountCommandHandler : IRequestHandler<UpdateBankAccount
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUserService;
     private readonly IAccountNumberProtector _accountNumberProtector;
+    private readonly IAccountBalanceCalculator _balanceCalculator;
 
-    public UpdateBankAccountCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService, IAccountNumberProtector accountNumberProtector)
+    public UpdateBankAccountCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService,
+        IAccountNumberProtector accountNumberProtector, IAccountBalanceCalculator balanceCalculator)
     {
         _context = context;
         _currentUserService = currentUserService;
         _accountNumberProtector = accountNumberProtector;
+        _balanceCalculator = balanceCalculator;
     }
 
     public async Task<BankAccountDto> Handle(UpdateBankAccountCommand request, CancellationToken cancellationToken)
@@ -43,15 +46,32 @@ public class UpdateBankAccountCommandHandler : IRequestHandler<UpdateBankAccount
             throw new InvalidOperationException("Ya existe una cuenta bancaria con ese nombre.");
         }
 
+        if (!string.Equals(account.Currency, request.Currency, StringComparison.OrdinalIgnoreCase) ||
+            account.OpeningBalance != request.OpeningBalance ||
+            account.OpeningDate.Date != request.OpeningDate.Date)
+        {
+            throw new InvalidOperationException("La moneda, el saldo inicial y la fecha de apertura son inmutables. Registre un ajuste contable si necesita corregir el saldo.");
+        }
+
         account.Name = request.Name;
         account.BankName = request.BankName;
-        account.AccountNumber = string.IsNullOrWhiteSpace(request.AccountNumber) ? null : _accountNumberProtector.Protect(request.AccountNumber);
-        account.Currency = request.Currency;
-        account.OpeningBalance = request.OpeningBalance;
-        account.OpeningDate = request.OpeningDate;
+        var currentMask = _accountNumberProtector.MaskFromProtected(account.AccountNumber);
+        if (!string.Equals(currentMask, request.AccountNumber, StringComparison.Ordinal))
+        {
+            account.AccountNumber = string.IsNullOrWhiteSpace(request.AccountNumber) ? null : _accountNumberProtector.Protect(request.AccountNumber);
+        }
         account.IsActive = request.IsActive;
 
+        var ledgerAccount = await _context.GeneralLedgerAccounts
+            .FirstOrDefaultAsync(item => item.BankAccountId == account.Id, cancellationToken);
+        if (ledgerAccount is not null)
+        {
+            ledgerAccount.Name = $"Bank · {account.Name}";
+            ledgerAccount.IsActive = account.IsActive;
+        }
+
         await _context.SaveChangesAsync(cancellationToken);
+        var balances = await _balanceCalculator.CalculateBalancesAsync(account.Id, null, cancellationToken);
 
         return new BankAccountDto
         {
@@ -62,6 +82,11 @@ public class UpdateBankAccountCommandHandler : IRequestHandler<UpdateBankAccount
             Currency = account.Currency,
             OpeningBalance = account.OpeningBalance,
             OpeningDate = account.OpeningDate,
+            LedgerBalance = balances.LedgerBalance,
+            BankBalance = balances.BankBalance,
+            BankBalanceAsOfDate = balances.BankBalanceAsOfDate,
+            ComparisonLedgerBalance = balances.ComparisonLedgerBalance,
+            Difference = balances.Difference,
             IsActive = account.IsActive
         };
     }

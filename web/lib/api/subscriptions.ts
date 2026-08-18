@@ -11,6 +11,7 @@ import type {
   CreateSubscriptionRequest,
   UpdateSubscriptionRequest,
   ChangePriceRequest,
+  ChangeSubscriptionPlanRequest,
   SubscriptionActionRequest,
   AddSubscriptionPermissionRequest,
 } from "@/types/api";
@@ -58,6 +59,9 @@ export const subscriptionsApi = {
 
   changePrice: (id: string, data: ChangePriceRequest) =>
     api.post<SubscriptionDto>(`/subscriptions/${id}/change-price`, data),
+
+  changePlan: (id: string, data: ChangeSubscriptionPlanRequest) =>
+    api.post<void>(`/subscriptions/${id}/change-plan`, data),
 
   getPriceHistory: (id: string) =>
     api.get<SubscriptionPriceHistoryDto[]>(`/subscriptions/${id}/price-history`),

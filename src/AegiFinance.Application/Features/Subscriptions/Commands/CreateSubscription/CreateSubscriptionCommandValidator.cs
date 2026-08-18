@@ -23,5 +23,10 @@ public class CreateSubscriptionCommandValidator : AbstractValidator<CreateSubscr
 
         RuleFor(x => x.BillingType)
             .IsInEnum().WithMessage("El tipo de facturación no es válido.");
+        RuleFor(x => x.DiscountPercent).InclusiveBetween(0, 100);
+        RuleFor(x => x.TaxPercent).InclusiveBetween(0, 100);
+        RuleFor(x => x.CustomIntervalDays).NotNull().InclusiveBetween(1, 3660)
+            .When(x => x.BillingType == Domain.Enums.BillingType.Custom);
+        RuleFor(x => x.ContractTerms).MaximumLength(4000);
     }
 }

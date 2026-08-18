@@ -2,14 +2,12 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS restore
 WORKDIR /src
 
-COPY ["AegiFinance.sln", "."]
 COPY ["src/AegiFinance.Domain/AegiFinance.Domain.csproj",           "src/AegiFinance.Domain/"]
 COPY ["src/AegiFinance.Application/AegiFinance.Application.csproj", "src/AegiFinance.Application/"]
 COPY ["src/AegiFinance.Infrastructure/AegiFinance.Infrastructure.csproj", "src/AegiFinance.Infrastructure/"]
-COPY ["src/AegiFinance.Web/AegiFinance.Web.csproj",                 "src/AegiFinance.Web/"]
 COPY ["src/AegiFinance.Worker/AegiFinance.Worker.csproj",           "src/AegiFinance.Worker/"]
 
-RUN dotnet restore "AegiFinance.sln"
+RUN dotnet restore "src/AegiFinance.Worker/AegiFinance.Worker.csproj"
 
 # ── 2. Build & Publish ─────────────────────────────────────────────────────────
 FROM restore AS build

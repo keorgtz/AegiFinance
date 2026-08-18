@@ -5,6 +5,7 @@ import { subscriptionsApi } from "@/lib/api/subscriptions";
 import type {
   AddSubscriptionPermissionRequest,
   ChangePriceRequest,
+  ChangeSubscriptionPlanRequest,
   CreateSubscriptionRequest,
   GetSubscriptionsParams,
   SubscriptionActionRequest,
@@ -157,7 +158,7 @@ export function useRenewSubscription() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: SubscriptionActionRequest }) =>
-      subscriptionsApi.renew(id, data),
+      subscriptionsApi.renew(id, { ...data, idempotencyKey: data.idempotencyKey ?? crypto.randomUUID() }),
     onSuccess: (_, { id }) => {
       qc.invalidateQueries({ queryKey: subscriptionKeys.lists() });
       qc.invalidateQueries({ queryKey: subscriptionKeys.detail(id) });
@@ -177,6 +178,20 @@ export function useChangeSubscriptionPrice() {
       qc.invalidateQueries({ queryKey: subscriptionKeys.detail(id) });
       qc.invalidateQueries({ queryKey: subscriptionKeys.priceHistory(id) });
       toast.success("Precio actualizado.");
+    },
+    onError: (err: Error) => toast.error(err.message),
+  });
+}
+
+export function useChangeSubscriptionPlan() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: ChangeSubscriptionPlanRequest }) => subscriptionsApi.changePlan(id, data),
+    onSuccess: (_, { id }) => {
+      qc.invalidateQueries({ queryKey: subscriptionKeys.detail(id) });
+      qc.invalidateQueries({ queryKey: subscriptionKeys.history(id) });
+      qc.invalidateQueries({ queryKey: subscriptionKeys.lists() });
+      toast.success("Cambio de plan programado.");
     },
     onError: (err: Error) => toast.error(err.message),
   });

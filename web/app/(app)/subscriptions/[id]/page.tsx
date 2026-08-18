@@ -21,6 +21,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { SubscriptionStatusBadge } from "@/components/modules/subscriptions/subscription-status-badge";
 import { SubscriptionForm } from "@/components/modules/subscriptions/subscription-form";
 import { ChangePriceForm } from "@/components/modules/subscriptions/change-price-form";
+import { ChangePlanForm } from "@/components/modules/subscriptions/change-plan-form";
 import {
   SubscriptionActionDialog,
   type ActionType,
@@ -65,6 +66,7 @@ export default function SubscriptionDetailPage() {
 
   const [editOpen, setEditOpen] = useState(false);
   const [priceOpen, setPriceOpen] = useState(false);
+  const [planOpen, setPlanOpen] = useState(false);
   const [actionState, setActionState] = useState<ActionType | null>(null);
 
   if (isLoading) {
@@ -192,7 +194,7 @@ export default function SubscriptionDetailPage() {
           <ArrowLeft className="h-3.5 w-3.5" /> Suscripciones
         </button>
 
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
           <div className="flex items-center gap-3 min-w-0">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-card bg-canvas text-muted">
               <Layers className="h-6 w-6" />
@@ -211,7 +213,7 @@ export default function SubscriptionDetailPage() {
             </div>
           </div>
 
-          <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <div className="flex w-full flex-wrap items-center gap-2 md:w-auto md:shrink-0">
             {canSuspend && (
               <Button controlKey="ui.app.app.subscriptions.id.page.button.4" variant="secondary" size="sm" onClick={() => setActionState("suspend")}>
                 Suspender
@@ -243,7 +245,8 @@ export default function SubscriptionDetailPage() {
       <Tabs defaultTab="info">
         <TabList>
           <Tab controlKey="ui.app.app.subscriptions.id.page.tab.1" id="info">Información</Tab>
-          <Tab controlKey="ui.app.app.subscriptions.id.page.tab.2" id="prices">
+          <Tab controlKey="subscriptions.detail.tab.terms" id="terms">Condiciones ({sub.termsVersions.length})</Tab>
+          <Tab controlKey="ui.app.app.subscriptions.id.page.tab.3" id="prices">
             Historial de precios
             {priceHistory.length > 0 && (
               <span className="ml-1.5 rounded-full bg-border px-1.5 py-0.5 text-[10px] font-bold text-muted">
@@ -251,7 +254,7 @@ export default function SubscriptionDetailPage() {
               </span>
             )}
           </Tab>
-          <Tab controlKey="ui.app.app.subscriptions.id.page.tab.3" id="log">
+          <Tab controlKey="ui.app.app.subscriptions.id.page.tab.4" id="log">
             Cambios
             {changeLogs.length > 0 && (
               <span className="ml-1.5 rounded-full bg-border px-1.5 py-0.5 text-[10px] font-bold text-muted">
@@ -259,8 +262,8 @@ export default function SubscriptionDetailPage() {
               </span>
             )}
           </Tab>
-          <Can permission="ManageUsers">
-            <Tab controlKey="ui.app.app.subscriptions.id.page.tab.4" id="permissions">Visibilidad</Tab>
+          <Can permission="ManageSubscriptionAccess">
+            <Tab controlKey="subscriptions.detail.tab.access" id="permissions">Visibilidad</Tab>
           </Can>
         </TabList>
 
@@ -284,9 +287,7 @@ export default function SubscriptionDetailPage() {
                 <Badge variant={sub.autoRenew ? "jade" : "muted"}>{sub.autoRenew ? "Sí" : "No"}</Badge>
               </InfoRow>
               <div className="mt-3 border-t border-surface-subtle pt-3">
-                <Button controlKey="ui.app.app.subscriptions.id.page.button.9" size="sm" onClick={() => setPriceOpen(true)}>
-                  Cambiar precio
-                </Button>
+                <div className="flex flex-wrap gap-2"><Button controlKey="subscriptions.detail.change-plan" size="sm" onClick={() => setPlanOpen(true)}>Cambiar plan</Button><Button controlKey="subscriptions.detail.change-price" variant="secondary" size="sm" onClick={() => setPriceOpen(true)}>Cambiar precio</Button></div>
               </div>
             </InfoCard>
 
@@ -311,13 +312,25 @@ export default function SubscriptionDetailPage() {
           </div>
         </TabPanel>
 
+        <TabPanel id="terms">
+          <div className="space-y-3">
+            {sub.termsVersions.length === 0 ? <div className="rounded-card border border-dashed border-border p-8 text-center text-[13px] text-muted">Sin condiciones versionadas.</div> : sub.termsVersions.map((terms) => (
+              <div key={terms.id} className="rounded-card border border-border bg-surface p-4 shadow-dp1">
+                <div className="flex flex-col justify-between gap-2 sm:flex-row"><div><p className="font-semibold text-foreground">Condiciones v{terms.versionNumber}</p><p className="text-[12px] text-muted">Desde {formatDate(terms.effectiveFrom)}{terms.effectiveTo ? ` hasta ${formatDate(terms.effectiveTo)}` : " · vigentes"}</p></div><p className="text-[18px] font-bold text-foreground">{formatAmount(terms.total, terms.currency)}</p></div>
+                <div className="mt-3 grid grid-cols-2 gap-2 text-[12px] md:grid-cols-4"><span className="rounded-input bg-surface-subtle p-2">Base {formatAmount(terms.basePrice, terms.currency)}</span><span className="rounded-input bg-surface-subtle p-2">Descuento {terms.discountPercent}%</span><span className="rounded-input bg-surface-subtle p-2">Impuesto {terms.taxPercent}%</span><span className="rounded-input bg-surface-subtle p-2">Prorrateo {terms.prorationPolicy === "Daily" ? "diario" : "no"}</span></div>
+                {terms.reason && <p className="mt-3 text-[12px] text-muted">Motivo: {terms.reason}</p>}
+              </div>
+            ))}
+          </div>
+        </TabPanel>
+
         {/* ── PRICE HISTORY ── */}
         <TabPanel id="prices">
           <div className="mb-4 flex items-center justify-between">
             <p className="text-[13px] text-muted">
               {priceHistory.length === 0 ? "Sin cambios de precio." : `${priceHistory.length} registro${priceHistory.length !== 1 ? "s" : ""}`}
             </p>
-            <Button controlKey="ui.app.app.subscriptions.id.page.button.10" size="sm" onClick={() => setPriceOpen(true)}>
+            <Button controlKey="ui.app.app.subscriptions.id.page.button.11" size="sm" onClick={() => setPriceOpen(true)}>
               <Plus className="h-3.5 w-3.5" /> Registrar cambio
             </Button>
           </div>
@@ -340,7 +353,7 @@ export default function SubscriptionDetailPage() {
         </TabPanel>
 
         {/* ── PERMISSIONS ── */}
-        <Can permission="ManageUsers">
+        <Can permission="ManageSubscriptionAccess">
           <TabPanel id="permissions">
             <div className="mb-4 flex items-center justify-between">
               <p className="text-[13px] text-muted">
@@ -366,6 +379,7 @@ export default function SubscriptionDetailPage() {
         currentPrice={sub.price}
         currency={sub.currency}
       />
+      <ChangePlanForm open={planOpen} onOpenChange={setPlanOpen} subscriptionId={sub.id} currentServiceId={sub.serviceId} />
       {actionState && (
         <SubscriptionActionDialog
           open={!!actionState}

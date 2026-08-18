@@ -9,14 +9,27 @@ namespace AegiFinance.Web.Seed;
 
 public static class SeedData
 {
+    public static readonly Guid DefaultOrganizationId = Guid.Parse("11111111-1111-1111-1111-111111111111");
     public static async Task InitializeAsync(
         IServiceProvider serviceProvider,
         IEnumerable<string>? discoveredPermissionCodes = null)
     {
         var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
         var passwordHasher = serviceProvider.GetRequiredService<IPasswordHasher>();
+        var majorLedger = serviceProvider.GetRequiredService<IMajorLedgerService>();
 
-        await context.Database.MigrateAsync();
+        var organization = await context.Organizations.IgnoreQueryFilters().FirstOrDefaultAsync(item => item.Id == DefaultOrganizationId);
+        if (organization is null)
+        {
+            organization = new Organization { Id = DefaultOrganizationId, Code = "DEFAULT", Name = "AegiFinance", IsActive = true };
+            context.Organizations.Add(organization);
+            await context.SaveChangesAsync();
+        }
+        await context.Users.IgnoreQueryFilters().Where(item => item.OrganizationId == null).ExecuteUpdateAsync(setters => setters.SetProperty(item => item.OrganizationId, DefaultOrganizationId));
+        await context.Clients.IgnoreQueryFilters().Where(item => item.OrganizationId == Guid.Empty).ExecuteUpdateAsync(setters => setters.SetProperty(item => item.OrganizationId, DefaultOrganizationId));
+        await context.BankAccounts.IgnoreQueryFilters().Where(item => item.OrganizationId == Guid.Empty).ExecuteUpdateAsync(setters => setters.SetProperty(item => item.OrganizationId, DefaultOrganizationId));
+        if (!await context.ClientDuplicateRules.IgnoreQueryFilters().AnyAsync(item => item.OrganizationId == DefaultOrganizationId))
+            context.ClientDuplicateRules.Add(new ClientDuplicateRule { Id = Guid.NewGuid(), OrganizationId = DefaultOrganizationId });
 
         // Seed Currency MXN
         if (!await context.CurrencyConfigs.AnyAsync(c => c.Code == "MXN"))
@@ -78,6 +91,7 @@ public static class SeedData
         }
 
         await context.SaveChangesAsync();
+        await majorLedger.EnsureBaseChartAsync();
 
         // Seed Admin Role
         var adminRole = await context.Roles
@@ -116,16 +130,30 @@ public static class SeedData
         // Seed default admin user
         if (!await context.Users.AnyAsync(u => u.UserName == "Admin"))
         {
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+            var environment = serviceProvider.GetRequiredService<IHostEnvironment>();
+            var initialAdminPassword = configuration["AdminSeed:Password"];
+            if (string.IsNullOrWhiteSpace(initialAdminPassword))
+            {
+                if (!environment.IsDevelopment())
+                    throw new InvalidOperationException("AdminSeed:Password debe configurarse para crear el administrador inicial en producción.");
+                initialAdminPassword = "Admin";
+            }
+            if (!environment.IsDevelopment() && initialAdminPassword.Length < 12)
+                throw new InvalidOperationException("AdminSeed:Password debe tener al menos 12 caracteres en producción.");
+
             var adminUser = new User
             {
                 Id = Guid.NewGuid(),
                 UserName = "Admin",
                 Email = "admin@aegifinance.com",
-                PasswordHash = passwordHasher.HashPassword("Admin"),
+                PasswordHash = passwordHasher.HashPassword(initialAdminPassword),
                 UserType = UserType.Administrator,
+                OrganizationId = DefaultOrganizationId,
                 Name = "Administrador",
                 IsActive = true,
                 EmailConfirmed = true,
+                MustChangePassword = true,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };

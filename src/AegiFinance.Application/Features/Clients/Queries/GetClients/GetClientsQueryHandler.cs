@@ -25,6 +25,7 @@ public class GetClientsQueryHandler : IRequestHandler<GetClientsQuery, Paginated
             .Include(c => c.Category)
             .Include(c => c.Tags)
             .Include(c => c.Contacts)
+            .Include(c => c.AccountManagerUser)
             .AsQueryable();
 
         var isClientUser = Enum.TryParse<UserType>(_currentUserService.UserType, out var userType)
@@ -81,7 +82,10 @@ public class GetClientsQueryHandler : IRequestHandler<GetClientsQuery, Paginated
                 Id = t.Id,
                 Name = t.Name,
                 Color = t.Color
-            }).ToList()
+            }).ToList(),
+            PresentationCurrency = c.PresentationCurrency,
+            CreditLimit = c.CreditLimit,
+            AccountManagerName = c.AccountManagerUser != null ? c.AccountManagerUser.Name : null
         });
 
         return await projected.ToPaginatedListAsync(request.PageNumber, request.PageSize, cancellationToken);

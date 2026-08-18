@@ -9,6 +9,7 @@ export interface UserDto {
   name: string;
   userType: UserType;
   clientId?: string | null;
+  organizationId?: string | null;
   isActive: boolean;
   emailConfirmed: boolean;
   lastLoginAt?: string | null;
@@ -236,6 +237,9 @@ export interface ClientListDto {
   categoryName?: string | null;
   primaryContactName?: string | null;
   tags: ClientTagDto[];
+  presentationCurrency: string;
+  creditLimit: number;
+  accountManagerName?: string | null;
 }
 
 export interface ClientDetailDto {
@@ -254,6 +258,13 @@ export interface ClientDetailDto {
   tags: ClientTagDto[];
   contacts: ClientContactDto[];
   notesList: ClientNoteDto[];
+  documents: ClientDocumentDto[];
+  presentationCurrency: string;
+  paymentTermsDays: number;
+  creditLimit: number;
+  commercialTerms?: string | null;
+  accountManagerUserId?: string | null;
+  accountManagerName?: string | null;
 }
 
 export interface ClientDto extends Omit<ClientDetailDto, "contacts" | "notesList"> {}
@@ -278,9 +289,19 @@ export interface CreateClientRequest {
   notes?: string | null;
   categoryId?: string | null;
   tagIds?: string[];
+  presentationCurrency: string;
+  paymentTermsDays: number;
+  creditLimit: number;
+  commercialTerms?: string | null;
+  accountManagerUserId?: string | null;
 }
 
 export interface UpdateClientRequest extends CreateClientRequest {}
+
+export interface ClientDocumentDto { id: string; clientId: string; name: string; contentType: string; sizeBytes: number; description?: string | null; createdAt: string; }
+export interface ClientTimelineItemDto { id: string; occurredAt: string; type: string; title: string; detail?: string | null; actorUserId?: string | null; }
+export interface ClientDuplicateRuleDto { matchTaxId: boolean; matchName: boolean; matchBillingEmail: boolean; blockOnMatch: boolean; }
+export interface ClientDuplicateMatchDto { id: string; code: string; name: string; matchedFields: string[]; }
 
 export interface AddContactRequest {
   name: string;
@@ -387,6 +408,55 @@ export interface AddPriceHistoryRequest {
   reason?: string | null;
 }
 
+export type ProrationPolicy = "None" | "Daily";
+
+export interface ServiceVersionConceptDto {
+  id: string;
+  code: string;
+  name: string;
+  description?: string | null;
+  quantity: number;
+  unitPrice: number;
+  taxPercent: number;
+  sortOrder: number;
+}
+
+export interface ServiceVersionDto {
+  id: string;
+  serviceId: string;
+  versionNumber: number;
+  name: string;
+  description?: string | null;
+  billingType: BillingType;
+  basePrice: number;
+  currency: string;
+  defaultDiscountPercent: number;
+  defaultTaxPercent: number;
+  customIntervalDays?: number | null;
+  prorationPolicy: ProrationPolicy;
+  effectiveFrom: string;
+  effectiveTo?: string | null;
+  terms?: string | null;
+  isPublished: boolean;
+  concepts: ServiceVersionConceptDto[];
+}
+
+export interface CreateServiceVersionRequest {
+  name: string;
+  description?: string | null;
+  billingType: BillingType;
+  basePrice: number;
+  currency: string;
+  defaultDiscountPercent: number;
+  defaultTaxPercent: number;
+  customIntervalDays?: number | null;
+  prorationPolicy: ProrationPolicy;
+  effectiveFrom: string;
+  terms?: string | null;
+  isPublished: boolean;
+  concepts: Array<Omit<ServiceVersionConceptDto, "id">>;
+}
+
 export interface CreateServiceCategoryRequest {
   name: string;
   description?: string | null;
@@ -460,6 +530,12 @@ export interface SubscriptionDetailDto {
   startDate: string;
   endDate?: string | null;
   billingDay: number;
+  serviceVersionId?: string | null;
+  customIntervalDays?: number | null;
+  discountPercent: number;
+  taxPercent: number;
+  prorationPolicy: ProrationPolicy;
+  contractTerms?: string | null;
   status: SubscriptionStatus;
   autoRenew: boolean;
   notes?: string | null;
@@ -467,10 +543,30 @@ export interface SubscriptionDetailDto {
   nextBillingDate?: string | null;
   priceHistory: SubscriptionPriceHistoryDto[];
   changeLogs: SubscriptionChangeLogDto[];
+  termsVersions: SubscriptionTermsVersionDto[];
 }
 
 export interface SubscriptionDto
-  extends Omit<SubscriptionDetailDto, "priceHistory" | "changeLogs"> {}
+  extends Omit<SubscriptionDetailDto, "priceHistory" | "changeLogs" | "termsVersions"> {}
+
+export interface SubscriptionTermsVersionDto {
+  id: string;
+  versionNumber: number;
+  serviceVersionId?: string | null;
+  effectiveFrom: string;
+  effectiveTo?: string | null;
+  billingType: BillingType;
+  basePrice: number;
+  currency: string;
+  discountPercent: number;
+  taxPercent: number;
+  billingDay: number;
+  customIntervalDays?: number | null;
+  prorationPolicy: ProrationPolicy;
+  terms?: string | null;
+  reason?: string | null;
+  total: number;
+}
 
 export interface GetSubscriptionsParams {
   clientId?: string;
@@ -491,6 +587,11 @@ export interface CreateSubscriptionRequest {
   startDate: string;
   endDate?: string | null;
   billingDay: number;
+  customIntervalDays?: number | null;
+  discountPercent: number;
+  taxPercent: number;
+  prorationPolicy: ProrationPolicy;
+  contractTerms?: string | null;
   autoRenew: boolean;
   notes?: string | null;
 }
@@ -503,9 +604,16 @@ export interface ChangePriceRequest {
   reason?: string | null;
 }
 
+export interface ChangeSubscriptionPlanRequest {
+  serviceVersionId: string;
+  effectiveDate: string;
+  reason?: string | null;
+}
+
 export interface SubscriptionActionRequest {
   reason?: string | null;
   effectiveDate?: string | null;
+  idempotencyKey?: string;
 }
 
 export interface AddSubscriptionPermissionRequest {
@@ -654,6 +762,92 @@ export interface GetLedgerEntriesParams {
   pageSize?: number;
 }
 
+export interface GeneralLedgerAccountDto {
+  id: string;
+  code: string;
+  name: string;
+  accountType: "Asset" | "Liability" | "Equity" | "Revenue" | "Expense";
+  purpose: string;
+  currency: string;
+  isSystem: boolean;
+  isActive: boolean;
+  parentAccountId?: string | null;
+  bankAccountId?: string | null;
+  balance: number;
+}
+
+export interface JournalLineDto {
+  id: string;
+  accountId: string;
+  accountCode: string;
+  accountName: string;
+  debit: number;
+  credit: number;
+  description?: string | null;
+  clientId?: string | null;
+  bankAccountId?: string | null;
+  billingItemId?: string | null;
+  legacyLedgerEntryId?: string | null;
+}
+
+export interface JournalEntryDto {
+  id: string;
+  entryNumber: string;
+  date: string;
+  description: string;
+  reference?: string | null;
+  currency: string;
+  status: "Draft" | "Posted" | "Reversed";
+  sourceType: string;
+  sourceId?: string | null;
+  accountingPeriodId: string;
+  accountingPeriodName: string;
+  clientId?: string | null;
+  postedAt?: string | null;
+  reversedAt?: string | null;
+  reversesJournalEntryId?: string | null;
+  totalDebit: number;
+  totalCredit: number;
+  lines: JournalLineDto[];
+}
+
+export interface AccountingPeriodDto {
+  id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  status: "Open" | "Closed";
+  closedAt?: string | null;
+}
+
+export interface TrialBalanceLineDto {
+  accountId: string;
+  accountCode: string;
+  accountName: string;
+  accountType: string;
+  debit: number;
+  credit: number;
+  balance: number;
+}
+
+export interface TrialBalanceDto {
+  asOfDate: string;
+  currency: string;
+  totalDebit: number;
+  totalCredit: number;
+  isBalanced: boolean;
+  lines: TrialBalanceLineDto[];
+}
+
+export interface LegacyMigrationResultDto {
+  migratedEntries: number;
+  previouslyMigratedEntries: number;
+  legacySignedTotal: number;
+  journalBankTotal: number;
+  difference: number;
+  isReconciled: boolean;
+}
+
 // ── OPERATIONAL DASHBOARD ───────────────────────────────────────────────────
 
 export interface DashboardFilters {
@@ -789,11 +983,26 @@ export interface BankAccountListDto {
   maskedAccountNumber?: string | null;
   currency: string;
   openingBalance: number;
+  openingDate: string;
+  ledgerBalance: number;
+  bankBalance?: number | null;
+  bankBalanceAsOfDate?: string | null;
+  comparisonLedgerBalance?: number | null;
+  difference?: number | null;
   isActive: boolean;
 }
 
-export interface BankAccountDto extends BankAccountListDto {
-  openingDate: string;
+export interface BankAccountDto extends BankAccountListDto {}
+
+export interface BankAccountBalancesDto {
+  bankAccountId: string;
+  currency: string;
+  asOfDate: string;
+  ledgerBalance: number;
+  bankBalance?: number | null;
+  bankBalanceAsOfDate?: string | null;
+  comparisonLedgerBalance?: number | null;
+  difference?: number | null;
 }
 
 export interface GetBankAccountsParams {
@@ -801,6 +1010,7 @@ export interface GetBankAccountsParams {
   search?: string;
   pageNumber?: number;
   pageSize?: number;
+  includeBalances?: boolean;
 }
 
 export interface CreateBankAccountRequest {
@@ -814,6 +1024,11 @@ export interface CreateBankAccountRequest {
 }
 
 export interface UpdateBankAccountRequest extends CreateBankAccountRequest {}
+
+export interface RecordBankBalanceRequest {
+  asOfDate: string;
+  balance: number;
+}
 
 // ── ACCOUNT STATEMENTS ────────────────────────────────────────────────────────
 

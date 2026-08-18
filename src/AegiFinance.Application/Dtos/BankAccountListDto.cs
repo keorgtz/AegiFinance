@@ -8,5 +8,11 @@ public class BankAccountListDto
     public string? MaskedAccountNumber { get; set; }
     public string Currency { get; set; } = string.Empty;
     public decimal OpeningBalance { get; set; }
+    public DateTime OpeningDate { get; set; }
+    public decimal LedgerBalance { get; set; }
+    public decimal? BankBalance { get; set; }
+    public DateTime? BankBalanceAsOfDate { get; set; }
+    public decimal? ComparisonLedgerBalance { get; set; }
+    public decimal? Difference { get; set; }
     public bool IsActive { get; set; }
 }

@@ -9,6 +9,8 @@ public class User : AuditableEntity
     public string PasswordHash { get; set; } = string.Empty;
     public UserType UserType { get; set; }
     public Guid? ClientId { get; set; }
+    public Guid? OrganizationId { get; set; }
+    public Organization? Organization { get; set; }
     public string Name { get; set; } = string.Empty;
     public bool IsActive { get; set; }
     public bool EmailConfirmed { get; set; }

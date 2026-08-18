@@ -1,4 +1,5 @@
 using AegiFinance.Application.Common.Interfaces;
+using AegiFinance.Application.Dtos;
 using AegiFinance.Domain.Enums;
 using AegiFinance.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,9 @@ public class AccountBalanceCalculator : IAccountBalanceCalculator
     }
 
     public async Task<decimal> CalculateBalanceAsync(Guid bankAccountId, DateTime? asOfDate = null, CancellationToken cancellationToken = default)
+        => (await CalculateBalancesAsync(bankAccountId, asOfDate, cancellationToken)).LedgerBalance;
+
+    public async Task<BankAccountBalancesDto> CalculateBalancesAsync(Guid bankAccountId, DateTime? asOfDate = null, CancellationToken cancellationToken = default)
     {
         var account = await _context.BankAccounts
             .AsNoTracking()
@@ -25,25 +29,46 @@ public class AccountBalanceCalculator : IAccountBalanceCalculator
             throw new InvalidOperationException("La cuenta bancaria no existe.");
         }
 
-        var query = _context.LedgerEntries
+        var cutoff = asOfDate?.Date.AddDays(1).AddTicks(-1) ?? DateTime.UtcNow;
+        var ledgerAccountId = await _context.GeneralLedgerAccounts
             .AsNoTracking()
-            .Where(le => le.BankAccountId == bankAccountId);
+            .Where(item => item.BankAccountId == bankAccountId)
+            .Select(item => (Guid?)item.Id)
+            .FirstOrDefaultAsync(cancellationToken);
 
-        if (asOfDate.HasValue)
+        var ledgerBalance = ledgerAccountId.HasValue
+            ? await _context.JournalLines.AsNoTracking()
+                .Where(line => line.AccountId == ledgerAccountId.Value &&
+                    line.JournalEntry.Date <= cutoff &&
+                    line.JournalEntry.Status != JournalEntryStatus.Draft)
+                .SumAsync(line => line.Debit - line.Credit, cancellationToken)
+            : 0m;
+
+        var latestStatement = await _context.BankStatements.AsNoTracking()
+            .Where(statement => statement.BankAccountId == bankAccountId && statement.IsBalanceVerified && statement.EndDate <= cutoff)
+            .OrderByDescending(statement => statement.EndDate)
+            .ThenByDescending(statement => statement.StatementDate)
+            .Select(statement => new { statement.ClosingBalance, statement.EndDate })
+            .FirstOrDefaultAsync(cancellationToken);
+
+        var bankBalance = latestStatement?.ClosingBalance;
+        decimal? comparisonLedgerBalance = null;
+        if (latestStatement is not null && ledgerAccountId.HasValue)
         {
-            var endDate = asOfDate.Value.Date.AddDays(1).AddTicks(-1);
-            query = query.Where(le => le.Date <= endDate);
+            comparisonLedgerBalance = await _context.JournalLines.AsNoTracking()
+                .Where(line => line.AccountId == ledgerAccountId.Value &&
+                    line.JournalEntry.Date <= latestStatement.EndDate &&
+                    line.JournalEntry.Status != JournalEntryStatus.Draft)
+                .SumAsync(line => line.Debit - line.Credit, cancellationToken);
         }
-
-        var entries = await query.ToListAsync(cancellationToken);
-
-        var balance = account.OpeningBalance
-            + entries.Where(e => e.EntryType == LedgerEntryType.Income).Sum(e => e.Amount)
-            - entries.Where(e => e.EntryType == LedgerEntryType.Expense).Sum(e => e.Amount)
-            + entries.Where(e => e.EntryType == LedgerEntryType.TransferIn).Sum(e => e.Amount)
-            - entries.Where(e => e.EntryType == LedgerEntryType.TransferOut).Sum(e => e.Amount)
-            + entries.Where(e => e.EntryType == LedgerEntryType.Adjustment).Sum(e => e.Amount);
-
-        return balance;
+        return new BankAccountBalancesDto(
+            account.Id,
+            account.Currency,
+            cutoff,
+            ledgerBalance,
+            bankBalance,
+            latestStatement?.EndDate,
+            comparisonLedgerBalance,
+            bankBalance.HasValue ? bankBalance.Value - comparisonLedgerBalance!.Value : null);
     }
 }

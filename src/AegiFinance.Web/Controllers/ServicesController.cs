@@ -6,9 +6,11 @@ using AegiFinance.Application.Features.Services.Commands.CreateService;
 using AegiFinance.Application.Features.Services.Commands.DeactivateService;
 using AegiFinance.Application.Features.Services.Commands.DeleteService;
 using AegiFinance.Application.Features.Services.Commands.UpdateService;
+using AegiFinance.Application.Features.Services.Commands.CreateServiceVersion;
 using AegiFinance.Application.Features.Services.Queries.GetServiceById;
 using AegiFinance.Application.Features.Services.Queries.GetServicePriceHistory;
 using AegiFinance.Application.Features.Services.Queries.GetServices;
+using AegiFinance.Application.Features.Services.Queries.GetServiceVersions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -28,12 +30,14 @@ public class ServicesController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "ViewServices")]
     public async Task<ActionResult<PaginatedList<ServiceListDto>>> GetAll([FromQuery] GetServicesQuery query, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(query, cancellationToken));
     }
 
     [HttpGet("{id:guid}")]
+    [Authorize(Policy = "ViewServices")]
     public async Task<ActionResult<ServiceDetailDto>> GetById(Guid id, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(new GetServiceByIdQuery(id), cancellationToken));
@@ -80,6 +84,7 @@ public class ServicesController : ControllerBase
     }
 
     [HttpGet("{id:guid}/price-history")]
+    [Authorize(Policy = "ViewServices")]
     public async Task<ActionResult<List<ServicePriceHistoryDto>>> GetPriceHistory(Guid id, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(new GetServicePriceHistoryQuery(id), cancellationToken));
@@ -88,6 +93,19 @@ public class ServicesController : ControllerBase
     [HttpPost("{id:guid}/price-history")]
     [Authorize(Policy = "UpdateServices")]
     public async Task<ActionResult<ServicePriceHistoryDto>> AddPriceHistory(Guid id, AddServicePriceHistoryCommand command, CancellationToken cancellationToken)
+    {
+        command.ServiceId = id;
+        return Ok(await _mediator.Send(command, cancellationToken));
+    }
+
+    [HttpGet("{id:guid}/versions")]
+    [Authorize(Policy = "ViewServices")]
+    public async Task<ActionResult<List<ServiceVersionDto>>> GetVersions(Guid id, CancellationToken cancellationToken)
+        => Ok(await _mediator.Send(new GetServiceVersionsQuery(id), cancellationToken));
+
+    [HttpPost("{id:guid}/versions")]
+    [Authorize(Policy = "CreateServiceVersions")]
+    public async Task<ActionResult<ServiceVersionDto>> CreateVersion(Guid id, CreateServiceVersionCommand command, CancellationToken cancellationToken)
     {
         command.ServiceId = id;
         return Ok(await _mediator.Send(command, cancellationToken));

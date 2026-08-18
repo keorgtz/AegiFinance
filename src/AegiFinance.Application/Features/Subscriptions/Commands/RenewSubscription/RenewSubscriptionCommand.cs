@@ -6,6 +6,7 @@ public class RenewSubscriptionCommand : IRequest
 {
     public Guid Id { get; set; }
     public string? Reason { get; set; }
+    public string IdempotencyKey { get; set; } = string.Empty;
 
     public RenewSubscriptionCommand() { }
 

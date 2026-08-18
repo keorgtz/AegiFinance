@@ -4,6 +4,7 @@ using AegiFinance.Application.Common.Models;
 using AegiFinance.Application.Dtos;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using AegiFinance.Domain.Enums;
 
 namespace AegiFinance.Application.Features.BankAccounts.Queries.GetBankAccounts;
 
@@ -13,7 +14,8 @@ public class GetBankAccountsQueryHandler : IRequestHandler<GetBankAccountsQuery,
     private readonly ICurrentUserService _currentUserService;
     private readonly IAccountNumberProtector _accountNumberProtector;
 
-    public GetBankAccountsQueryHandler(IApplicationDbContext context, ICurrentUserService currentUserService, IAccountNumberProtector accountNumberProtector)
+    public GetBankAccountsQueryHandler(IApplicationDbContext context, ICurrentUserService currentUserService,
+        IAccountNumberProtector accountNumberProtector)
     {
         _context = context;
         _currentUserService = currentUserService;
@@ -54,14 +56,46 @@ public class GetBankAccountsQueryHandler : IRequestHandler<GetBankAccountsQuery,
             MaskedAccountNumber = ba.AccountNumber,
             Currency = ba.Currency,
             OpeningBalance = ba.OpeningBalance,
+            OpeningDate = ba.OpeningDate,
             IsActive = ba.IsActive
         });
 
         var result = await projected.ToPaginatedListAsync(request.PageNumber, request.PageSize, cancellationToken);
 
         foreach (var item in result.Items)
-        {
             item.MaskedAccountNumber = _accountNumberProtector.MaskFromProtected(item.MaskedAccountNumber);
+        if (!request.IncludeBalances) return result;
+
+        var accountIds = result.Items.Select(item => item.Id).ToList();
+        var ledgerBalances = await _context.JournalLines.AsNoTracking()
+            .Where(line => line.BankAccountId.HasValue && accountIds.Contains(line.BankAccountId.Value) &&
+                line.JournalEntry.Status != JournalEntryStatus.Draft)
+            .GroupBy(line => line.BankAccountId!.Value)
+            .Select(group => new { BankAccountId = group.Key, Balance = group.Sum(line => line.Debit - line.Credit) })
+            .ToDictionaryAsync(item => item.BankAccountId, item => item.Balance, cancellationToken);
+        var statements = await _context.BankStatements.AsNoTracking()
+            .Where(statement => accountIds.Contains(statement.BankAccountId) && statement.IsBalanceVerified && statement.EndDate <= DateTime.UtcNow)
+            .OrderByDescending(statement => statement.EndDate)
+            .ThenByDescending(statement => statement.StatementDate)
+            .Select(statement => new { statement.BankAccountId, statement.ClosingBalance, statement.EndDate })
+            .ToListAsync(cancellationToken);
+        var latestStatements = statements.GroupBy(statement => statement.BankAccountId)
+            .ToDictionary(group => group.Key, group => group.First());
+
+        foreach (var item in result.Items)
+        {
+            item.LedgerBalance = ledgerBalances.GetValueOrDefault(item.Id);
+            if (latestStatements.TryGetValue(item.Id, out var statement))
+            {
+                var comparison = await _context.JournalLines.AsNoTracking()
+                    .Where(line => line.BankAccountId == item.Id && line.JournalEntry.Date <= statement.EndDate &&
+                        line.JournalEntry.Status != JournalEntryStatus.Draft)
+                    .SumAsync(line => line.Debit - line.Credit, cancellationToken);
+                item.BankBalance = statement.ClosingBalance;
+                item.BankBalanceAsOfDate = statement.EndDate;
+                item.ComparisonLedgerBalance = comparison;
+                item.Difference = statement.ClosingBalance - comparison;
+            }
         }
 
         return result;

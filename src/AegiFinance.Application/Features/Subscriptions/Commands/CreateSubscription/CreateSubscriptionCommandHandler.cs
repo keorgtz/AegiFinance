@@ -4,6 +4,7 @@ using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
 using AegiFinance.Domain.Entities;
 using AegiFinance.Domain.Enums;
+using AegiFinance.Domain.Accounting;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -44,7 +45,7 @@ public class CreateSubscriptionCommandHandler : IRequestHandler<CreateSubscripti
         }
 
         var service = await _context.Services
-            .AsNoTracking()
+            .Include(s => s.Versions)
             .FirstOrDefaultAsync(s => s.Id == request.ServiceId, cancellationToken);
 
         if (service is null)
@@ -54,6 +55,12 @@ public class CreateSubscriptionCommandHandler : IRequestHandler<CreateSubscripti
 
         var code = await _codeGenerator.GenerateAsync(cancellationToken);
         var currency = string.IsNullOrWhiteSpace(request.Currency) ? "MXN" : request.Currency.Trim().ToUpper();
+        var serviceVersion = request.ServiceVersionId.HasValue
+            ? service.Versions.FirstOrDefault(v => v.Id == request.ServiceVersionId && v.IsPublished)
+            : service.Versions.Where(v => v.IsPublished && v.EffectiveFrom <= request.StartDate).OrderByDescending(v => v.EffectiveFrom).FirstOrDefault();
+        if (serviceVersion is null)
+            throw new InvalidOperationException("El plan no tiene una versión publicada aplicable.");
+        var pricing = SubscriptionPricingRules.Calculate(request.Price, request.DiscountPercent, request.TaxPercent);
 
         var subscription = new Subscription
         {
@@ -63,24 +70,38 @@ public class CreateSubscriptionCommandHandler : IRequestHandler<CreateSubscripti
             Client = client,
             ServiceId = request.ServiceId,
             Service = service,
+            ServiceVersionId = serviceVersion.Id,
+            ServiceVersion = serviceVersion,
             BillingType = request.BillingType,
-            Price = request.Price,
+            Price = pricing.Total,
             Currency = currency,
             StartDate = request.StartDate,
             EndDate = request.EndDate,
             BillingDay = request.BillingDay,
+            CustomIntervalDays = request.CustomIntervalDays,
+            DiscountPercent = request.DiscountPercent,
+            TaxPercent = request.TaxPercent,
+            ProrationPolicy = request.ProrationPolicy,
+            ContractTerms = request.ContractTerms,
             Status = SubscriptionStatus.Active,
             AutoRenew = request.AutoRenew,
             Notes = request.Notes
         };
 
-        if (subscription.BillingType == BillingType.Monthly || subscription.BillingType == BillingType.Yearly)
+        subscription.NextBillingDate = subscription.BillingType == BillingType.OneTime
+            ? subscription.StartDate
+            : SubscriptionDateCalculator.CalculateNextBillingDate(subscription.StartDate, subscription.BillingType, subscription.BillingDay, subscription.CustomIntervalDays);
+
+        subscription.TermsVersions.Add(new SubscriptionTermsVersion
         {
-            subscription.NextBillingDate = SubscriptionDateCalculator.CalculateNextBillingDate(
-                subscription.StartDate,
-                subscription.BillingType,
-                subscription.BillingDay);
-        }
+            Id = Guid.NewGuid(), SubscriptionId = subscription.Id, Subscription = subscription,
+            VersionNumber = 1, ServiceVersionId = serviceVersion.Id, ServiceVersion = serviceVersion,
+            EffectiveFrom = subscription.StartDate, BillingType = subscription.BillingType,
+            BasePrice = request.Price, Currency = currency, DiscountPercent = request.DiscountPercent,
+            TaxPercent = request.TaxPercent, BillingDay = request.BillingDay,
+            CustomIntervalDays = request.CustomIntervalDays, ProrationPolicy = request.ProrationPolicy,
+            Terms = request.ContractTerms, Reason = "Condiciones iniciales"
+        });
 
         if (subscription.Price > 0)
         {
@@ -118,6 +139,12 @@ public class CreateSubscriptionCommandHandler : IRequestHandler<CreateSubscripti
             StartDate = subscription.StartDate,
             EndDate = subscription.EndDate,
             BillingDay = subscription.BillingDay,
+            ServiceVersionId = subscription.ServiceVersionId,
+            CustomIntervalDays = subscription.CustomIntervalDays,
+            DiscountPercent = subscription.DiscountPercent,
+            TaxPercent = subscription.TaxPercent,
+            ProrationPolicy = subscription.ProrationPolicy.ToString(),
+            ContractTerms = subscription.ContractTerms,
             Status = subscription.Status.ToString(),
             AutoRenew = subscription.AutoRenew,
             Notes = subscription.Notes,

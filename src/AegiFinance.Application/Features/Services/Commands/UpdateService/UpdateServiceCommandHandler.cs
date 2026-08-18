@@ -47,31 +47,15 @@ public class UpdateServiceCommandHandler : IRequestHandler<UpdateServiceCommand,
             }
         }
 
-        var previousPrice = service.DefaultPrice;
         var currency = string.IsNullOrWhiteSpace(request.Currency) ? "MXN" : request.Currency.Trim().ToUpper();
+        if (request.BillingType != service.BillingType || request.DefaultPrice != service.DefaultPrice || currency != service.Currency)
+            throw new InvalidOperationException("La periodicidad, el precio y la moneda se cambian publicando una nueva versión del plan.");
 
         service.Name = request.Name;
         service.Description = request.Description;
         service.CategoryId = request.CategoryId;
-        service.BillingType = request.BillingType;
-        service.DefaultPrice = request.DefaultPrice;
-        service.Currency = currency;
         service.IsActive = request.IsActive;
         service.IsPublic = request.IsPublic;
-
-        if (request.DefaultPrice != previousPrice)
-        {
-            service.PriceHistory.Add(new ServicePriceHistory
-            {
-                Id = Guid.NewGuid(),
-                ServiceId = service.Id,
-                Service = service,
-                Price = request.DefaultPrice,
-                Currency = currency,
-                EffectiveDate = DateTime.UtcNow,
-                Reason = $"Cambio de precio de {previousPrice:C} a {request.DefaultPrice:C}"
-            });
-        }
 
         await _context.SaveChangesAsync(cancellationToken);
 

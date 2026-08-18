@@ -4,7 +4,7 @@ import path from "node:path";
 const root = process.cwd();
 const writeMode = process.argv.includes("--write");
 const sourceRoots = ["app", "components"];
-const tags = new Set(["Button", "Input", "Select", "Textarea", "Tab", "Link", "button", "input", "select", "textarea"]);
+const tags = new Set(["Button", "Input", "Select", "Textarea", "Tab", "Link", "PermissionMenuItem", "PermissionSwitch", "RuleToggle", "button", "input", "select", "textarea"]);
 
 async function filesIn(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -126,6 +126,11 @@ for (const match of navigationSource.matchAll(/href:\s*"([^"]+)"[\s\S]*?label:\s
     isSystemRequired: false,
   });
 }
+
+manifest.push(
+  { controlKey: "ui.dialog.close", label: "Cerrar diálogo", module: "system", controlType: "button", requiredPermissionCode: null, isSystemRequired: true },
+  { controlKey: "ui.drawer.close", label: "Cerrar panel", module: "system", controlType: "button", requiredPermissionCode: null, isSystemRequired: true },
+);
 
 if (missing.length) {
   console.error(`Interactive controls without a stable key:\n${missing.join("\n")}`);

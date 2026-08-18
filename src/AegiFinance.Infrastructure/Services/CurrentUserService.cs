@@ -17,6 +17,7 @@ public class CurrentUserService : ICurrentUserService
     public string? UserName => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
     public string? UserType => _httpContextAccessor.HttpContext?.User?.FindFirstValue("userType");
     public Guid? ClientId => GetGuidClaim("clientId");
+    public Guid? OrganizationId => GetGuidClaim("organizationId");
 
     private Guid? GetGuidClaim(string claimType)
     {

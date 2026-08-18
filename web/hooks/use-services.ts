@@ -7,6 +7,7 @@ import type {
   CreateServiceRequest,
   GetServicesParams,
   UpdateServiceRequest,
+  CreateServiceVersionRequest,
 } from "@/types/api";
 import { toast } from "sonner";
 
@@ -16,12 +17,31 @@ export const serviceKeys = {
   list: (p: GetServicesParams) => [...serviceKeys.lists(), p] as const,
   detail: (id: string) => [...serviceKeys.all, "detail", id] as const,
   priceHistory: (id: string) => [...serviceKeys.all, "price-history", id] as const,
+  versions: (id: string) => [...serviceKeys.all, "versions", id] as const,
 };
 
 export function useServices(params: GetServicesParams = {}) {
   return useQuery({
     queryKey: serviceKeys.list(params),
     queryFn: () => servicesApi.list(params),
+  });
+}
+
+export function useServiceVersions(id: string) {
+  return useQuery({ queryKey: serviceKeys.versions(id), queryFn: () => servicesApi.getVersions(id), enabled: !!id });
+}
+
+export function useCreateServiceVersion() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: CreateServiceVersionRequest }) => servicesApi.createVersion(id, data),
+    onSuccess: (_, { id }) => {
+      qc.invalidateQueries({ queryKey: serviceKeys.versions(id) });
+      qc.invalidateQueries({ queryKey: serviceKeys.detail(id) });
+      qc.invalidateQueries({ queryKey: serviceKeys.lists() });
+      toast.success("Nueva versión del plan publicada.");
+    },
+    onError: (err: Error) => toast.error(err.message),
   });
 }
 

@@ -74,9 +74,8 @@ async function apiFetch<T>(
 ): Promise<T> {
   const { body, ...rest } = options;
 
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
+  const isForm = typeof FormData !== "undefined" && body instanceof FormData;
+  const headers: Record<string, string> = isForm ? {} : { "Content-Type": "application/json" };
 
   if (accessToken) {
     headers["Authorization"] = `Bearer ${accessToken}`;
@@ -89,7 +88,7 @@ async function apiFetch<T>(
       ...headers,
       ...(rest.headers as Record<string, string> | undefined),
     },
-    body: body !== undefined ? JSON.stringify(body) : undefined,
+    body: body !== undefined ? (isForm ? body as FormData : JSON.stringify(body)) : undefined,
   });
 
   // Token expirado — intentar refresh una vez
@@ -145,5 +144,16 @@ export const api = {
 
   delete<T = void>(path: string) {
     return apiFetch<T>(path, { method: "DELETE" });
+  },
+
+  postForm<T>(path: string, body: FormData) {
+    return apiFetch<T>(path, { method: "POST", body });
+  },
+
+  async blob(path: string, retry = true): Promise<Blob> {
+    const res = await fetch(`${API_BASE}${path}`, { credentials: "include", headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {} });
+    if (res.status === 401 && retry && await refreshAccessToken()) return api.blob(path, false);
+    if (!res.ok) throw new ApiRequestError(res.status, await res.json().catch(() => ({ message: "No se pudo descargar el documento" })));
+    return res.blob();
   },
 };

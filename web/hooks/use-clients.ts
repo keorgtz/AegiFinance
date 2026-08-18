@@ -8,6 +8,7 @@ import type {
   CreateClientRequest,
   GetClientsParams,
   UpdateClientRequest,
+  ClientDuplicateRuleDto,
 } from "@/types/api";
 import { toast } from "sonner";
 
@@ -18,6 +19,7 @@ export const clientKeys = {
   detail: (id: string) => [...clientKeys.all, "detail", id] as const,
   contacts: (id: string) => [...clientKeys.all, "contacts", id] as const,
   notes: (id: string) => [...clientKeys.all, "notes", id] as const,
+  timeline: (id: string) => [...clientKeys.all, "timeline", id] as const,
 };
 
 export function useClients(params: GetClientsParams = {}) {
@@ -26,6 +28,13 @@ export function useClients(params: GetClientsParams = {}) {
     queryFn: () => clientsApi.list(params),
   });
 }
+
+export function useClientTimeline(clientId: string) { return useQuery({ queryKey: clientKeys.timeline(clientId), queryFn: () => clientsApi.timeline(clientId), enabled: !!clientId }); }
+export function useDuplicateRule() { return useQuery({ queryKey: [...clientKeys.all, "duplicate-rule"], queryFn: clientsApi.duplicateRule }); }
+export function useUpdateDuplicateRule() { const qc = useQueryClient(); return useMutation({ mutationFn: (data: ClientDuplicateRuleDto) => clientsApi.updateDuplicateRule(data), onSuccess: () => { qc.invalidateQueries({ queryKey: [...clientKeys.all, "duplicate-rule"] }); toast.success("Reglas de duplicados actualizadas."); }, onError: (error: Error) => toast.error(error.message) }); }
+export function useClientDuplicates(name: string, taxId?: string, billingEmail?: string, excludeClientId?: string) { return useQuery({ queryKey: [...clientKeys.all, "duplicates", name, taxId, billingEmail, excludeClientId], queryFn: () => clientsApi.duplicates({ name, taxId, billingEmail, excludeClientId }), enabled: name.trim().length >= 3 }); }
+export function useUploadClientDocument() { const qc = useQueryClient(); return useMutation({ mutationFn: ({ clientId, file, description }: { clientId: string; file: File; description?: string }) => clientsApi.uploadDocument(clientId, file, description), onSuccess: (_, { clientId }) => { qc.invalidateQueries({ queryKey: clientKeys.detail(clientId) }); qc.invalidateQueries({ queryKey: clientKeys.timeline(clientId) }); toast.success("Documento cargado."); }, onError: (error: Error) => toast.error(error.message) }); }
+export function useDeleteClientDocument() { const qc = useQueryClient(); return useMutation({ mutationFn: ({ clientId, documentId }: { clientId: string; documentId: string }) => clientsApi.deleteDocument(clientId, documentId), onSuccess: (_, { clientId }) => { qc.invalidateQueries({ queryKey: clientKeys.detail(clientId) }); qc.invalidateQueries({ queryKey: clientKeys.timeline(clientId) }); toast.success("Documento retirado."); }, onError: (error: Error) => toast.error(error.message) }); }
 
 export function useClient(id: string) {
   return useQuery({

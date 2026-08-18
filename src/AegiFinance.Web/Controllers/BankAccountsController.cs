@@ -3,7 +3,9 @@ using AegiFinance.Application.Dtos;
 using AegiFinance.Application.Features.BankAccounts.Commands.CreateBankAccount;
 using AegiFinance.Application.Features.BankAccounts.Commands.DeleteBankAccount;
 using AegiFinance.Application.Features.BankAccounts.Commands.UpdateBankAccount;
+using AegiFinance.Application.Features.BankAccounts.Commands.RecordBankBalance;
 using AegiFinance.Application.Features.BankAccounts.Queries.GetBankAccountBalance;
+using AegiFinance.Application.Features.BankAccounts.Queries.GetBankAccountBalances;
 using AegiFinance.Application.Features.BankAccounts.Queries.GetBankAccountById;
 using AegiFinance.Application.Features.BankAccounts.Queries.GetBankAccounts;
 using MediatR;
@@ -25,14 +27,14 @@ public class BankAccountsController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Policy = "ViewPayments")]
+    [Authorize(Policy = "ViewBankAccounts")]
     public async Task<ActionResult<PaginatedList<BankAccountListDto>>> GetAll([FromQuery] GetBankAccountsQuery query, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(query, cancellationToken));
     }
 
     [HttpGet("{id:guid}")]
-    [Authorize(Policy = "ViewPayments")]
+    [Authorize(Policy = "ViewBankAccounts")]
     public async Task<ActionResult<BankAccountDto>> GetById(Guid id, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(new GetBankAccountByIdQuery(id), cancellationToken));
@@ -63,9 +65,24 @@ public class BankAccountsController : ControllerBase
     }
 
     [HttpGet("{id:guid}/balance")]
-    [Authorize(Policy = "ViewPayments")]
+    [Authorize(Policy = "ViewBankAccounts")]
     public async Task<ActionResult<decimal>> GetBalance(Guid id, [FromQuery] DateTime? asOfDate, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(new GetBankAccountBalanceQuery(id, asOfDate), cancellationToken));
+    }
+
+    [HttpGet("{id:guid}/balances")]
+    [Authorize(Policy = "ViewBankAccountBalances")]
+    public async Task<ActionResult<BankAccountBalancesDto>> GetBalances(Guid id, [FromQuery] DateTime? asOfDate, CancellationToken cancellationToken)
+    {
+        return Ok(await _mediator.Send(new GetBankAccountBalancesQuery(id, asOfDate), cancellationToken));
+    }
+
+    [HttpPost("{id:guid}/bank-balance")]
+    [Authorize(Policy = "UpdateBankAccountBalances")]
+    public async Task<ActionResult<BankAccountBalancesDto>> RecordBankBalance(Guid id, RecordBankBalanceCommand command, CancellationToken cancellationToken)
+    {
+        command.BankAccountId = id;
+        return Ok(await _mediator.Send(command, cancellationToken));
     }
 }

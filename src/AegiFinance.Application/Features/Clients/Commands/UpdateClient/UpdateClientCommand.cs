@@ -17,4 +17,9 @@ public class UpdateClientCommand : IRequest<ClientDto>
     public string? Notes { get; set; }
     public Guid? CategoryId { get; set; }
     public List<Guid>? TagIds { get; set; }
+    public string PresentationCurrency { get; set; } = "MXN";
+    public int PaymentTermsDays { get; set; }
+    public decimal CreditLimit { get; set; }
+    public string? CommercialTerms { get; set; }
+    public Guid? AccountManagerUserId { get; set; }
 }

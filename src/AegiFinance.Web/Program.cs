@@ -54,10 +54,13 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure pipeline
-app.UseSwagger();
-app.UseSwaggerUI();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
-app.MapGet("/", () => Results.Redirect("/swagger")).AllowAnonymous();
+app.MapGet("/", () => Results.Ok(new { service = "AegiFinance.Web", status = "running" })).AllowAnonymous();
 
 app.UseExceptionHandler();
 
@@ -67,7 +70,10 @@ app.UseCors(NextJsCorsPolicy);
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/health", () => Results.Ok(new { status = "ok", service = "AegiFinance.Web", utc = DateTime.UtcNow }))
+app.MapGet("/health", async (AegiFinance.Infrastructure.Data.ApplicationDbContext context, CancellationToken cancellationToken) =>
+    await context.Database.CanConnectAsync(cancellationToken)
+        ? Results.Ok(new { status = "ok", service = "AegiFinance.Web", database = "connected", utc = DateTime.UtcNow })
+        : Results.Problem(statusCode: StatusCodes.Status503ServiceUnavailable, title: "Database unavailable"))
     .AllowAnonymous();
 
 app.MapControllers();

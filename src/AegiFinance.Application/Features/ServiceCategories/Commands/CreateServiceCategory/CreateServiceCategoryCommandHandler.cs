@@ -37,6 +37,8 @@ public class CreateServiceCategoryCommandHandler : IRequestHandler<CreateService
         var category = new ServiceCategory
         {
             Id = Guid.NewGuid(),
+            OrganizationId = _currentUserService.OrganizationId
+                ?? throw new UnauthorizedAccessException("No se pudo determinar la organización activa."),
             Name = request.Name,
             Description = request.Description
         };

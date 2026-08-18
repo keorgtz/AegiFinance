@@ -9,6 +9,8 @@ public class AegiFinanceDbContext : DbContext
 {
     protected virtual bool IsClientScope => false;
     protected virtual Guid? CurrentClientId => null;
+    protected virtual Guid? CurrentOrganizationId => null;
+    protected virtual bool IsOrganizationScope => CurrentOrganizationId.HasValue;
 
     public AegiFinanceDbContext(DbContextOptions<AegiFinanceDbContext> options)
         : base(options)
@@ -20,6 +22,7 @@ public class AegiFinanceDbContext : DbContext
     {
     }
 
+    public DbSet<Organization> Organizations => Set<Organization>();
     public DbSet<User> Users => Set<User>();
     public DbSet<UserSession> UserSessions => Set<UserSession>();
     public DbSet<Role> Roles => Set<Role>();
@@ -39,10 +42,16 @@ public class AegiFinanceDbContext : DbContext
     public DbSet<ClientCategory> ClientCategories => Set<ClientCategory>();
     public DbSet<ClientNote> ClientNotes => Set<ClientNote>();
     public DbSet<ClientContact> ClientContacts => Set<ClientContact>();
+    public DbSet<ClientDocument> ClientDocuments => Set<ClientDocument>();
+    public DbSet<ClientDuplicateRule> ClientDuplicateRules => Set<ClientDuplicateRule>();
     public DbSet<Service> Services => Set<Service>();
     public DbSet<ServiceCategory> ServiceCategories => Set<ServiceCategory>();
     public DbSet<ServicePriceHistory> ServicePriceHistories => Set<ServicePriceHistory>();
+    public DbSet<ServiceVersion> ServiceVersions => Set<ServiceVersion>();
+    public DbSet<ServiceVersionConcept> ServiceVersionConcepts => Set<ServiceVersionConcept>();
     public DbSet<Subscription> Subscriptions => Set<Subscription>();
+    public DbSet<SubscriptionTermsVersion> SubscriptionTermsVersions => Set<SubscriptionTermsVersion>();
+    public DbSet<SubscriptionRenewal> SubscriptionRenewals => Set<SubscriptionRenewal>();
     public DbSet<SubscriptionPriceHistory> SubscriptionPriceHistories => Set<SubscriptionPriceHistory>();
     public DbSet<SubscriptionChangeLog> SubscriptionChangeLogs => Set<SubscriptionChangeLog>();
     public DbSet<BillingCycle> BillingCycles => Set<BillingCycle>();
@@ -50,6 +59,10 @@ public class AegiFinanceDbContext : DbContext
     public DbSet<BillingGenerationLog> BillingGenerationLogs => Set<BillingGenerationLog>();
     public DbSet<BankAccount> BankAccounts => Set<BankAccount>();
     public DbSet<LedgerEntry> LedgerEntries => Set<LedgerEntry>();
+    public DbSet<GeneralLedgerAccount> GeneralLedgerAccounts => Set<GeneralLedgerAccount>();
+    public DbSet<AccountingPeriod> AccountingPeriods => Set<AccountingPeriod>();
+    public DbSet<JournalEntry> JournalEntries => Set<JournalEntry>();
+    public DbSet<JournalLine> JournalLines => Set<JournalLine>();
     public DbSet<TransferGroup> TransferGroups => Set<TransferGroup>();
     public DbSet<SubscriptionAllocation> SubscriptionAllocations => Set<SubscriptionAllocation>();
     public DbSet<BankStatement> BankStatements => Set<BankStatement>();
@@ -60,6 +73,7 @@ public class AegiFinanceDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        ConfigureOrganization(modelBuilder);
         ConfigureUser(modelBuilder);
         ConfigureUserSession(modelBuilder);
         ConfigureRole(modelBuilder);
@@ -78,10 +92,16 @@ public class AegiFinanceDbContext : DbContext
         ConfigureClientCategory(modelBuilder);
         ConfigureClientNote(modelBuilder);
         ConfigureClientContact(modelBuilder);
+        ConfigureClientDocument(modelBuilder);
+        ConfigureClientDuplicateRule(modelBuilder);
         ConfigureService(modelBuilder);
         ConfigureServiceCategory(modelBuilder);
         ConfigureServicePriceHistory(modelBuilder);
+        ConfigureServiceVersion(modelBuilder);
+        ConfigureServiceVersionConcept(modelBuilder);
         ConfigureSubscription(modelBuilder);
+        ConfigureSubscriptionTermsVersion(modelBuilder);
+        ConfigureSubscriptionRenewal(modelBuilder);
         ConfigureSubscriptionPriceHistory(modelBuilder);
         ConfigureSubscriptionChangeLog(modelBuilder);
         ConfigureBillingCycle(modelBuilder);
@@ -89,6 +109,10 @@ public class AegiFinanceDbContext : DbContext
         ConfigureBillingGenerationLog(modelBuilder);
         ConfigureBankAccount(modelBuilder);
         ConfigureLedgerEntry(modelBuilder);
+        ConfigureGeneralLedgerAccount(modelBuilder);
+        ConfigureAccountingPeriod(modelBuilder);
+        ConfigureJournalEntry(modelBuilder);
+        ConfigureJournalLine(modelBuilder);
         ConfigureTransferGroup(modelBuilder);
         ConfigureSubscriptionAllocation(modelBuilder);
         ConfigureBankStatement(modelBuilder);
@@ -113,6 +137,8 @@ public class AegiFinanceDbContext : DbContext
                     v => v.ToString(),
                     v => (UserType)Enum.Parse(typeof(UserType), v));
             entity.Property(e => e.ClientId).IsRequired(false);
+            entity.HasOne(e => e.Organization).WithMany().HasForeignKey(e => e.OrganizationId)
+                .IsRequired(false).OnDelete(DeleteBehavior.Restrict);
 
             entity.HasIndex(e => e.UserName).IsUnique();
             entity.HasIndex(e => e.Email).IsUnique();
@@ -138,6 +164,17 @@ public class AegiFinanceDbContext : DbContext
                 .HasForeignKey(policy => policy.UserId)
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+    }
+
+    private static void ConfigureOrganization(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Organization>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.Code).HasMaxLength(50).IsRequired();
+            entity.Property(item => item.Name).HasMaxLength(200).IsRequired();
+            entity.HasIndex(item => item.Code).IsUnique();
         });
     }
 
@@ -281,6 +318,8 @@ public class AegiFinanceDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.DisplayName).HasMaxLength(200).IsRequired();
+            entity.HasOne(e => e.Client).WithMany().HasForeignKey(e => e.ClientId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.Restrict);
         });
     }
 
@@ -366,8 +405,21 @@ public class AegiFinanceDbContext : DbContext
                     v => v.ToString(),
                     v => (ClientStatus)Enum.Parse(typeof(ClientStatus), v));
             entity.Property(e => e.Notes).HasMaxLength(2000);
+            entity.Property(e => e.PresentationCurrency).HasMaxLength(3).IsRequired().HasDefaultValue("MXN");
+            entity.Property(e => e.CreditLimit).HasPrecision(18, 2);
+            entity.Property(e => e.CommercialTerms).HasMaxLength(2000);
+            entity.Property(e => e.NormalizedName).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.NormalizedTaxId).HasMaxLength(50);
+            entity.Property(e => e.NormalizedBillingEmail).HasMaxLength(256);
 
-            entity.HasIndex(e => e.Code).IsUnique();
+            entity.HasIndex(e => new { e.OrganizationId, e.Code }).IsUnique();
+            entity.HasIndex(e => new { e.OrganizationId, e.NormalizedTaxId });
+            entity.HasIndex(e => new { e.OrganizationId, e.NormalizedName });
+
+            entity.HasOne(e => e.Organization).WithMany(item => item.Clients)
+                .HasForeignKey(e => e.OrganizationId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(e => e.AccountManagerUser).WithMany()
+                .HasForeignKey(e => e.AccountManagerUserId).IsRequired(false).OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(c => c.Category)
                 .WithMany(c => c.Clients)
@@ -393,6 +445,32 @@ public class AegiFinanceDbContext : DbContext
             entity.HasMany(c => c.Contacts)
                 .WithOne(con => con.Client)
                 .HasForeignKey(con => con.ClientId);
+        });
+    }
+
+    private static void ConfigureClientDocument(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<ClientDocument>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.Name).HasMaxLength(260).IsRequired();
+            entity.Property(item => item.StorageKey).HasMaxLength(500).IsRequired();
+            entity.Property(item => item.ContentType).HasMaxLength(150).IsRequired();
+            entity.Property(item => item.Description).HasMaxLength(500);
+            entity.HasIndex(item => new { item.ClientId, item.CreatedAt });
+            entity.HasOne(item => item.Client).WithMany(client => client.Documents)
+                .HasForeignKey(item => item.ClientId).OnDelete(DeleteBehavior.Restrict);
+        });
+    }
+
+    private static void ConfigureClientDuplicateRule(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<ClientDuplicateRule>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.HasIndex(item => item.OrganizationId).IsUnique();
+            entity.HasOne(item => item.Organization).WithMany()
+                .HasForeignKey(item => item.OrganizationId).OnDelete(DeleteBehavior.Restrict);
         });
     }
 
@@ -456,7 +534,9 @@ public class AegiFinanceDbContext : DbContext
             entity.Property(e => e.DefaultPrice).HasPrecision(18, 2);
             entity.Property(e => e.Currency).HasMaxLength(3).IsRequired().HasDefaultValue("MXN");
 
-            entity.HasIndex(e => e.Code).IsUnique();
+            entity.HasIndex(e => new { e.OrganizationId, e.Code }).IsUnique();
+            entity.HasOne(e => e.Organization).WithMany(e => e.Services)
+                .HasForeignKey(e => e.OrganizationId).OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(s => s.Category)
                 .WithMany(c => c.Services)
@@ -477,7 +557,9 @@ public class AegiFinanceDbContext : DbContext
             entity.Property(e => e.Name).HasMaxLength(100).IsRequired();
             entity.Property(e => e.Description).HasMaxLength(500);
 
-            entity.HasIndex(e => e.Name).IsUnique();
+            entity.HasIndex(e => new { e.OrganizationId, e.Name }).IsUnique();
+            entity.HasOne(e => e.Organization).WithMany(e => e.ServiceCategories)
+                .HasForeignKey(e => e.OrganizationId).OnDelete(DeleteBehavior.Restrict);
         });
     }
 
@@ -497,6 +579,44 @@ public class AegiFinanceDbContext : DbContext
         });
     }
 
+    private static void ConfigureServiceVersion(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<ServiceVersion>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.Description).HasMaxLength(1000);
+            entity.Property(e => e.BillingType).HasConversion<string>();
+            entity.Property(e => e.BasePrice).HasPrecision(18, 2);
+            entity.Property(e => e.Currency).HasMaxLength(3).IsRequired();
+            entity.Property(e => e.DefaultDiscountPercent).HasPrecision(9, 4);
+            entity.Property(e => e.DefaultTaxPercent).HasPrecision(9, 4);
+            entity.Property(e => e.ProrationPolicy).HasConversion<string>();
+            entity.Property(e => e.Terms).HasMaxLength(4000);
+            entity.HasIndex(e => new { e.ServiceId, e.VersionNumber }).IsUnique();
+            entity.HasIndex(e => new { e.ServiceId, e.EffectiveFrom });
+            entity.HasOne(e => e.Service).WithMany(e => e.Versions)
+                .HasForeignKey(e => e.ServiceId).OnDelete(DeleteBehavior.Restrict);
+        });
+    }
+
+    private static void ConfigureServiceVersionConcept(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<ServiceVersionConcept>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Code).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Name).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.Description).HasMaxLength(1000);
+            entity.Property(e => e.Quantity).HasPrecision(18, 4);
+            entity.Property(e => e.UnitPrice).HasPrecision(18, 2);
+            entity.Property(e => e.TaxPercent).HasPrecision(9, 4);
+            entity.HasIndex(e => new { e.ServiceVersionId, e.Code }).IsUnique();
+            entity.HasOne(e => e.ServiceVersion).WithMany(e => e.Concepts)
+                .HasForeignKey(e => e.ServiceVersionId).OnDelete(DeleteBehavior.Cascade);
+        });
+    }
+
     private static void ConfigureSubscription(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Subscription>(entity =>
@@ -508,6 +628,10 @@ public class AegiFinanceDbContext : DbContext
                     v => v.ToString(),
                     v => (BillingType)Enum.Parse(typeof(BillingType), v));
             entity.Property(e => e.Price).HasPrecision(18, 2);
+            entity.Property(e => e.DiscountPercent).HasPrecision(9, 4);
+            entity.Property(e => e.TaxPercent).HasPrecision(9, 4);
+            entity.Property(e => e.ProrationPolicy).HasConversion<string>();
+            entity.Property(e => e.ContractTerms).HasMaxLength(4000);
             entity.Property(e => e.Currency).HasMaxLength(3).IsRequired().HasDefaultValue("MXN");
             entity.Property(e => e.StartDate).IsRequired();
             entity.Property(e => e.BillingDay).IsRequired();
@@ -532,6 +656,9 @@ public class AegiFinanceDbContext : DbContext
                 .HasForeignKey(s => s.ServiceId)
                 .IsRequired();
 
+            entity.HasOne(s => s.ServiceVersion).WithMany()
+                .HasForeignKey(s => s.ServiceVersionId).IsRequired(false).OnDelete(DeleteBehavior.Restrict);
+
             entity.HasMany(s => s.PriceHistory)
                 .WithOne(ph => ph.Subscription)
                 .HasForeignKey(ph => ph.SubscriptionId);
@@ -539,6 +666,41 @@ public class AegiFinanceDbContext : DbContext
             entity.HasMany(s => s.ChangeLogs)
                 .WithOne(cl => cl.Subscription)
                 .HasForeignKey(cl => cl.SubscriptionId);
+        });
+    }
+
+    private static void ConfigureSubscriptionTermsVersion(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<SubscriptionTermsVersion>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.BillingType).HasConversion<string>();
+            entity.Property(e => e.BasePrice).HasPrecision(18, 2);
+            entity.Property(e => e.Currency).HasMaxLength(3).IsRequired();
+            entity.Property(e => e.DiscountPercent).HasPrecision(9, 4);
+            entity.Property(e => e.TaxPercent).HasPrecision(9, 4);
+            entity.Property(e => e.ProrationPolicy).HasConversion<string>();
+            entity.Property(e => e.Terms).HasMaxLength(4000);
+            entity.Property(e => e.Reason).HasMaxLength(500);
+            entity.HasIndex(e => new { e.SubscriptionId, e.VersionNumber }).IsUnique();
+            entity.HasIndex(e => new { e.SubscriptionId, e.EffectiveFrom });
+            entity.HasOne(e => e.Subscription).WithMany(e => e.TermsVersions)
+                .HasForeignKey(e => e.SubscriptionId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.ServiceVersion).WithMany()
+                .HasForeignKey(e => e.ServiceVersionId).IsRequired(false).OnDelete(DeleteBehavior.Restrict);
+        });
+    }
+
+    private static void ConfigureSubscriptionRenewal(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<SubscriptionRenewal>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.IdempotencyKey).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.Reason).HasMaxLength(500);
+            entity.HasIndex(e => new { e.SubscriptionId, e.IdempotencyKey }).IsUnique();
+            entity.HasOne(e => e.Subscription).WithMany(e => e.Renewals)
+                .HasForeignKey(e => e.SubscriptionId).OnDelete(DeleteBehavior.Cascade);
         });
     }
 
@@ -600,6 +762,10 @@ public class AegiFinanceDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Description).HasMaxLength(500).IsRequired();
             entity.Property(e => e.Amount).HasPrecision(18, 2);
+            entity.Property(e => e.BaseAmount).HasPrecision(18, 2);
+            entity.Property(e => e.DiscountAmount).HasPrecision(18, 2);
+            entity.Property(e => e.TaxAmount).HasPrecision(18, 2);
+            entity.Property(e => e.ProrationFactor).HasPrecision(12, 8);
             entity.Property(e => e.PaidAmount).HasPrecision(18, 2);
             entity.Property(e => e.Currency).HasMaxLength(3).IsRequired().HasDefaultValue("MXN");
             entity.Property(e => e.DueDate).IsRequired();
@@ -629,6 +795,12 @@ public class AegiFinanceDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(bi => bi.ClientId)
                 .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(bi => bi.SubscriptionTermsVersion)
+                .WithMany()
+                .HasForeignKey(bi => bi.SubscriptionTermsVersionId)
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
         });
     }
@@ -661,7 +833,9 @@ public class AegiFinanceDbContext : DbContext
             entity.Property(e => e.OpeningBalance).HasPrecision(18, 2);
             entity.Property(e => e.OpeningDate).IsRequired();
 
-            entity.HasIndex(e => e.Name).IsUnique();
+            entity.HasIndex(e => new { e.OrganizationId, e.Name }).IsUnique();
+            entity.HasOne(e => e.Organization).WithMany(item => item.BankAccounts)
+                .HasForeignKey(e => e.OrganizationId).OnDelete(DeleteBehavior.Restrict);
         });
     }
 
@@ -718,6 +892,91 @@ public class AegiFinanceDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(tg => tg.ToEntryId)
                 .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+    }
+
+    private static void ConfigureGeneralLedgerAccount(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<GeneralLedgerAccount>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.Code).HasMaxLength(30).IsRequired();
+            entity.Property(item => item.Name).HasMaxLength(200).IsRequired();
+            entity.Property(item => item.Currency).HasMaxLength(3).IsRequired();
+            entity.Property(item => item.AccountType).HasConversion<string>().HasMaxLength(30);
+            entity.Property(item => item.Purpose).HasConversion<string>().HasMaxLength(40);
+            entity.HasIndex(item => item.Code).IsUnique();
+            entity.HasIndex(item => item.BankAccountId).IsUnique().HasFilter("[BankAccountId] IS NOT NULL AND [IsDeleted] = 0");
+            entity.HasOne(item => item.ParentAccount).WithMany().HasForeignKey(item => item.ParentAccountId)
+                .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.BankAccount).WithMany().HasForeignKey(item => item.BankAccountId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+    }
+
+    private static void ConfigureAccountingPeriod(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<AccountingPeriod>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.Name).HasMaxLength(100).IsRequired();
+            entity.Property(item => item.Status).HasConversion<string>().HasMaxLength(20);
+            entity.HasIndex(item => new { item.StartDate, item.EndDate }).IsUnique();
+        });
+    }
+
+    private static void ConfigureJournalEntry(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<JournalEntry>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.EntryNumber).HasMaxLength(40).IsRequired();
+            entity.Property(item => item.Description).HasMaxLength(500).IsRequired();
+            entity.Property(item => item.Reference).HasMaxLength(200);
+            entity.Property(item => item.Currency).HasMaxLength(3).IsRequired();
+            entity.Property(item => item.Status).HasConversion<string>().HasMaxLength(20);
+            entity.Property(item => item.SourceType).HasConversion<string>().HasMaxLength(30);
+            entity.Property(item => item.SourceId).HasMaxLength(100);
+            entity.Property(item => item.IdempotencyKey).HasMaxLength(160).IsRequired();
+            entity.HasIndex(item => item.EntryNumber).IsUnique();
+            entity.HasIndex(item => item.IdempotencyKey).IsUnique();
+            entity.HasIndex(item => new { item.Date, item.Status });
+            entity.HasOne(item => item.AccountingPeriod).WithMany().HasForeignKey(item => item.AccountingPeriodId)
+                .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.Client).WithMany().HasForeignKey(item => item.ClientId)
+                .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.ReversesJournalEntry).WithMany().HasForeignKey(item => item.ReversesJournalEntryId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+    }
+
+    private static void ConfigureJournalLine(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<JournalLine>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.Debit).HasPrecision(18, 2);
+            entity.Property(item => item.Credit).HasPrecision(18, 2);
+            entity.Property(item => item.Description).HasMaxLength(500);
+            entity.HasIndex(item => new { item.AccountId, item.JournalEntryId });
+            entity.HasIndex(item => item.LegacyLedgerEntryId)
+                .IsUnique().HasFilter("[LegacyLedgerEntryId] IS NOT NULL AND [IsDeleted] = 0");
+            entity.ToTable(table =>
+            {
+                table.HasCheckConstraint("CK_JournalLines_DebitOrCredit", "([Debit] > 0 AND [Credit] = 0) OR ([Credit] > 0 AND [Debit] = 0)");
+            });
+            entity.HasOne(item => item.JournalEntry).WithMany(entry => entry.Lines)
+                .HasForeignKey(item => item.JournalEntryId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.Account).WithMany().HasForeignKey(item => item.AccountId)
+                .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.Client).WithMany().HasForeignKey(item => item.ClientId)
+                .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.BankAccount).WithMany().HasForeignKey(item => item.BankAccountId)
+                .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.BillingItem).WithMany().HasForeignKey(item => item.BillingItemId)
+                .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.LegacyLedgerEntry).WithMany().HasForeignKey(item => item.LegacyLedgerEntryId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
     }
@@ -823,30 +1082,86 @@ public class AegiFinanceDbContext : DbContext
 
     private void ApplyTenantQueryFilters(ModelBuilder modelBuilder)
     {
+        AppendQueryFilter<Organization>(modelBuilder, entity =>
+            !IsOrganizationScope || entity.Id == CurrentOrganizationId);
         AppendQueryFilter<Client>(modelBuilder, entity =>
-            !IsClientScope || (CurrentClientId.HasValue && entity.Id == CurrentClientId.Value));
+            (!IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId) &&
+            (!IsClientScope || (CurrentClientId.HasValue && entity.Id == CurrentClientId.Value)));
+        AppendQueryFilter<BankAccount>(modelBuilder, entity =>
+            !IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId);
         AppendQueryFilter<User>(modelBuilder, entity =>
-            !IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value));
+            (!IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId) &&
+            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value)));
         AppendQueryFilter<ClientUser>(modelBuilder, entity =>
-            !IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value));
+            (!IsOrganizationScope || entity.Client.OrganizationId == CurrentOrganizationId) &&
+            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value)));
         AppendQueryFilter<ClientNote>(modelBuilder, entity =>
-            !IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value));
+            (!IsOrganizationScope || entity.Client.OrganizationId == CurrentOrganizationId) &&
+            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value)));
         AppendQueryFilter<ClientContact>(modelBuilder, entity =>
-            !IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value));
+            (!IsOrganizationScope || entity.Client.OrganizationId == CurrentOrganizationId) &&
+            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value)));
+        AppendQueryFilter<ClientDocument>(modelBuilder, entity =>
+            (!IsOrganizationScope || entity.Client.OrganizationId == CurrentOrganizationId) &&
+            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value)));
+        AppendQueryFilter<ClientDuplicateRule>(modelBuilder, entity =>
+            !IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId);
+        AppendQueryFilter<ServiceCategory>(modelBuilder, entity =>
+            !IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId);
+        AppendQueryFilter<Service>(modelBuilder, entity =>
+            !IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId);
+        AppendQueryFilter<ServicePriceHistory>(modelBuilder, entity =>
+            !IsOrganizationScope || entity.Service.OrganizationId == CurrentOrganizationId);
+        AppendQueryFilter<ServiceVersion>(modelBuilder, entity =>
+            !IsOrganizationScope || entity.Service.OrganizationId == CurrentOrganizationId);
+        AppendQueryFilter<ServiceVersionConcept>(modelBuilder, entity =>
+            !IsOrganizationScope || entity.ServiceVersion.Service.OrganizationId == CurrentOrganizationId);
         AppendQueryFilter<Subscription>(modelBuilder, entity =>
-            !IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value));
+            (!IsOrganizationScope || entity.Client.OrganizationId == CurrentOrganizationId) &&
+            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value)));
         AppendQueryFilter<SubscriptionPriceHistory>(modelBuilder, entity =>
-            !IsClientScope || (CurrentClientId.HasValue && entity.Subscription.ClientId == CurrentClientId.Value));
+            (!IsOrganizationScope || entity.Subscription.Client.OrganizationId == CurrentOrganizationId) &&
+            (!IsClientScope || (CurrentClientId.HasValue && entity.Subscription.ClientId == CurrentClientId.Value)));
         AppendQueryFilter<SubscriptionChangeLog>(modelBuilder, entity =>
-            !IsClientScope || (CurrentClientId.HasValue && entity.Subscription.ClientId == CurrentClientId.Value));
+            (!IsOrganizationScope || entity.Subscription.Client.OrganizationId == CurrentOrganizationId) &&
+            (!IsClientScope || (CurrentClientId.HasValue && entity.Subscription.ClientId == CurrentClientId.Value)));
+        AppendQueryFilter<SubscriptionTermsVersion>(modelBuilder, entity =>
+            (!IsOrganizationScope || entity.Subscription.Client.OrganizationId == CurrentOrganizationId) &&
+            (!IsClientScope || (CurrentClientId.HasValue && entity.Subscription.ClientId == CurrentClientId.Value)));
+        AppendQueryFilter<SubscriptionRenewal>(modelBuilder, entity =>
+            (!IsOrganizationScope || entity.Subscription.Client.OrganizationId == CurrentOrganizationId) &&
+            (!IsClientScope || (CurrentClientId.HasValue && entity.Subscription.ClientId == CurrentClientId.Value)));
         AppendQueryFilter<BillingItem>(modelBuilder, entity =>
-            !IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value));
+            (!IsOrganizationScope || entity.Client.OrganizationId == CurrentOrganizationId) &&
+            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value)));
         AppendQueryFilter<LedgerEntry>(modelBuilder, entity =>
-            !IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value));
+            (!IsOrganizationScope || entity.BankAccount.OrganizationId == CurrentOrganizationId) &&
+            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value)));
+        AppendQueryFilter<JournalEntry>(modelBuilder, entity =>
+            (!IsOrganizationScope ||
+                (entity.ClientId.HasValue && entity.Client!.OrganizationId == CurrentOrganizationId) ||
+                entity.Lines.Any(line => line.BankAccountId.HasValue && line.BankAccount!.OrganizationId == CurrentOrganizationId)) &&
+            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value)));
+        AppendQueryFilter<JournalLine>(modelBuilder, entity =>
+            (!IsOrganizationScope ||
+                (entity.ClientId.HasValue && entity.Client!.OrganizationId == CurrentOrganizationId) ||
+                (entity.BankAccountId.HasValue && entity.BankAccount!.OrganizationId == CurrentOrganizationId) ||
+                (entity.JournalEntry.ClientId.HasValue && entity.JournalEntry.Client!.OrganizationId == CurrentOrganizationId)) &&
+            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value)));
         AppendQueryFilter<SubscriptionAllocation>(modelBuilder, entity =>
-            !IsClientScope || (CurrentClientId.HasValue && entity.BillingItem.ClientId == CurrentClientId.Value));
+            (!IsOrganizationScope || entity.BillingItem.Client.OrganizationId == CurrentOrganizationId) &&
+            (!IsClientScope || (CurrentClientId.HasValue && entity.BillingItem.ClientId == CurrentClientId.Value)));
         AppendQueryFilter<SubscriptionPermission>(modelBuilder, entity =>
-            !IsClientScope || (CurrentClientId.HasValue && entity.Subscription.ClientId == CurrentClientId.Value));
+            (!IsOrganizationScope || entity.Subscription.Client.OrganizationId == CurrentOrganizationId) &&
+            (!IsClientScope || (CurrentClientId.HasValue && entity.Subscription.ClientId == CurrentClientId.Value)));
+        AppendQueryFilter<BankStatement>(modelBuilder, entity =>
+            !IsOrganizationScope || entity.BankAccount.OrganizationId == CurrentOrganizationId);
+        AppendQueryFilter<BankStatementLine>(modelBuilder, entity =>
+            !IsOrganizationScope || entity.BankStatement.BankAccount.OrganizationId == CurrentOrganizationId);
+        AppendQueryFilter<BankImportAttempt>(modelBuilder, entity =>
+            !IsOrganizationScope || entity.BankAccount.OrganizationId == CurrentOrganizationId);
+        AppendQueryFilter<TransferGroup>(modelBuilder, entity =>
+            !IsOrganizationScope || entity.FromEntry.BankAccount.OrganizationId == CurrentOrganizationId);
         AppendQueryFilter<UiControlPolicy>(modelBuilder, entity =>
             !IsClientScope || !entity.ClientId.HasValue ||
             (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value));

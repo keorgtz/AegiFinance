@@ -36,6 +36,12 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, UserD
             throw new InvalidOperationException("Ya existe un usuario con el mismo correo electrónico.");
         }
 
+        if (request.ClientId.HasValue && !await _context.Clients.AsNoTracking()
+                .AnyAsync(client => client.Id == request.ClientId, cancellationToken))
+        {
+            throw new InvalidOperationException("El cliente no pertenece a la organización.");
+        }
+
         user.Email = request.Email;
         user.Name = request.Name;
         if (user.Roles.Any(role => role.UserType.HasValue && role.UserType.Value != request.UserType))
@@ -55,6 +61,7 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, UserD
             Name = user.Name,
             UserType = user.UserType.ToString(),
             ClientId = user.ClientId,
+            OrganizationId = user.OrganizationId,
             IsActive = user.IsActive,
             EmailConfirmed = user.EmailConfirmed,
             LastLoginAt = user.LastLoginAt,

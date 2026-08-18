@@ -13,6 +13,7 @@ import { Pagination } from "@/components/ui/pagination";
 import { ClientForm } from "@/components/modules/clients/client-form";
 import { ClientStatusBadge } from "@/components/modules/clients/client-status-badge";
 import { TagChip } from "@/components/modules/clients/tag-chip";
+import { ClientDuplicateRulesDialog } from "@/components/modules/clients/client-duplicate-rules-dialog";
 import { Can } from "@/lib/auth/can";
 import type { ClientListDto, ClientStatus } from "@/types/api";
 import {
@@ -20,6 +21,7 @@ import {
   MoreHorizontal,
   Plus,
   Search,
+  Settings2,
   Tag,
   Trash2,
   UserCheck,
@@ -87,6 +89,7 @@ export default function ClientsPage() {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [tagFilter, setTagFilter] = useState("");
   const [formOpen, setFormOpen] = useState(false);
+  const [duplicateRulesOpen, setDuplicateRulesOpen] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -273,13 +276,20 @@ export default function ClientsPage() {
             {data ? `${data.totalCount} registro${data.totalCount !== 1 ? "s" : ""}` : "Cargando…"}
           </p>
         </div>
-        <Can permission="ManageClients">
-          <Button controlKey="ui.app.app.clients.page.button.2" onClick={() => setFormOpen(true)} size="md">
-            <Plus className="h-4 w-4" />
-            Nuevo
-            <kbd className="ml-1 rounded bg-surface/20 px-1 text-[10px]">N</kbd>
-          </Button>
-        </Can>
+        <div className="flex items-center gap-2">
+          <Can permission="ManageClientDuplicateRules">
+            <Button controlKey="clients.duplicate-rules.open" permission="ManageClientDuplicateRules" variant="secondary" size="md" onClick={() => setDuplicateRulesOpen(true)} aria-label="Configurar detección de duplicados">
+              <Settings2 className="h-4 w-4" /><span className="hidden sm:inline">Duplicados</span>
+            </Button>
+          </Can>
+          <Can permission="CreateClients">
+            <Button controlKey="clients.create.open" permission="CreateClients" onClick={() => setFormOpen(true)} size="md">
+              <Plus className="h-4 w-4" />
+              Nuevo
+              <kbd className="ml-1 rounded bg-surface/20 px-1 text-[10px]">N</kbd>
+            </Button>
+          </Can>
+        </div>
       </div>
 
       {/* Filtros */}
@@ -341,7 +351,7 @@ export default function ClientsPage() {
         )}
 
         {hasFilters && (
-          <button data-ui-control="ui.app.app.clients.page.button.3"
+          <button data-ui-control="ui.app.app.clients.page.button.4"
             onClick={() => {
               setSearch("");
               setStatusFilter("");
@@ -382,6 +392,7 @@ export default function ClientsPage() {
 
       {/* Drawer alta rápida */}
       <ClientForm open={formOpen} onOpenChange={setFormOpen} />
+      <ClientDuplicateRulesDialog open={duplicateRulesOpen} onOpenChange={setDuplicateRulesOpen} />
     </div>
   );
 }

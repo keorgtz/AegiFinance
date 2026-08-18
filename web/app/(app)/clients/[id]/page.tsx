@@ -8,6 +8,7 @@ import {
   useClientNotes,
   useDeleteContact,
   useSetPrimaryContact,
+  useClientTimeline,
 } from "@/hooks/use-clients";
 import { Tabs, TabList, Tab, TabPanel } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -18,12 +19,16 @@ import { TagChip } from "@/components/modules/clients/tag-chip";
 import { ClientForm } from "@/components/modules/clients/client-form";
 import { ContactForm } from "@/components/modules/clients/contact-form";
 import { NoteForm } from "@/components/modules/clients/note-form";
+import { ClientDocumentsPanel } from "@/components/modules/clients/client-documents-panel";
 import { Can } from "@/lib/auth/can";
-import { formatDate, formatDateTime } from "@/lib/utils/format";
+import { formatAmount, formatDateTime } from "@/lib/utils/format";
 import type { ClientContactDto } from "@/types/api";
 import {
   ArrowLeft,
   Building2,
+  CalendarClock,
+  Clock3,
+  Coins,
   Mail,
   MapPin,
   Pencil,
@@ -42,6 +47,7 @@ export default function ClientDetailPage() {
   const { data: client, isLoading } = useClient(params.id);
   const { data: contacts = [], isLoading: contactsLoading } = useClientContacts(params.id);
   const { data: notes = [], isLoading: notesLoading } = useClientNotes(params.id);
+  const { data: timeline = [], isLoading: timelineLoading, isError: timelineError } = useClientTimeline(params.id);
 
   const deleteContact = useDeleteContact();
   const setPrimary = useSetPrimaryContact();
@@ -132,8 +138,8 @@ export default function ClientDetailPage() {
       {/* Tabs */}
       <Tabs defaultTab="info">
         <TabList>
-          <Tab controlKey="ui.app.app.clients.id.page.tab.1" id="info">Información general</Tab>
-          <Tab controlKey="ui.app.app.clients.id.page.tab.2" id="contacts">
+          <Tab controlKey="clients.detail.tab.overview" permission="ViewClients" id="info">Información general</Tab>
+          <Tab controlKey="clients.detail.tab.contacts" permission="ViewClients" id="contacts">
             Contactos
             {contacts.length > 0 && (
               <span className="ml-1.5 rounded-full bg-border px-1.5 py-0.5 text-[10px] font-bold text-muted">
@@ -141,7 +147,7 @@ export default function ClientDetailPage() {
               </span>
             )}
           </Tab>
-          <Tab controlKey="ui.app.app.clients.id.page.tab.3" id="notes">
+          <Tab controlKey="clients.detail.tab.notes" permission="ViewClients" id="notes">
             Notas
             {notes.length > 0 && (
               <span className="ml-1.5 rounded-full bg-border px-1.5 py-0.5 text-[10px] font-bold text-muted">
@@ -149,7 +155,8 @@ export default function ClientDetailPage() {
               </span>
             )}
           </Tab>
-          <Tab controlKey="ui.app.app.clients.id.page.tab.4" id="history">Historial</Tab>
+          <Tab controlKey="clients.detail.tab.documents" permission="ViewClientDocuments" id="documents">Documentos {client.documents.length > 0 && <span className="ml-1.5 rounded-full bg-border px-1.5 py-0.5 text-[10px] font-bold text-muted">{client.documents.length}</span>}</Tab>
+          <Tab controlKey="clients.detail.tab.timeline" permission="ViewClientTimeline" id="history">Historial</Tab>
         </TabList>
 
         {/* ── TAB: Información general ── */}
@@ -178,6 +185,14 @@ export default function ClientDetailPage() {
               {!client.billingEmail && !client.phone && !client.billingAddress && (
                 <p className="text-[13px] text-muted">Sin datos de contacto registrados.</p>
               )}
+            </InfoCard>
+
+            <InfoCard title="Condiciones comerciales">
+              <InfoRow icon={<Coins className="h-4 w-4" />} label="Moneda de presentación" value={client.presentationCurrency} />
+              <InfoRow icon={<CalendarClock className="h-4 w-4" />} label="Plazo de pago" value={`${client.paymentTermsDays} día${client.paymentTermsDays === 1 ? "" : "s"}`} />
+              <InfoRow icon={<Coins className="h-4 w-4" />} label="Límite de crédito" value={formatAmount(client.creditLimit, client.presentationCurrency)} />
+              <InfoRow icon={<User className="h-4 w-4" />} label="Responsable" value={client.accountManagerName ?? "Sin asignar"} />
+              {client.commercialTerms && <p className="whitespace-pre-wrap border-t border-border pt-2 text-[13px] text-foreground-secondary">{client.commercialTerms}</p>}
             </InfoCard>
 
             {client.notes && (
@@ -345,13 +360,26 @@ export default function ClientDetailPage() {
           )}
         </TabPanel>
 
+        <TabPanel id="documents">
+          <ClientDocumentsPanel clientId={params.id} documents={client.documents} />
+        </TabPanel>
+
         {/* ── TAB: Historial ── */}
         <TabPanel id="history">
-          <div className="rounded-card border border-dashed border-border py-12 text-center">
-            <p className="text-[13px] text-muted">
-              El historial de cambios estará disponible próximamente.
-            </p>
-          </div>
+          {timelineLoading ? <div className="flex justify-center py-12"><Spinner className="text-action" /></div> : timelineError ? (
+            <div role="alert" className="rounded-card border border-danger/30 bg-danger-soft p-4 text-sm text-danger">No se pudo cargar el historial auditable.</div>
+          ) : timeline.length === 0 ? (
+            <div className="rounded-card border border-dashed border-border py-12 text-center"><Clock3 className="mx-auto mb-2 h-6 w-6 text-muted" /><p className="text-sm text-muted">Todavía no hay eventos auditables.</p></div>
+          ) : (
+            <ol className="space-y-3">
+              {timeline.map((event) => (
+                <li key={event.id} className="flex gap-3 rounded-card border border-border bg-surface p-4 shadow-dp1">
+                  <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-action-soft text-action"><Clock3 className="h-4 w-4" /></div>
+                  <div className="min-w-0"><p className="text-sm font-semibold text-foreground">{event.title}</p>{event.detail && <p className="mt-1 text-xs text-foreground-secondary">{event.detail}</p>}<time className="mt-1 block text-xs text-muted" dateTime={event.occurredAt}>{formatDateTime(event.occurredAt)}</time></div>
+                </li>
+              ))}
+            </ol>
+          )}
         </TabPanel>
       </Tabs>
 

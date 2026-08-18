@@ -7,8 +7,11 @@ import { z } from "zod";
 import { Drawer, DrawerContent, DrawerClose } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Select, SelectItem } from "@/components/ui/select";
 import * as RadixSwitch from "@radix-ui/react-switch";
 import { useCreateBankAccount, useUpdateBankAccount } from "@/hooks/use-bank-accounts";
+import { useCurrencies } from "@/hooks/use-currencies";
+import { useUiControl } from "@/lib/auth/ui-control";
 import type { BankAccountDto } from "@/types/api";
 
 const schema = z.object({
@@ -29,19 +32,25 @@ interface BankAccountFormProps {
   account?: BankAccountDto | null;
 }
 
-function SwitchRow({
+function PermissionSwitch({
   id,
   label,
   checked,
   onCheckedChange,
+  controlKey,
+  permission,
 }: {
   id: string;
   label: string;
   checked: boolean;
   onCheckedChange: (v: boolean) => void;
+  controlKey: string;
+  permission: string;
 }) {
+  const access = useUiControl({ controlKey, permission });
+  if (access.hidden) return null;
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex min-h-11 items-center justify-between gap-4" {...access.dataAttributes}>
       <label htmlFor={id} className="text-[13px] font-medium text-foreground-secondary cursor-pointer">
         {label}
       </label>
@@ -49,9 +58,10 @@ function SwitchRow({
         id={id}
         checked={checked}
         onCheckedChange={onCheckedChange}
-        className="relative h-5 w-9 cursor-pointer rounded-full transition-colors data-[state=checked]:bg-action data-[state=unchecked]:bg-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action focus-visible:ring-offset-2"
+        disabled={access.disabled || access.readOnly}
+        className="relative h-7 w-12 cursor-pointer rounded-full transition-colors data-[state=checked]:bg-action data-[state=unchecked]:bg-border focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-action/30 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
       >
-        <RadixSwitch.Thumb className="block h-4 w-4 rounded-full bg-surface shadow transition-transform data-[state=checked]:translate-x-[18px] data-[state=unchecked]:translate-x-[2px]" />
+        <RadixSwitch.Thumb className="block h-5 w-5 rounded-full bg-surface shadow transition-transform data-[state=checked]:translate-x-[25px] data-[state=unchecked]:translate-x-[3px]" />
       </RadixSwitch.Root>
     </div>
   );
@@ -61,6 +71,8 @@ export function BankAccountForm({ open, onOpenChange, account }: BankAccountForm
   const isEdit = !!account;
   const create = useCreateBankAccount();
   const update = useUpdateBankAccount();
+  const currencies = useCurrencies();
+  const businessPermission = isEdit ? "UpdateBankAccounts" : "CreateBankAccounts";
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -110,63 +122,87 @@ export function BankAccountForm({ open, onOpenChange, account }: BankAccountForm
     onOpenChange(false);
   };
 
+  const mutationError = create.error ?? update.error;
+
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent title={isEdit ? "Editar cuenta bancaria" : "Nueva cuenta bancaria"} width="md">
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-          <Input controlKey="ui.components.modules.ledger.bank.account.form.input.1"
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
+          <div className="rounded-card bg-action-soft p-4 text-sm text-foreground-secondary">
+            <p className="font-semibold text-foreground">Identidad y apertura</p>
+            <p className="mt-1 text-xs text-muted">El saldo inicial se contabiliza como un asiento. Después de crear la cuenta, moneda, importe y fecha quedan protegidos.</p>
+          </div>
+          <Input controlKey="ledger.bankAccounts.form.name" permission={businessPermission}
             {...register("name")}
             label="Nombre *"
             placeholder="Ej. Cuenta principal BBVA"
             autoFocus
             error={errors.name?.message}
           />
-          <Input controlKey="ui.components.modules.ledger.bank.account.form.input.2"
+          <Input controlKey="ledger.bankAccounts.form.bankName" permission={businessPermission}
             {...register("bankName")}
             label="Banco"
             placeholder="Ej. BBVA, Banorte, HSBC…"
             error={errors.bankName?.message}
           />
-          <Input controlKey="ui.components.modules.ledger.bank.account.form.input.3"
+          <Input controlKey="ledger.bankAccounts.form.accountNumber" permission={businessPermission}
             {...register("accountNumber")}
             label="Número de cuenta"
-            placeholder="Ej. ****1234"
+            placeholder={isEdit ? "Conservar número protegido" : "Número o CLABE"}
+            hint={isEdit ? "Deja el valor enmascarado para conservar el número actual." : "Se cifra antes de guardarse; sólo se mostrarán los últimos 4 dígitos."}
             error={errors.accountNumber?.message}
           />
-          <div className="grid grid-cols-2 gap-3">
-            <Input controlKey="ui.components.modules.ledger.bank.account.form.input.4"
-              {...register("currency")}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Select controlKey="ledger.bankAccounts.form.currency" permission={businessPermission}
               label="Moneda *"
-              placeholder="MXN"
+              value={watch("currency")}
+              onValueChange={(value) => setValue("currency", value, { shouldValidate: true })}
+              disabled={isEdit}
               error={errors.currency?.message}
-            />
-            <Input controlKey="ui.components.modules.ledger.bank.account.form.input.5"
+            >
+              {(currencies.data ?? []).filter((currency) => currency.isActive).map((currency) => (
+                <SelectItem key={currency.code} value={currency.code}>{currency.code} · {currency.name}</SelectItem>
+              ))}
+              {!currencies.data?.length && <SelectItem value="MXN">MXN · Peso mexicano</SelectItem>}
+            </Select>
+            <Input controlKey="ledger.bankAccounts.form.openingBalance" permission={businessPermission}
               {...register("openingBalance")}
               type="number"
               step="0.01"
               label="Saldo inicial *"
               inputMode="decimal"
+              readOnly={isEdit}
+              hint={isEdit ? "Inmutable; utiliza un ajuste contable para corregirlo." : undefined}
               error={errors.openingBalance?.message}
             />
           </div>
-          <Input controlKey="ui.components.modules.ledger.bank.account.form.input.6"
+          <Input controlKey="ledger.bankAccounts.form.openingDate" permission={businessPermission}
             {...register("openingDate")}
             type="date"
             label="Fecha de apertura *"
+            readOnly={isEdit}
             error={errors.openingDate?.message}
           />
-          <SwitchRow
+          <PermissionSwitch
             id="isActive"
             label="Cuenta activa"
             checked={watch("isActive")}
             onCheckedChange={(v) => setValue("isActive", v)}
+            controlKey="ledger.bankAccounts.form.isActive"
+            permission={businessPermission}
           />
 
-          <div className="mt-2 flex justify-end gap-3">
+          {mutationError && (
+            <p role="alert" className="rounded-input bg-danger-soft p-3 text-sm font-medium text-danger">
+              No se pudo guardar la cuenta. Revisa los datos y vuelve a intentar.
+            </p>
+          )}
+
+          <div className="sticky bottom-0 -mx-1 mt-2 flex flex-col-reverse gap-3 border-t border-border bg-surface/95 px-1 pt-4 backdrop-blur sm:flex-row sm:justify-end">
             <DrawerClose asChild>
-              <Button controlKey="ui.components.modules.ledger.bank.account.form.button.1" type="button" variant="secondary">Cancelar</Button>
+              <Button controlKey="ledger.bankAccounts.form.cancel" type="button" variant="secondary" systemRequired>Cancelar</Button>
             </DrawerClose>
-            <Button controlKey="ui.components.modules.ledger.bank.account.form.button.2" type="submit" loading={isSubmitting}>
+            <Button controlKey="ledger.bankAccounts.form.submit" permission={businessPermission} type="submit" loading={isSubmitting}>
               {isEdit ? "Guardar cambios" : "Crear cuenta"}
             </Button>
           </div>

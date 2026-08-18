@@ -6,4 +6,5 @@ public interface ICurrentUserService
     string? UserName { get; }
     string? UserType { get; }
     Guid? ClientId { get; }
+    Guid? OrganizationId { get; }
 }

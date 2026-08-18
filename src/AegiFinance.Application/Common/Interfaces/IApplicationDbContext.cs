@@ -1,10 +1,12 @@
 using AegiFinance.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace AegiFinance.Application.Common.Interfaces;
 
 public interface IApplicationDbContext
 {
+    DbSet<Organization> Organizations { get; }
     DbSet<User> Users { get; }
     DbSet<UserSession> UserSessions { get; }
     DbSet<Role> Roles { get; }
@@ -24,10 +26,16 @@ public interface IApplicationDbContext
     DbSet<ClientCategory> ClientCategories { get; }
     DbSet<ClientNote> ClientNotes { get; }
     DbSet<ClientContact> ClientContacts { get; }
+    DbSet<ClientDocument> ClientDocuments { get; }
+    DbSet<ClientDuplicateRule> ClientDuplicateRules { get; }
     DbSet<Service> Services { get; }
     DbSet<ServiceCategory> ServiceCategories { get; }
     DbSet<ServicePriceHistory> ServicePriceHistories { get; }
+    DbSet<ServiceVersion> ServiceVersions { get; }
+    DbSet<ServiceVersionConcept> ServiceVersionConcepts { get; }
     DbSet<Subscription> Subscriptions { get; }
+    DbSet<SubscriptionTermsVersion> SubscriptionTermsVersions { get; }
+    DbSet<SubscriptionRenewal> SubscriptionRenewals { get; }
     DbSet<SubscriptionPriceHistory> SubscriptionPriceHistories { get; }
     DbSet<SubscriptionChangeLog> SubscriptionChangeLogs { get; }
     DbSet<BillingCycle> BillingCycles { get; }
@@ -35,6 +43,10 @@ public interface IApplicationDbContext
     DbSet<BillingGenerationLog> BillingGenerationLogs { get; }
     DbSet<BankAccount> BankAccounts { get; }
     DbSet<LedgerEntry> LedgerEntries { get; }
+    DbSet<GeneralLedgerAccount> GeneralLedgerAccounts { get; }
+    DbSet<AccountingPeriod> AccountingPeriods { get; }
+    DbSet<JournalEntry> JournalEntries { get; }
+    DbSet<JournalLine> JournalLines { get; }
     DbSet<TransferGroup> TransferGroups { get; }
     DbSet<SubscriptionAllocation> SubscriptionAllocations { get; }
     DbSet<BankStatement> BankStatements { get; }
@@ -42,4 +54,5 @@ public interface IApplicationDbContext
     DbSet<BankImportAttempt> BankImportAttempts { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+    Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
 }

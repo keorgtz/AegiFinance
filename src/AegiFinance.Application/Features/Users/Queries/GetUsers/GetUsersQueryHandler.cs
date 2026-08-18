@@ -53,6 +53,7 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, PaginatedList
                 Name = u.Name,
                 UserType = u.UserType.ToString(),
                 ClientId = u.ClientId,
+                OrganizationId = u.OrganizationId,
                 IsActive = u.IsActive,
                 EmailConfirmed = u.EmailConfirmed,
                 LastLoginAt = u.LastLoginAt,

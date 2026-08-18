@@ -15,4 +15,10 @@ public class ClientDto
     public Guid? CategoryId { get; set; }
     public string? CategoryName { get; set; }
     public List<ClientTagDto> Tags { get; set; } = new List<ClientTagDto>();
+    public string PresentationCurrency { get; set; } = "MXN";
+    public int PaymentTermsDays { get; set; }
+    public decimal CreditLimit { get; set; }
+    public string? CommercialTerms { get; set; }
+    public Guid? AccountManagerUserId { get; set; }
+    public string? AccountManagerName { get; set; }
 }

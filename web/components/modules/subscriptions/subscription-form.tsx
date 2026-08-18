@@ -34,6 +34,11 @@ const schema = z.object({
   startDate: z.string().min(1, "Requerido"),
   endDate: z.string().optional(),
   billingDay: z.coerce.number().int().min(1, "Min 1").max(31, "Máx 31"),
+  customIntervalDays: z.coerce.number().int().min(1).max(3660).optional(),
+  discountPercent: z.coerce.number().min(0).max(100),
+  taxPercent: z.coerce.number().min(0).max(100),
+  prorationPolicy: z.enum(["None", "Daily"] as const),
+  contractTerms: z.string().max(4000).optional(),
   autoRenew: z.boolean(),
   notes: z.string().optional(),
 });
@@ -82,6 +87,9 @@ export function SubscriptionForm({
       billingType: "Monthly",
       currency: "MXN",
       billingDay: 1,
+      discountPercent: 0,
+      taxPercent: 0,
+      prorationPolicy: "None",
       autoRenew: true,
       startDate: format(new Date(), "yyyy-MM-dd"),
     },
@@ -91,6 +99,7 @@ export function SubscriptionForm({
   const serviceId = watch("serviceId");
   const billingType = watch("billingType");
   const autoRenew = watch("autoRenew");
+  const prorationPolicy = watch("prorationPolicy");
 
   // When a service is selected, prefill price/currency/billingType
   const selectedService = servicesPage?.items.find((s) => s.id === serviceId);
@@ -117,6 +126,11 @@ export function SubscriptionForm({
                 ? format(new Date(editingSubscription.endDate), "yyyy-MM-dd")
                 : "",
               billingDay: editingSubscription.billingDay,
+              customIntervalDays: editingSubscription.customIntervalDays ?? undefined,
+              discountPercent: editingSubscription.discountPercent ?? 0,
+              taxPercent: editingSubscription.taxPercent ?? 0,
+              prorationPolicy: editingSubscription.prorationPolicy ?? "None",
+              contractTerms: editingSubscription.contractTerms ?? "",
               autoRenew: editingSubscription.autoRenew,
               notes: editingSubscription.notes ?? "",
             }
@@ -129,6 +143,11 @@ export function SubscriptionForm({
               startDate: format(new Date(), "yyyy-MM-dd"),
               endDate: "",
               billingDay: 1,
+              customIntervalDays: undefined,
+              discountPercent: 0,
+              taxPercent: 0,
+              prorationPolicy: "None",
+              contractTerms: "",
               autoRenew: true,
               notes: "",
             }
@@ -151,6 +170,11 @@ export function SubscriptionForm({
       startDate: new Date(values.startDate).toISOString(),
       endDate: values.endDate ? new Date(values.endDate).toISOString() : null,
       billingDay: values.billingDay,
+      customIntervalDays: values.billingType === "Custom" ? values.customIntervalDays : null,
+      discountPercent: values.discountPercent,
+      taxPercent: values.taxPercent,
+      prorationPolicy: values.prorationPolicy,
+      contractTerms: values.contractTerms || null,
       autoRenew: values.autoRenew,
       notes: values.notes || null,
     };
@@ -183,6 +207,7 @@ export function SubscriptionForm({
         <form id="subscription-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Cliente y servicio */}
           <Combobox
+            controlKey="subscriptions.form.client"
             label="Cliente *"
             value={clientId ?? ""}
             onValueChange={(v) => setValue("clientId", v, { shouldDirty: true })}
@@ -190,8 +215,10 @@ export function SubscriptionForm({
             placeholder="Selecciona un cliente…"
             searchPlaceholder="Buscar cliente…"
             error={errors.clientId?.message}
+            disabled={isEdit}
           />
           <Combobox
+            controlKey="subscriptions.form.service"
             label="Servicio *"
             value={serviceId ?? ""}
             onValueChange={(v) => setValue("serviceId", v, { shouldDirty: true })}
@@ -199,6 +226,7 @@ export function SubscriptionForm({
             placeholder="Selecciona un servicio…"
             searchPlaceholder="Buscar servicio…"
             error={errors.serviceId?.message}
+            disabled={isEdit}
           />
 
           <hr className="border-surface-subtle" />
@@ -207,11 +235,12 @@ export function SubscriptionForm({
           <p className="text-[11px] font-bold uppercase tracking-wider text-muted">
             Facturación
           </p>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Select controlKey="ui.components.modules.subscriptions.subscription.form.select.1"
               label="Tipo *"
               value={billingType}
               onValueChange={(v) => setValue("billingType", v as BillingType)}
+              disabled={isEdit}
             >
               {BILLING_TYPES.map((bt) => (
                 <SelectItem key={bt.value} value={bt.value}>{bt.label}</SelectItem>
@@ -225,10 +254,12 @@ export function SubscriptionForm({
               max="31"
               inputMode="numeric"
               error={errors.billingDay?.message}
+              disabled={isEdit}
             />
+            {billingType === "Custom" && <Input controlKey="subscriptions.form.custom-interval" {...register("customIntervalDays")} label="Intervalo (días) *" type="number" min="1" max="3660" disabled={isEdit} />}
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <Input controlKey="ui.components.modules.subscriptions.subscription.form.input.2"
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Input controlKey="ui.components.modules.subscriptions.subscription.form.input.3"
               {...register("price")}
               label="Precio *"
               type="number"
@@ -236,13 +267,20 @@ export function SubscriptionForm({
               min="0"
               inputMode="decimal"
               error={errors.price?.message}
+              disabled={isEdit}
             />
-            <Input controlKey="ui.components.modules.subscriptions.subscription.form.input.3"
+            <Input controlKey="ui.components.modules.subscriptions.subscription.form.input.4"
               {...register("currency")}
               label="Moneda *"
               placeholder="MXN"
               error={errors.currency?.message}
+              disabled={isEdit}
             />
+          </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Input controlKey="subscriptions.form.discount" {...register("discountPercent")} label="Descuento (%)" type="number" min="0" max="100" step="0.01" disabled={isEdit} />
+            <Input controlKey="subscriptions.form.tax" {...register("taxPercent")} label="Impuesto (%)" type="number" min="0" max="100" step="0.01" disabled={isEdit} />
+            <Select controlKey="subscriptions.form.proration" label="Prorrateo" value={prorationPolicy} onValueChange={(value) => setValue("prorationPolicy", value as "None" | "Daily")} disabled={isEdit}><SelectItem value="None">Sin prorrateo</SelectItem><SelectItem value="Daily">Diario</SelectItem></Select>
           </div>
 
           <hr className="border-surface-subtle" />
@@ -251,14 +289,15 @@ export function SubscriptionForm({
           <p className="text-[11px] font-bold uppercase tracking-wider text-muted">
             Período
           </p>
-          <div className="grid grid-cols-2 gap-3">
-            <Input controlKey="ui.components.modules.subscriptions.subscription.form.input.4"
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Input controlKey="ui.components.modules.subscriptions.subscription.form.input.7"
               {...register("startDate")}
               label="Inicio *"
               type="date"
               error={errors.startDate?.message}
+              disabled={isEdit}
             />
-            <Input controlKey="ui.components.modules.subscriptions.subscription.form.input.5"
+            <Input controlKey="ui.components.modules.subscriptions.subscription.form.input.8"
               {...register("endDate")}
               label="Fin (opcional)"
               type="date"
@@ -274,10 +313,11 @@ export function SubscriptionForm({
               </p>
             </label>
             <RadixSwitch.Root
+              data-ui-control="subscriptions.form.auto-renew"
               id="auto-renew"
               checked={autoRenew}
               onCheckedChange={(v) => setValue("autoRenew", v)}
-              className="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors data-[state=checked]:bg-action data-[state=unchecked]:bg-border"
+              className="relative inline-flex min-h-11 min-w-11 shrink-0 items-center rounded-full px-1 transition-colors data-[state=checked]:bg-action data-[state=unchecked]:bg-border"
             >
               <RadixSwitch.Thumb className="block h-4 w-4 rounded-full bg-surface shadow-dp1 transition-transform data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0.5" />
             </RadixSwitch.Root>
@@ -291,6 +331,7 @@ export function SubscriptionForm({
             placeholder="Observaciones sobre esta suscripción…"
             rows={3}
           />
+          <Textarea controlKey="subscriptions.form.contract-terms" {...register("contractTerms")} label="Condiciones contractuales" rows={4} disabled={isEdit} />
         </form>
       </DrawerContent>
     </Drawer>

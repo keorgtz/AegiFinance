@@ -52,6 +52,7 @@ public class GetCurrentUserQueryHandler : IRequestHandler<GetCurrentUserQuery, U
             Name = user.Name,
             UserType = user.UserType.ToString(),
             ClientId = user.ClientId,
+            OrganizationId = user.OrganizationId,
             IsActive = user.IsActive,
             EmailConfirmed = user.EmailConfirmed,
             LastLoginAt = user.LastLoginAt,

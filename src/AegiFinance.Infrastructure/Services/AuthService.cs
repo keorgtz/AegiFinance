@@ -144,7 +144,7 @@ public class AuthService : IAuthService
             User = new UserDto
             {
                 Id = user.Id, UserName = user.UserName, Email = user.Email, Name = user.Name,
-                UserType = user.UserType.ToString(), ClientId = user.ClientId, IsActive = user.IsActive,
+                UserType = user.UserType.ToString(), ClientId = user.ClientId, OrganizationId = user.OrganizationId, IsActive = user.IsActive,
                 EmailConfirmed = user.EmailConfirmed, LastLoginAt = user.LastLoginAt, MustChangePassword = user.MustChangePassword,
                 Roles = user.Roles.Select(role => role.Name).ToList(), Permissions = permissions.ToList()
             }

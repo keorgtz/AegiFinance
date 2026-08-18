@@ -14,6 +14,13 @@ public class SubscriptionDetailDto
     public DateTime StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     public int BillingDay { get; set; }
+    public Guid? ServiceVersionId { get; set; }
+    public int? CustomIntervalDays { get; set; }
+    public decimal DiscountPercent { get; set; }
+    public decimal TaxPercent { get; set; }
+    public string ProrationPolicy { get; set; } = "None";
+    public string? ContractTerms { get; set; }
+    public List<SubscriptionTermsVersionDto> TermsVersions { get; set; } = new();
     public string Status { get; set; } = string.Empty;
     public bool AutoRenew { get; set; }
     public string? Notes { get; set; }

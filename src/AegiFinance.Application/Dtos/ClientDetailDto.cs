@@ -17,4 +17,11 @@ public class ClientDetailDto
     public List<ClientTagDto> Tags { get; set; } = new List<ClientTagDto>();
     public List<ClientContactDto> Contacts { get; set; } = new List<ClientContactDto>();
     public List<ClientNoteDto> NotesList { get; set; } = new List<ClientNoteDto>();
+    public List<ClientDocumentDto> Documents { get; set; } = new();
+    public string PresentationCurrency { get; set; } = "MXN";
+    public int PaymentTermsDays { get; set; }
+    public decimal CreditLimit { get; set; }
+    public string? CommercialTerms { get; set; }
+    public Guid? AccountManagerUserId { get; set; }
+    public string? AccountManagerName { get; set; }
 }

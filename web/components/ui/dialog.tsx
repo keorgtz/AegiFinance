@@ -56,6 +56,8 @@ export function DialogContent({
             )}
           </div>
           <RadixDialog.Close
+            data-ui-control="ui.dialog.close"
+            data-ui-system-required="true"
             className="inline-grid h-11 w-11 place-items-center rounded-full text-muted transition-ui hover:bg-surface-subtle hover:text-foreground"
             aria-label="Cerrar"
           >

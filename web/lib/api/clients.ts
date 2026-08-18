@@ -11,6 +11,10 @@ import type {
   GetClientsParams,
   PaginatedList,
   UpdateClientRequest,
+  ClientDocumentDto,
+  ClientTimelineItemDto,
+  ClientDuplicateRuleDto,
+  ClientDuplicateMatchDto,
 } from "@/types/api";
 
 export const clientsApi = {
@@ -76,4 +80,12 @@ export const clientsApi = {
   addNote(id: string, data: AddNoteRequest) {
     return api.post<ClientNoteDto>(`/clients/${id}/notes`, data);
   },
+
+  timeline(id: string) { return api.get<ClientTimelineItemDto[]>(`/client-governance/clients/${id}/timeline`); },
+  duplicateRule() { return api.get<ClientDuplicateRuleDto>("/client-governance/duplicate-rule"); },
+  updateDuplicateRule(data: ClientDuplicateRuleDto) { return api.put<ClientDuplicateRuleDto>("/client-governance/duplicate-rule", data); },
+  duplicates(params: { name: string; taxId?: string; billingEmail?: string; excludeClientId?: string }) { return api.get<ClientDuplicateMatchDto[]>("/client-governance/duplicates", params); },
+  uploadDocument(id: string, file: File, description?: string) { const data = new FormData(); data.append("file", file); if (description) data.append("description", description); return api.postForm<ClientDocumentDto>(`/clients/${id}/documents`, data); },
+  deleteDocument(id: string, documentId: string) { return api.delete(`/clients/${id}/documents/${documentId}`); },
+  downloadDocument(id: string, documentId: string) { return api.blob(`/clients/${id}/documents/${documentId}`); },
 };
