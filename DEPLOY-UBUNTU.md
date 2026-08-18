@@ -94,6 +94,28 @@ curl -I http://127.0.0.1:3001/login
 
 La salud de `web` sólo se declara correcta cuando también puede conectarse a SQL Server. El frontend no debe apuntar a `localhost` desde su contenedor: su destino interno correcto es `http://web:8080`.
 
+### SQL Server inicia pero aparece como `unhealthy` por error 18456, estado 8
+
+Un volumen existente conserva la contraseña de `sa` dentro de la base `master`. Cambiar
+`MSSQL_SA_PASSWORD` en `.env` no rota esa contraseña. Con el contenedor iniciado,
+autenticá con la contraseña anterior y cambiala por la nueva:
+
+```bash
+read -rsp "Contraseña anterior de sa: " OLD_SA_PASSWORD; echo
+read -rsp "Contraseña nueva de sa (igual a .env): " NEW_SA_PASSWORD; echo
+docker compose exec -T sqlserver \
+  /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$OLD_SA_PASSWORD" \
+  -C -b -v NEW_SA_PASSWORD="$NEW_SA_PASSWORD" \
+  -Q "ALTER LOGIN [sa] WITH PASSWORD = N'\$(NEW_SA_PASSWORD)'"
+unset OLD_SA_PASSWORD NEW_SA_PASSWORD
+docker compose up -d --remove-orphans
+docker compose ps
+```
+
+No uses `docker compose down -v` para corregir una contraseña: eliminaría los datos
+persistentes. Si la contraseña anterior se perdió, detené el despliegue y realizá el
+procedimiento de recuperación de `sa` antes de volver a iniciar los servicios.
+
 ## Licencia de SQL Server
 
 El valor predeterminado es `MSSQL_PID=Express`, gratuito pero limitado a 10 GB por base de datos y a los límites de recursos de esa edición. Para una operación que supere esos límites, configurá una edición de SQL Server con licencia válida. La edición `Developer` no está autorizada para cargas productivas.
