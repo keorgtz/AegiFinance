@@ -132,6 +132,19 @@ manifest.push(
   { controlKey: "ui.drawer.close", label: "Cerrar panel", module: "system", controlType: "button", requiredPermissionCode: null, isSystemRequired: true },
 );
 
+for (const section of ["client-categories", "client-tags", "service-categories"]) {
+  const permission = section === "service-categories" ? "ManageServices" : "ManageClients";
+  for (const [suffix, type] of [["create", "button"], ["field.name", "input"], [section === "client-tags" ? "field.color" : "field.description", "input"], ["save", "button"], ["cancel", "button"], ["edit", "button"], ["delete", "button"]]) {
+    manifest.push({ controlKey: `settings.${section}.${suffix}`, label: suffix, module: "settings", controlType: type, requiredPermissionCode: permission, isSystemRequired: false });
+  }
+}
+for (const section of ["client-categories", "client-tags", "service-categories", "currencies", "exchange-rates"]) {
+  manifest.push({ controlKey: `settings.section.${section}.open`, label: section, module: "settings", controlType: "button", requiredPermissionCode: "ViewSettings", isSystemRequired: false });
+}
+for (const field of ["active", "default"]) {
+  manifest.push({ controlKey: `settings.currencies.field.${field}`, label: field, module: "settings", controlType: "input", requiredPermissionCode: "ManageCurrencies", isSystemRequired: false });
+}
+
 if (missing.length) {
   console.error(`Interactive controls without a stable key:\n${missing.join("\n")}`);
   process.exit(1);

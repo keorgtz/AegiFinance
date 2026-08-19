@@ -936,6 +936,32 @@ export interface CurrencyConfigDto {
   isDefault: boolean;
 }
 
+export interface CreateCurrencyConfigRequest {
+  code: string;
+  name: string;
+  symbol: string;
+  isActive: boolean;
+  isDefault: boolean;
+}
+
+export type UpdateCurrencyConfigRequest = Omit<CreateCurrencyConfigRequest, "code">;
+
+export interface ExchangeRateDto {
+  id: string;
+  currencyCode: string;
+  rateToMXN: number;
+  rateFromMXN: number;
+  effectiveDate: string;
+  source: string;
+}
+
+export interface ExchangeRateRequest {
+  currencyCode: string;
+  rateToMXN: number;
+  rateFromMXN: number;
+  effectiveDate: string;
+}
+
 export interface RegisterIncomeRequest {
   bankAccountId: string;
   amount: number;

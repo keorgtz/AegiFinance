@@ -816,6 +816,166 @@
     "isSystemRequired": false
   },
   {
+    "controlKey": "ui.app.app.settings.page.input.1",
+    "label": "input 1",
+    "module": "settings",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.settings.page.button.1",
+    "label": "button 1",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.currencies.create",
+    "label": "Button 7",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageCurrencies",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.currencies.field.code",
+    "label": "Código ISO",
+    "module": "settings",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageCurrencies",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.currencies.field.name",
+    "label": "Nombre",
+    "module": "settings",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageCurrencies",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.currencies.field.symbol",
+    "label": "Símbolo",
+    "module": "settings",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageCurrencies",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.currencies.save",
+    "label": "Button 8",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageCurrencies",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.currencies.cancel",
+    "label": "Button 9",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageCurrencies",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.currencies.edit",
+    "label": "Button 10",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageCurrencies",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.currencies.delete",
+    "label": "Button 11",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageCurrencies",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.exchange-rates.create",
+    "label": "Button 12",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageExchangeRates",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.exchange-rates.field.currency",
+    "label": "Moneda",
+    "module": "settings",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageExchangeRates",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.exchange-rates.field.to-mxn",
+    "label": "Tasa a MXN",
+    "module": "settings",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageExchangeRates",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.exchange-rates.field.from-mxn",
+    "label": "Tasa desde MXN",
+    "module": "settings",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageExchangeRates",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.exchange-rates.field.date",
+    "label": "Fecha efectiva",
+    "module": "settings",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageExchangeRates",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.exchange-rates.save",
+    "label": "Button 13",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageExchangeRates",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.exchange-rates.cancel",
+    "label": "Button 14",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageExchangeRates",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.exchange-rates.sync",
+    "label": "Button 15",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "SyncExchangeRates",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.exchange-rates.edit",
+    "label": "Button 16",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageExchangeRates",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.exchange-rates.delete",
+    "label": "Button 17",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageExchangeRates",
+    "isSystemRequired": false
+  },
+  {
     "controlKey": "ui.app.app.subscriptions.page.button.1",
     "label": "Más acciones",
     "module": "subscriptions",
@@ -2960,6 +3120,14 @@
     "isSystemRequired": false
   },
   {
+    "controlKey": "navigation.settings.open",
+    "label": "Configuración",
+    "module": "navigation",
+    "controlType": "link",
+    "requiredPermissionCode": "ViewSettings",
+    "isSystemRequired": false
+  },
+  {
     "controlKey": "ui.dialog.close",
     "label": "Cerrar diálogo",
     "module": "system",
@@ -2974,5 +3142,229 @@
     "controlType": "button",
     "requiredPermissionCode": null,
     "isSystemRequired": true
+  },
+  {
+    "controlKey": "settings.client-categories.create",
+    "label": "create",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageClients",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.client-categories.field.name",
+    "label": "field.name",
+    "module": "settings",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageClients",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.client-categories.field.description",
+    "label": "field.description",
+    "module": "settings",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageClients",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.client-categories.save",
+    "label": "save",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageClients",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.client-categories.cancel",
+    "label": "cancel",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageClients",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.client-categories.edit",
+    "label": "edit",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageClients",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.client-categories.delete",
+    "label": "delete",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageClients",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.client-tags.create",
+    "label": "create",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageClients",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.client-tags.field.name",
+    "label": "field.name",
+    "module": "settings",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageClients",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.client-tags.field.color",
+    "label": "field.color",
+    "module": "settings",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageClients",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.client-tags.save",
+    "label": "save",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageClients",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.client-tags.cancel",
+    "label": "cancel",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageClients",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.client-tags.edit",
+    "label": "edit",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageClients",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.client-tags.delete",
+    "label": "delete",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageClients",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.service-categories.create",
+    "label": "create",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageServices",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.service-categories.field.name",
+    "label": "field.name",
+    "module": "settings",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageServices",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.service-categories.field.description",
+    "label": "field.description",
+    "module": "settings",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageServices",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.service-categories.save",
+    "label": "save",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageServices",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.service-categories.cancel",
+    "label": "cancel",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageServices",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.service-categories.edit",
+    "label": "edit",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageServices",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.service-categories.delete",
+    "label": "delete",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageServices",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.section.client-categories.open",
+    "label": "client-categories",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewSettings",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.section.client-tags.open",
+    "label": "client-tags",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewSettings",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.section.service-categories.open",
+    "label": "service-categories",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewSettings",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.section.currencies.open",
+    "label": "currencies",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewSettings",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.section.exchange-rates.open",
+    "label": "exchange-rates",
+    "module": "settings",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewSettings",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.currencies.field.active",
+    "label": "active",
+    "module": "settings",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageCurrencies",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "settings.currencies.field.default",
+    "label": "default",
+    "module": "settings",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageCurrencies",
+    "isSystemRequired": false
   }
 ]

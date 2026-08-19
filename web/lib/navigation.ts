@@ -7,6 +7,7 @@ import {
   Package,
   Receipt,
   Shield,
+  Settings,
   Users,
   Wallet,
 } from "lucide-react";
@@ -31,6 +32,7 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
   { href: "/account-statement", label: "Estados de cuenta", icon: FileText, permission: "ViewPayments", group: "operations" },
   { href: "/users", label: "Usuarios", icon: Users, permission: "ManageUsers", group: "administration" },
   { href: "/roles", label: "Roles y permisos", icon: Shield, permission: "ManageRoles", group: "administration" },
+  { href: "/settings", label: "Configuración", icon: Settings, permission: "ViewSettings", group: "administration" },
 ];
 
 export const NAVIGATION_GROUP_LABELS: Record<NavigationItem["group"], string> = {
