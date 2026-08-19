@@ -413,16 +413,24 @@ namespace AegiFinance.Infrastructure.Migrations
                 RETURNS TABLE WITH SCHEMABINDING AS RETURN SELECT 1 AS [Allowed]
                 WHERE SESSION_CONTEXT(N'AegiFinance.OrganizationId') IS NULL
                    OR EXISTS (SELECT 1 FROM [dbo].[Services] s WHERE s.[Id]=@ServiceId AND s.[OrganizationId]=TRY_CONVERT(uniqueidentifier,SESSION_CONTEXT(N'AegiFinance.OrganizationId')));
+                """);
+
+            migrationBuilder.Sql("""
                 CREATE FUNCTION [dbo].[fn_AegiFinanceServiceVersionAccess](@ServiceVersionId uniqueidentifier)
                 RETURNS TABLE WITH SCHEMABINDING AS RETURN SELECT 1 AS [Allowed]
                 WHERE SESSION_CONTEXT(N'AegiFinance.OrganizationId') IS NULL
                    OR EXISTS (SELECT 1 FROM [dbo].[ServiceVersions] v INNER JOIN [dbo].[Services] s ON s.[Id]=v.[ServiceId] WHERE v.[Id]=@ServiceVersionId AND s.[OrganizationId]=TRY_CONVERT(uniqueidentifier,SESSION_CONTEXT(N'AegiFinance.OrganizationId')));
+                """);
+
+            migrationBuilder.Sql("""
                 CREATE FUNCTION [dbo].[fn_AegiFinanceSubscriptionAccess](@SubscriptionId uniqueidentifier)
                 RETURNS TABLE WITH SCHEMABINDING AS RETURN SELECT 1 AS [Allowed]
                 WHERE (SESSION_CONTEXT(N'AegiFinance.OrganizationId') IS NULL
                    OR EXISTS (SELECT 1 FROM [dbo].[Subscriptions] sub INNER JOIN [dbo].[Clients] c ON c.[Id]=sub.[ClientId] WHERE sub.[Id]=@SubscriptionId AND c.[OrganizationId]=TRY_CONVERT(uniqueidentifier,SESSION_CONTEXT(N'AegiFinance.OrganizationId'))))
                   AND (TRY_CONVERT(bit,SESSION_CONTEXT(N'AegiFinance.IsClient'))=0 OR EXISTS (SELECT 1 FROM [dbo].[Subscriptions] sub WHERE sub.[Id]=@SubscriptionId AND sub.[ClientId]=TRY_CONVERT(uniqueidentifier,SESSION_CONTEXT(N'AegiFinance.ClientId'))));
+                """);
 
+            migrationBuilder.Sql("""
                 ALTER SECURITY POLICY [dbo].[AegiFinanceTenantSecurityPolicy]
                 ADD FILTER PREDICATE [dbo].[fn_AegiFinanceOrganizationAccess]([OrganizationId]) ON [dbo].[Services],
                 ADD FILTER PREDICATE [dbo].[fn_AegiFinanceOrganizationAccess]([OrganizationId]) ON [dbo].[ServiceCategories],

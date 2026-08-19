@@ -14,6 +14,20 @@ function Forbid-Text([string]$path, [string]$pattern, [string]$message) {
     if ((Get-Content -Raw -LiteralPath $full) -match $pattern) { $errors.Add($message) }
 }
 
+function Require-IsolatedSqlFunctions([string]$path) {
+    $full = Join-Path $root $path
+    if (-not (Test-Path -LiteralPath $full)) { $errors.Add("Missing deployment artifact: $path"); return }
+    $content = Get-Content -Raw -LiteralPath $full
+    foreach ($batch in [regex]::Matches($content, 'migrationBuilder\.Sql\("""(?<sql>.*?)"""\);', 'Singleline')) {
+        $sql = $batch.Groups['sql'].Value.Trim()
+        $functionCount = [regex]::Matches($sql, 'CREATE\s+FUNCTION', 'IgnoreCase').Count
+        if ($functionCount -gt 1 -or ($functionCount -eq 1 -and $sql -notmatch '^CREATE\s+FUNCTION')) {
+            $errors.Add("SQL functions must be isolated as the first statement of their migration batch: $path")
+            return
+        }
+    }
+}
+
 Require-Text "docker-compose.yml" 'MSSQL_SA_PASSWORD:\s*\$\{MSSQL_SA_PASSWORD:\?' "SQL password is not required by Compose."
 Require-Text "docker-compose.yml" 'MSSQL_PID:\s*\$\{MSSQL_PID:-Express\}' "Production Compose does not default to a licensed SQL edition."
 Require-Text "docker-compose.yml" 'Encrypt=True;TrustServerCertificate=True' "Container SQL connections are not encrypted consistently."
@@ -30,6 +44,9 @@ Require-Text "DEPLOY-UBUNTU.md" 'docker compose config --quiet' "Ubuntu deployme
 Require-Text "scripts/bootstrap-env.sh" 'openssl rand -base64 64' "Ubuntu environment bootstrap does not generate a strong JWT secret."
 Require-Text "scripts/bootstrap-env.sh" 'chmod 600' "Generated deployment secrets are not restricted to the owner."
 Forbid-Text "src/AegiFinance.Infrastructure/Migrations/20260818183012_Phase1DynamicPermissions.cs" '\(\[ClientId\] IS NOT NULL OR \[SubscriptionId\] IS NOT NULL\)' "The permissions migration contains an OR expression unsupported by SQL Server filtered indexes."
+Require-IsolatedSqlFunctions "src/AegiFinance.Infrastructure/Migrations/20260818183012_Phase1DynamicPermissions.cs"
+Require-IsolatedSqlFunctions "src/AegiFinance.Infrastructure/Migrations/20260818220002_Phase6ClientScope.cs"
+Require-IsolatedSqlFunctions "src/AegiFinance.Infrastructure/Migrations/20260818224818_Phase7VersionedPlans.cs"
 
 if (Get-Command docker -ErrorAction SilentlyContinue) {
     Push-Location $root

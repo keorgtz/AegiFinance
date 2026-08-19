@@ -300,21 +300,36 @@ namespace AegiFinance.Infrastructure.Migrations
             migrationBuilder.Sql("""
                 DROP SECURITY POLICY IF EXISTS [dbo].[AegiFinanceTenantSecurityPolicy];
                 DROP FUNCTION IF EXISTS [dbo].[fn_AegiFinanceTenantAccess];
+                """);
+
+            migrationBuilder.Sql("""
                 CREATE FUNCTION [dbo].[fn_AegiFinanceRootAccess](@ClientId uniqueidentifier, @OrganizationId uniqueidentifier)
                 RETURNS TABLE WITH SCHEMABINDING AS RETURN SELECT 1 AS [Allowed]
                 WHERE (SESSION_CONTEXT(N'AegiFinance.OrganizationId') IS NULL OR @OrganizationId=TRY_CONVERT(uniqueidentifier,SESSION_CONTEXT(N'AegiFinance.OrganizationId')))
                   AND (TRY_CONVERT(bit,SESSION_CONTEXT(N'AegiFinance.IsClient'))=0 OR @ClientId=TRY_CONVERT(uniqueidentifier,SESSION_CONTEXT(N'AegiFinance.ClientId')));
+                """);
+
+            migrationBuilder.Sql("""
                 CREATE FUNCTION [dbo].[fn_AegiFinanceOrganizationAccess](@OrganizationId uniqueidentifier)
                 RETURNS TABLE WITH SCHEMABINDING AS RETURN SELECT 1 AS [Allowed]
                 WHERE SESSION_CONTEXT(N'AegiFinance.OrganizationId') IS NULL OR @OrganizationId=TRY_CONVERT(uniqueidentifier,SESSION_CONTEXT(N'AegiFinance.OrganizationId'));
+                """);
+
+            migrationBuilder.Sql("""
                 CREATE FUNCTION [dbo].[fn_AegiFinanceRelatedClientAccess](@ClientId uniqueidentifier)
                 RETURNS TABLE WITH SCHEMABINDING AS RETURN SELECT 1 AS [Allowed]
                 WHERE (SESSION_CONTEXT(N'AegiFinance.OrganizationId') IS NULL OR EXISTS (SELECT 1 FROM [dbo].[Clients] AS c WHERE c.[Id]=@ClientId AND c.[OrganizationId]=TRY_CONVERT(uniqueidentifier,SESSION_CONTEXT(N'AegiFinance.OrganizationId'))))
                   AND (TRY_CONVERT(bit,SESSION_CONTEXT(N'AegiFinance.IsClient'))=0 OR @ClientId=TRY_CONVERT(uniqueidentifier,SESSION_CONTEXT(N'AegiFinance.ClientId')));
+                """);
+
+            migrationBuilder.Sql("""
                 CREATE FUNCTION [dbo].[fn_AegiFinanceLedgerAccess](@ClientId uniqueidentifier, @BankAccountId uniqueidentifier)
                 RETURNS TABLE WITH SCHEMABINDING AS RETURN SELECT 1 AS [Allowed]
                 WHERE (SESSION_CONTEXT(N'AegiFinance.OrganizationId') IS NULL OR EXISTS (SELECT 1 FROM [dbo].[BankAccounts] AS b WHERE b.[Id]=@BankAccountId AND b.[OrganizationId]=TRY_CONVERT(uniqueidentifier,SESSION_CONTEXT(N'AegiFinance.OrganizationId'))))
                   AND (TRY_CONVERT(bit,SESSION_CONTEXT(N'AegiFinance.IsClient'))=0 OR @ClientId=TRY_CONVERT(uniqueidentifier,SESSION_CONTEXT(N'AegiFinance.ClientId')));
+                """);
+
+            migrationBuilder.Sql("""
                 CREATE SECURITY POLICY [dbo].[AegiFinanceTenantSecurityPolicy]
                 ADD FILTER PREDICATE [dbo].[fn_AegiFinanceRootAccess]([Id],[OrganizationId]) ON [dbo].[Clients],
                 ADD BLOCK PREDICATE [dbo].[fn_AegiFinanceRootAccess]([Id],[OrganizationId]) ON [dbo].[Clients] AFTER INSERT,
