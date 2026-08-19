@@ -47,6 +47,7 @@ Forbid-Text "src/AegiFinance.Infrastructure/Migrations/20260818183012_Phase1Dyna
 Require-IsolatedSqlFunctions "src/AegiFinance.Infrastructure/Migrations/20260818183012_Phase1DynamicPermissions.cs"
 Require-IsolatedSqlFunctions "src/AegiFinance.Infrastructure/Migrations/20260818220002_Phase6ClientScope.cs"
 Require-IsolatedSqlFunctions "src/AegiFinance.Infrastructure/Migrations/20260818224818_Phase7VersionedPlans.cs"
+Forbid-Text "src/AegiFinance.Infrastructure/Migrations/20260818224818_Phase7VersionedPlans.cs" "s\.\[CreatedAt\], NULL, NULL, NULL, 1, SYSUTCDATETIME" "The Phase 7 ServiceVersions data migration has more SELECT values than INSERT columns."
 
 if (Get-Command docker -ErrorAction SilentlyContinue) {
     Push-Location $root

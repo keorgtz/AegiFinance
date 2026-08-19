@@ -281,7 +281,7 @@ namespace AegiFinance.Infrastructure.Migrations
                      [DefaultDiscountPercent], [DefaultTaxPercent], [CustomIntervalDays], [ProrationPolicy], [EffectiveFrom],
                      [EffectiveTo], [Terms], [IsPublished], [CreatedAt], [CreatedBy], [UpdatedAt], [UpdatedBy], [IsDeleted], [DeletedAt], [DeletedBy])
                 SELECT NEWID(), s.[Id], 1, s.[Name], s.[Description], s.[BillingType], s.[DefaultPrice], s.[Currency],
-                       0, 0, NULL, 'None', s.[CreatedAt], NULL, NULL, NULL, 1, SYSUTCDATETIME(), NULL, SYSUTCDATETIME(), NULL, 0, NULL, NULL
+                       0, 0, NULL, 'None', s.[CreatedAt], NULL, NULL, 1, SYSUTCDATETIME(), NULL, SYSUTCDATETIME(), NULL, 0, NULL, NULL
                 FROM [Services] s
                 WHERE NOT EXISTS (SELECT 1 FROM [ServiceVersions] v WHERE v.[ServiceId] = s.[Id]);
 
