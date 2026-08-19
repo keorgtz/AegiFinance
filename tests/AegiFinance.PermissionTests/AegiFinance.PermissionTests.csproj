@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="../../src/AegiFinance.Application/AegiFinance.Application.csproj" />
     <ProjectReference Include="../../src/AegiFinance.Domain/AegiFinance.Domain.csproj" />
   </ItemGroup>
 </Project>

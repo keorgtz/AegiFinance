@@ -39,6 +39,7 @@ public class UpdateClientCommandHandler : IRequestHandler<UpdateClientCommand, C
         var normalizedName = ClientIdentityRules.Normalize(request.Name);
         var normalizedTaxId = ClientIdentityRules.NormalizeOptional(request.TaxId);
         var normalizedEmail = ClientIdentityRules.NormalizeOptional(request.BillingEmail);
+        var presentationCurrency = request.PresentationCurrency.Trim().ToUpperInvariant();
         var duplicateRule = await _context.ClientDuplicateRules.AsNoTracking()
             .FirstOrDefaultAsync(rule => rule.OrganizationId == client.OrganizationId, cancellationToken);
         var duplicate = await _context.Clients.AsNoTracking().FirstOrDefaultAsync(other => other.Id != client.Id &&
@@ -48,7 +49,7 @@ public class UpdateClientCommandHandler : IRequestHandler<UpdateClientCommand, C
              ((duplicateRule == null || duplicateRule.MatchBillingEmail) && normalizedEmail != null && other.NormalizedBillingEmail == normalizedEmail)), cancellationToken);
         if (duplicate is not null && (duplicateRule?.BlockOnMatch ?? true))
             throw new InvalidOperationException($"Posible cliente duplicado: {duplicate.Code} · {duplicate.Name}.");
-        if (!await _context.CurrencyConfigs.AsNoTracking().AnyAsync(currency => currency.Code == request.PresentationCurrency && currency.IsActive, cancellationToken))
+        if (!await _context.CurrencyConfigs.AsNoTracking().AnyAsync(currency => currency.Code == presentationCurrency && currency.IsActive, cancellationToken))
             throw new InvalidOperationException("La moneda de presentación no está activa.");
         if (request.AccountManagerUserId.HasValue && !await _context.Users.AsNoTracking().AnyAsync(user =>
                 user.Id == request.AccountManagerUserId && user.OrganizationId == client.OrganizationId && user.IsActive, cancellationToken))
@@ -66,16 +67,16 @@ public class UpdateClientCommandHandler : IRequestHandler<UpdateClientCommand, C
             }
         }
 
-        client.Name = request.Name;
-        client.TradeName = request.TradeName;
-        client.TaxId = request.TaxId;
-        client.BillingEmail = request.BillingEmail;
-        client.BillingAddress = request.BillingAddress;
-        client.Phone = request.Phone;
+        client.Name = request.Name.Trim();
+        client.TradeName = request.TradeName?.Trim();
+        client.TaxId = request.TaxId?.Trim();
+        client.BillingEmail = request.BillingEmail?.Trim();
+        client.BillingAddress = request.BillingAddress?.Trim();
+        client.Phone = request.Phone?.Trim();
         client.Status = request.Status;
         client.Notes = request.Notes;
         client.CategoryId = request.CategoryId;
-        client.PresentationCurrency = request.PresentationCurrency.ToUpperInvariant();
+        client.PresentationCurrency = presentationCurrency;
         client.PaymentTermsDays = request.PaymentTermsDays;
         client.CreditLimit = request.CreditLimit;
         client.CommercialTerms = request.CommercialTerms;

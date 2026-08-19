@@ -28,6 +28,32 @@ function Require-IsolatedSqlFunctions([string]$path) {
     }
 }
 
+function Require-FrontendApiRootsHaveControllers {
+    $frontendRoots = Get-ChildItem -LiteralPath (Join-Path $root "web/lib/api") -Filter "*.ts" -File |
+        ForEach-Object { [regex]::Matches((Get-Content -Raw -LiteralPath $_.FullName), '["''`]/(?<root>[a-z][a-z0-9-]*)') } |
+        ForEach-Object { $_.Groups['root'].Value.ToLowerInvariant() } |
+        Where-Object { $_ -ne 'api' } |
+        Sort-Object -Unique
+
+    $controllerRoots = Get-ChildItem -LiteralPath (Join-Path $root "src/AegiFinance.Web/Controllers") -Filter "*Controller.cs" -File |
+        ForEach-Object {
+            $content = Get-Content -Raw -LiteralPath $_.FullName
+            $route = [regex]::Match($content, '\[Route\("api/(?<root>[^"/]+)')
+            if ($route.Success) {
+                $value = $route.Groups['root'].Value
+                if ($value -eq '[controller]') { $_.BaseName.Replace('Controller', '').ToLowerInvariant() }
+                else { $value.ToLowerInvariant() }
+            }
+        } |
+        Sort-Object -Unique
+
+    foreach ($frontendRoot in $frontendRoots) {
+        if ($frontendRoot -notin $controllerRoots) {
+            $errors.Add("Frontend API root '/$frontendRoot' has no matching controller route.")
+        }
+    }
+}
+
 Require-Text "docker-compose.yml" 'MSSQL_SA_PASSWORD:\s*\$\{MSSQL_SA_PASSWORD:\?' "SQL password is not required by Compose."
 Require-Text "docker-compose.yml" 'MSSQL_PID:\s*\$\{MSSQL_PID:-Express\}' "Production Compose does not default to a licensed SQL edition."
 Require-Text "docker-compose.yml" 'Encrypt=True;TrustServerCertificate=True' "Container SQL connections are not encrypted consistently."
@@ -40,6 +66,7 @@ Require-Text "web/Dockerfile" 'npm ci --no-audit --no-fund' "Frontend image is n
 Require-Text "web/.dockerignore" 'node_modules/' "Frontend Docker context includes local dependencies."
 Require-Text "src/AegiFinance.Web/Seed/SeedData.cs" 'AdminSeed:Password' "Production still has an implicit administrator password."
 Require-Text "src/AegiFinance.Web/Program.cs" 'Database.CanConnectAsync' "API health does not verify database connectivity."
+Require-Text "src/AegiFinance.Web/Program.cs" 'JsonStringEnumConverter' "JSON enum names are not supported, breaking frontend form contracts."
 Require-Text "DEPLOY-UBUNTU.md" 'docker compose config --quiet' "Ubuntu deployment procedure is missing Compose validation."
 Require-Text "scripts/bootstrap-env.sh" 'openssl rand -base64 64' "Ubuntu environment bootstrap does not generate a strong JWT secret."
 Require-Text "scripts/bootstrap-env.sh" 'chmod 600' "Generated deployment secrets are not restricted to the owner."
@@ -53,6 +80,7 @@ Require-Text "src/AegiFinance.Web/Controllers/ClientCategoriesController.cs" '\[
 Require-Text "src/AegiFinance.Web/Controllers/ClientTagsController.cs" '\[Route\("api/client-tags"\)\]' "Client tag routes do not match the frontend API contract."
 Require-Text "src/AegiFinance.Web/Controllers/ServiceCategoriesController.cs" '\[Route\("api/service-categories"\)\]' "Service category routes do not match the frontend API contract."
 Require-Text "src/AegiFinance.Web/Controllers/ExchangeRatesController.cs" '\[Route\("api/exchange-rates"\)\]' "Exchange-rate routes do not match the frontend API contract."
+Require-FrontendApiRootsHaveControllers
 
 if (Get-Command docker -ErrorAction SilentlyContinue) {
     Push-Location $root

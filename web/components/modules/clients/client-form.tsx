@@ -20,14 +20,14 @@ import { AlertTriangle, Check, Tag } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
 const schema = z.object({
-  name: z.string().min(1, "Requerido"),
-  tradeName: z.string().optional(),
-  taxId: z.string().optional(),
-  billingEmail: z.string().email("Correo inválido").optional().or(z.literal("")),
-  billingAddress: z.string().optional(),
-  phone: z.string().optional(),
+  name: z.string().trim().min(1, "Requerido").max(200, "Máximo 200 caracteres"),
+  tradeName: z.string().max(200, "Máximo 200 caracteres").optional(),
+  taxId: z.string().max(50, "Máximo 50 caracteres").optional(),
+  billingEmail: z.string().max(256, "Máximo 256 caracteres").email("Correo inválido").optional().or(z.literal("")),
+  billingAddress: z.string().max(500, "Máximo 500 caracteres").optional(),
+  phone: z.string().max(50, "Máximo 50 caracteres").optional(),
   status: z.enum(["Active", "Inactive", "Prospective"] as const),
-  notes: z.string().optional(),
+  notes: z.string().max(2000, "Máximo 2000 caracteres").optional(),
   categoryId: z.string().optional(),
   presentationCurrency: z.string().length(3, "Seleccioná una moneda"),
   paymentTermsDays: z.number().min(0).max(365),
@@ -59,6 +59,7 @@ export function ClientForm({ open, onOpenChange, editingClient }: ClientFormProp
     register,
     handleSubmit,
     reset,
+    setError,
     setValue,
     watch,
     formState: { errors, isSubmitting, isDirty },
@@ -134,12 +135,19 @@ export function ClientForm({ open, onOpenChange, editingClient }: ClientFormProp
       accountManagerUserId: values.accountManagerUserId || null,
     };
 
-    if (isEdit && editingClient) {
-      await updateClient.mutateAsync({ id: editingClient.id, data: payload });
-    } else {
-      await createClient.mutateAsync(payload);
+    try {
+      if (isEdit && editingClient) {
+        await updateClient.mutateAsync({ id: editingClient.id, data: payload });
+      } else {
+        await createClient.mutateAsync(payload);
+      }
+      onOpenChange(false);
+    } catch (error) {
+      setError("root.server", {
+        type: "server",
+        message: error instanceof Error ? error.message : "No se pudo guardar el cliente.",
+      });
     }
-    onOpenChange(false);
   };
 
   const toggleTag = (id: string) => {
@@ -171,11 +179,17 @@ export function ClientForm({ open, onOpenChange, editingClient }: ClientFormProp
         }
       >
         <form id="client-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {errors.root?.server?.message && (
+            <div role="alert" className="rounded-card border border-danger/40 bg-danger-soft p-3 text-sm text-danger">
+              {errors.root.server.message}
+            </div>
+          )}
           {/* Datos principales */}
           <Input controlKey="clients.form.name" permission={formPermission}
             {...register("name")}
             label="Nombre / Razón social *"
             placeholder="Ej. Restaurante El Fogón S.A."
+            maxLength={200}
             autoFocus
             error={errors.name?.message}
           />
@@ -184,11 +198,13 @@ export function ClientForm({ open, onOpenChange, editingClient }: ClientFormProp
               {...register("tradeName")}
               label="Nombre comercial"
               placeholder="Ej. El Fogón"
+              maxLength={200}
             />
             <Input controlKey="clients.form.tax-id" permission={formPermission}
               {...register("taxId")}
               label="RFC / ID Fiscal"
               placeholder="Ej. XEXX010101000"
+              maxLength={50}
             />
           </div>
 
@@ -280,6 +296,7 @@ export function ClientForm({ open, onOpenChange, editingClient }: ClientFormProp
             label="Correo de facturación"
             type="email"
             placeholder="facturacion@empresa.com"
+            maxLength={256}
             error={errors.billingEmail?.message}
           />
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -287,6 +304,7 @@ export function ClientForm({ open, onOpenChange, editingClient }: ClientFormProp
               {...register("phone")}
               label="Teléfono"
               placeholder="+52 33 0000 0000"
+              maxLength={50}
               inputMode="tel"
             />
           </div>
@@ -294,6 +312,7 @@ export function ClientForm({ open, onOpenChange, editingClient }: ClientFormProp
             {...register("billingAddress")}
             label="Dirección de facturación"
             placeholder="Calle, número, ciudad"
+            maxLength={500}
           />
 
           <hr className="border-surface-subtle" />
@@ -310,7 +329,7 @@ export function ClientForm({ open, onOpenChange, editingClient }: ClientFormProp
               {users?.items.map((user) => <SelectItem key={user.id} value={user.id}>{user.name}</SelectItem>)}
             </Select>
           </div>
-          <Textarea controlKey="clients.form.commercial-terms" permission={formPermission} {...register("commercialTerms")} label="Condiciones comerciales" placeholder="Acuerdos, excepciones o instrucciones de cobro" rows={3} error={errors.commercialTerms?.message} />
+          <Textarea controlKey="clients.form.commercial-terms" permission={formPermission} {...register("commercialTerms")} label="Condiciones comerciales" placeholder="Acuerdos, excepciones o instrucciones de cobro" rows={3} maxLength={2000} error={errors.commercialTerms?.message} />
 
           <hr className="border-surface-subtle" />
 
@@ -318,6 +337,7 @@ export function ClientForm({ open, onOpenChange, editingClient }: ClientFormProp
             {...register("notes")}
             label="Notas internas"
             placeholder="Observaciones sobre el cliente…"
+            maxLength={2000}
             rows={3}
           />
         </form>

@@ -1,4 +1,12 @@
 using AegiFinance.Domain.Security;
+using AegiFinance.Application.Features.Clients.Commands.CreateClient;
+using AegiFinance.Application.Features.Roles.Commands.CreateRole;
+using AegiFinance.Application.Features.Services.Commands.CreateService;
+using AegiFinance.Application.Features.Subscriptions.Commands.CreateSubscription;
+using AegiFinance.Application.Features.Users.Commands.CreateUser;
+using AegiFinance.Domain.Enums;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 var clientA = Guid.NewGuid();
 var clientB = Guid.NewGuid();
@@ -20,7 +28,21 @@ if (!activeSession.IsActiveAt(now)) throw new InvalidOperationException("Failed:
 activeSession.RevokedAt = now;
 if (activeSession.IsActiveAt(now)) throw new InvalidOperationException("Failed: revoked session");
 
-Console.WriteLine("Permission resolution tests passed: role, user, client and subscription denial paths.");
+var jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+jsonOptions.Converters.Add(new JsonStringEnumConverter());
+AssertJsonEnum<CreateClientCommand>("""{"status":"Active"}""", item => item.Status == ClientStatus.Active, "client status JSON contract");
+AssertJsonEnum<CreateUserCommand>("""{"userType":"Administrator"}""", item => item.UserType == UserType.Administrator, "user type JSON contract");
+AssertJsonEnum<CreateRoleCommand>("""{"userType":"Client"}""", item => item.UserType == UserType.Client, "role user type JSON contract");
+AssertJsonEnum<CreateServiceCommand>("""{"billingType":"Monthly"}""", item => item.BillingType == BillingType.Monthly, "service billing type JSON contract");
+AssertJsonEnum<CreateSubscriptionCommand>("""{"billingType":"Yearly","prorationPolicy":"Daily"}""", item => item.BillingType == BillingType.Yearly && item.ProrationPolicy == ProrationPolicy.Daily, "subscription JSON contract");
+
+Console.WriteLine("Permission and API enum contract tests passed.");
+
+void AssertJsonEnum<T>(string json, Func<T, bool> assertion, string scenario)
+{
+    var value = JsonSerializer.Deserialize<T>(json, jsonOptions);
+    if (value is null || !assertion(value)) throw new InvalidOperationException($"Failed: {scenario}");
+}
 
 static void AssertContains(IReadOnlyList<string> permissions, string permission, string scenario)
 {

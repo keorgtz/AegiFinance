@@ -59,7 +59,10 @@ export class ApiRequestError extends Error {
     public readonly status: number,
     public readonly error: ApiError
   ) {
-    super(error.detail ?? error.title ?? error.message ?? "Error desconocido");
+    const validationMessage = error.errors
+      ? Object.values(error.errors).flat().filter(Boolean).join(" ")
+      : undefined;
+    super(validationMessage ?? error.detail ?? error.title ?? error.message ?? "Error desconocido");
   }
 }
 

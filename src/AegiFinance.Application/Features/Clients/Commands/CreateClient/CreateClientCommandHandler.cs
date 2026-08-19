@@ -32,6 +32,7 @@ public class CreateClientCommandHandler : IRequestHandler<CreateClientCommand, C
         var normalizedName = ClientIdentityRules.Normalize(request.Name);
         var normalizedTaxId = ClientIdentityRules.NormalizeOptional(request.TaxId);
         var normalizedEmail = ClientIdentityRules.NormalizeOptional(request.BillingEmail);
+        var presentationCurrency = request.PresentationCurrency.Trim().ToUpperInvariant();
         var duplicateRule = await _context.ClientDuplicateRules.AsNoTracking()
             .FirstOrDefaultAsync(rule => rule.OrganizationId == organizationId, cancellationToken);
         var matchTax = duplicateRule?.MatchTaxId ?? true;
@@ -45,7 +46,7 @@ public class CreateClientCommandHandler : IRequestHandler<CreateClientCommand, C
         if (duplicate is not null && (duplicateRule?.BlockOnMatch ?? true))
             throw new InvalidOperationException($"Posible cliente duplicado: {duplicate.Code} · {duplicate.Name}.");
 
-        if (!await _context.CurrencyConfigs.AsNoTracking().AnyAsync(currency => currency.Code == request.PresentationCurrency && currency.IsActive, cancellationToken))
+        if (!await _context.CurrencyConfigs.AsNoTracking().AnyAsync(currency => currency.Code == presentationCurrency && currency.IsActive, cancellationToken))
             throw new InvalidOperationException("La moneda de presentación no está activa.");
         if (request.AccountManagerUserId.HasValue && !await _context.Users.AsNoTracking().AnyAsync(user =>
                 user.Id == request.AccountManagerUserId && user.OrganizationId == organizationId && user.IsActive, cancellationToken))
@@ -83,18 +84,18 @@ public class CreateClientCommandHandler : IRequestHandler<CreateClientCommand, C
             Id = Guid.NewGuid(),
             OrganizationId = organizationId,
             Code = code,
-            Name = request.Name,
-            TradeName = request.TradeName,
-            TaxId = request.TaxId,
-            BillingEmail = request.BillingEmail,
-            BillingAddress = request.BillingAddress,
-            Phone = request.Phone,
+            Name = request.Name.Trim(),
+            TradeName = request.TradeName?.Trim(),
+            TaxId = request.TaxId?.Trim(),
+            BillingEmail = request.BillingEmail?.Trim(),
+            BillingAddress = request.BillingAddress?.Trim(),
+            Phone = request.Phone?.Trim(),
             Status = request.Status,
             Notes = request.Notes,
             CategoryId = request.CategoryId,
             Category = category,
             Tags = tags,
-            PresentationCurrency = request.PresentationCurrency.ToUpperInvariant(),
+            PresentationCurrency = presentationCurrency,
             PaymentTermsDays = request.PaymentTermsDays,
             CreditLimit = request.CreditLimit,
             CommercialTerms = request.CommercialTerms,
