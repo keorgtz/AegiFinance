@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AegiFinance.Web.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/client-categories")]
 [Authorize]
 public class ClientCategoriesController : ControllerBase
 {

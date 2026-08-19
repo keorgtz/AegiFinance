@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AegiFinance.Web.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/service-categories")]
 [Authorize]
 public class ServiceCategoriesController : ControllerBase
 {

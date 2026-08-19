@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AegiFinance.Web.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/client-tags")]
 [Authorize]
 public class ClientTagsController : ControllerBase
 {

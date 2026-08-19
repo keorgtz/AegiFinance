@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AegiFinance.Web.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/exchange-rates")]
 [Authorize]
 public class ExchangeRatesController : ControllerBase
 {

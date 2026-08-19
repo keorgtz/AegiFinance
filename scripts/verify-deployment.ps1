@@ -49,6 +49,10 @@ Require-IsolatedSqlFunctions "src/AegiFinance.Infrastructure/Migrations/20260818
 Require-IsolatedSqlFunctions "src/AegiFinance.Infrastructure/Migrations/20260818224818_Phase7VersionedPlans.cs"
 Forbid-Text "src/AegiFinance.Infrastructure/Migrations/20260818224818_Phase7VersionedPlans.cs" "s\.\[CreatedAt\], NULL, NULL, NULL, 1, SYSUTCDATETIME" "The Phase 7 ServiceVersions data migration has more SELECT values than INSERT columns."
 Forbid-Text "src/AegiFinance.Infrastructure/Data/AegiFinanceDbContext.cs" 'CurrentClientId\.Value' "Tenant query filters dereference a nullable client ID during parameter extraction."
+Require-Text "src/AegiFinance.Web/Controllers/ClientCategoriesController.cs" '\[Route\("api/client-categories"\)\]' "Client category routes do not match the frontend API contract."
+Require-Text "src/AegiFinance.Web/Controllers/ClientTagsController.cs" '\[Route\("api/client-tags"\)\]' "Client tag routes do not match the frontend API contract."
+Require-Text "src/AegiFinance.Web/Controllers/ServiceCategoriesController.cs" '\[Route\("api/service-categories"\)\]' "Service category routes do not match the frontend API contract."
+Require-Text "src/AegiFinance.Web/Controllers/ExchangeRatesController.cs" '\[Route\("api/exchange-rates"\)\]' "Exchange-rate routes do not match the frontend API contract."
 
 if (Get-Command docker -ErrorAction SilentlyContinue) {
     Push-Location $root
