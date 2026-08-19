@@ -1086,24 +1086,24 @@ public class AegiFinanceDbContext : DbContext
             !IsOrganizationScope || entity.Id == CurrentOrganizationId);
         AppendQueryFilter<Client>(modelBuilder, entity =>
             (!IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId) &&
-            (!IsClientScope || (CurrentClientId.HasValue && entity.Id == CurrentClientId.Value)));
+            (!IsClientScope || (CurrentClientId.HasValue && entity.Id == CurrentClientId)));
         AppendQueryFilter<BankAccount>(modelBuilder, entity =>
             !IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId);
         AppendQueryFilter<User>(modelBuilder, entity =>
             (!IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId) &&
-            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value)));
+            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId)));
         AppendQueryFilter<ClientUser>(modelBuilder, entity =>
             (!IsOrganizationScope || entity.Client.OrganizationId == CurrentOrganizationId) &&
-            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value)));
+            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId)));
         AppendQueryFilter<ClientNote>(modelBuilder, entity =>
             (!IsOrganizationScope || entity.Client.OrganizationId == CurrentOrganizationId) &&
-            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value)));
+            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId)));
         AppendQueryFilter<ClientContact>(modelBuilder, entity =>
             (!IsOrganizationScope || entity.Client.OrganizationId == CurrentOrganizationId) &&
-            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value)));
+            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId)));
         AppendQueryFilter<ClientDocument>(modelBuilder, entity =>
             (!IsOrganizationScope || entity.Client.OrganizationId == CurrentOrganizationId) &&
-            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value)));
+            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId)));
         AppendQueryFilter<ClientDuplicateRule>(modelBuilder, entity =>
             !IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId);
         AppendQueryFilter<ServiceCategory>(modelBuilder, entity =>
@@ -1118,42 +1118,42 @@ public class AegiFinanceDbContext : DbContext
             !IsOrganizationScope || entity.ServiceVersion.Service.OrganizationId == CurrentOrganizationId);
         AppendQueryFilter<Subscription>(modelBuilder, entity =>
             (!IsOrganizationScope || entity.Client.OrganizationId == CurrentOrganizationId) &&
-            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value)));
+            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId)));
         AppendQueryFilter<SubscriptionPriceHistory>(modelBuilder, entity =>
             (!IsOrganizationScope || entity.Subscription.Client.OrganizationId == CurrentOrganizationId) &&
-            (!IsClientScope || (CurrentClientId.HasValue && entity.Subscription.ClientId == CurrentClientId.Value)));
+            (!IsClientScope || (CurrentClientId.HasValue && entity.Subscription.ClientId == CurrentClientId)));
         AppendQueryFilter<SubscriptionChangeLog>(modelBuilder, entity =>
             (!IsOrganizationScope || entity.Subscription.Client.OrganizationId == CurrentOrganizationId) &&
-            (!IsClientScope || (CurrentClientId.HasValue && entity.Subscription.ClientId == CurrentClientId.Value)));
+            (!IsClientScope || (CurrentClientId.HasValue && entity.Subscription.ClientId == CurrentClientId)));
         AppendQueryFilter<SubscriptionTermsVersion>(modelBuilder, entity =>
             (!IsOrganizationScope || entity.Subscription.Client.OrganizationId == CurrentOrganizationId) &&
-            (!IsClientScope || (CurrentClientId.HasValue && entity.Subscription.ClientId == CurrentClientId.Value)));
+            (!IsClientScope || (CurrentClientId.HasValue && entity.Subscription.ClientId == CurrentClientId)));
         AppendQueryFilter<SubscriptionRenewal>(modelBuilder, entity =>
             (!IsOrganizationScope || entity.Subscription.Client.OrganizationId == CurrentOrganizationId) &&
-            (!IsClientScope || (CurrentClientId.HasValue && entity.Subscription.ClientId == CurrentClientId.Value)));
+            (!IsClientScope || (CurrentClientId.HasValue && entity.Subscription.ClientId == CurrentClientId)));
         AppendQueryFilter<BillingItem>(modelBuilder, entity =>
             (!IsOrganizationScope || entity.Client.OrganizationId == CurrentOrganizationId) &&
-            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value)));
+            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId)));
         AppendQueryFilter<LedgerEntry>(modelBuilder, entity =>
             (!IsOrganizationScope || entity.BankAccount.OrganizationId == CurrentOrganizationId) &&
-            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value)));
+            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId)));
         AppendQueryFilter<JournalEntry>(modelBuilder, entity =>
             (!IsOrganizationScope ||
                 (entity.ClientId.HasValue && entity.Client!.OrganizationId == CurrentOrganizationId) ||
                 entity.Lines.Any(line => line.BankAccountId.HasValue && line.BankAccount!.OrganizationId == CurrentOrganizationId)) &&
-            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value)));
+            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId)));
         AppendQueryFilter<JournalLine>(modelBuilder, entity =>
             (!IsOrganizationScope ||
                 (entity.ClientId.HasValue && entity.Client!.OrganizationId == CurrentOrganizationId) ||
                 (entity.BankAccountId.HasValue && entity.BankAccount!.OrganizationId == CurrentOrganizationId) ||
                 (entity.JournalEntry.ClientId.HasValue && entity.JournalEntry.Client!.OrganizationId == CurrentOrganizationId)) &&
-            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value)));
+            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId)));
         AppendQueryFilter<SubscriptionAllocation>(modelBuilder, entity =>
             (!IsOrganizationScope || entity.BillingItem.Client.OrganizationId == CurrentOrganizationId) &&
-            (!IsClientScope || (CurrentClientId.HasValue && entity.BillingItem.ClientId == CurrentClientId.Value)));
+            (!IsClientScope || (CurrentClientId.HasValue && entity.BillingItem.ClientId == CurrentClientId)));
         AppendQueryFilter<SubscriptionPermission>(modelBuilder, entity =>
             (!IsOrganizationScope || entity.Subscription.Client.OrganizationId == CurrentOrganizationId) &&
-            (!IsClientScope || (CurrentClientId.HasValue && entity.Subscription.ClientId == CurrentClientId.Value)));
+            (!IsClientScope || (CurrentClientId.HasValue && entity.Subscription.ClientId == CurrentClientId)));
         AppendQueryFilter<BankStatement>(modelBuilder, entity =>
             !IsOrganizationScope || entity.BankAccount.OrganizationId == CurrentOrganizationId);
         AppendQueryFilter<BankStatementLine>(modelBuilder, entity =>
@@ -1164,10 +1164,10 @@ public class AegiFinanceDbContext : DbContext
             !IsOrganizationScope || entity.FromEntry.BankAccount.OrganizationId == CurrentOrganizationId);
         AppendQueryFilter<UiControlPolicy>(modelBuilder, entity =>
             !IsClientScope || !entity.ClientId.HasValue ||
-            (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value));
+            (CurrentClientId.HasValue && entity.ClientId == CurrentClientId));
         AppendQueryFilter<UserPermissionOverride>(modelBuilder, entity =>
             !IsClientScope || !entity.ClientId.HasValue ||
-            (CurrentClientId.HasValue && entity.ClientId == CurrentClientId.Value));
+            (CurrentClientId.HasValue && entity.ClientId == CurrentClientId));
     }
 
     private static void AppendQueryFilter<TEntity>(

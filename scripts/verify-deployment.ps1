@@ -48,6 +48,7 @@ Require-IsolatedSqlFunctions "src/AegiFinance.Infrastructure/Migrations/20260818
 Require-IsolatedSqlFunctions "src/AegiFinance.Infrastructure/Migrations/20260818220002_Phase6ClientScope.cs"
 Require-IsolatedSqlFunctions "src/AegiFinance.Infrastructure/Migrations/20260818224818_Phase7VersionedPlans.cs"
 Forbid-Text "src/AegiFinance.Infrastructure/Migrations/20260818224818_Phase7VersionedPlans.cs" "s\.\[CreatedAt\], NULL, NULL, NULL, 1, SYSUTCDATETIME" "The Phase 7 ServiceVersions data migration has more SELECT values than INSERT columns."
+Forbid-Text "src/AegiFinance.Infrastructure/Data/AegiFinanceDbContext.cs" 'CurrentClientId\.Value' "Tenant query filters dereference a nullable client ID during parameter extraction."
 
 if (Get-Command docker -ErrorAction SilentlyContinue) {
     Push-Location $root
