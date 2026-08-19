@@ -57,6 +57,24 @@ var price = SubscriptionPricingRules.Calculate(1000m, 10m, 16m);
 if (price.BaseAmount != 1000m || price.DiscountAmount != 100m || price.TaxAmount != 144m || price.Total != 1044m)
     throw new InvalidOperationException("Failed: subscription discount and tax order is incorrect.");
 
+var sameDayVersion = new ServiceVersion
+{
+    Id = Guid.NewGuid(),
+    IsPublished = true,
+    EffectiveFrom = new DateTime(2026, 8, 19, 18, 30, 0, DateTimeKind.Utc)
+};
+if (ServiceVersionRules.ResolveApplicable([sameDayVersion], new DateTime(2026, 8, 19))?.Id != sameDayVersion.Id)
+    throw new InvalidOperationException("Failed: a plan version published later on the same business date was rejected.");
+
+var futureVersion = new ServiceVersion
+{
+    Id = Guid.NewGuid(),
+    IsPublished = true,
+    EffectiveFrom = new DateTime(2026, 8, 20, 0, 0, 0, DateTimeKind.Utc)
+};
+if (ServiceVersionRules.ResolveApplicable([futureVersion], new DateTime(2026, 8, 19)) is not null)
+    throw new InvalidOperationException("Failed: a future plan version was accepted early.");
+
 var subscriptionId = Guid.NewGuid();
 var currentTerms = new SubscriptionTermsVersion { Id = Guid.NewGuid(), SubscriptionId = subscriptionId, VersionNumber = 1, EffectiveFrom = new DateTime(2026, 1, 1), EffectiveTo = new DateTime(2026, 7, 1), BasePrice = 100m };
 var futureTerms = new SubscriptionTermsVersion { Id = Guid.NewGuid(), SubscriptionId = subscriptionId, VersionNumber = 2, EffectiveFrom = new DateTime(2026, 7, 1), BasePrice = 200m };

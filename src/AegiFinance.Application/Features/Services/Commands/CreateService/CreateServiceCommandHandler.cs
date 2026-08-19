@@ -64,7 +64,7 @@ public class CreateServiceCommandHandler : IRequestHandler<CreateServiceCommand,
         {
             Id = Guid.NewGuid(), ServiceId = service.Id, Service = service, VersionNumber = 1,
             Name = service.Name, Description = service.Description, BillingType = service.BillingType,
-            BasePrice = service.DefaultPrice, Currency = service.Currency, EffectiveFrom = DateTime.UtcNow,
+            BasePrice = service.DefaultPrice, Currency = service.Currency, EffectiveFrom = DateTime.UtcNow.Date,
             IsPublished = true
         };
         version.Concepts.Add(new ServiceVersionConcept

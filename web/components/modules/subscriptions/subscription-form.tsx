@@ -179,13 +179,19 @@ export function SubscriptionForm({
       notes: values.notes || null,
     };
 
-    if (isEdit && editingSubscription) {
-      await updateSub.mutateAsync({ id: editingSubscription.id, data: payload });
-    } else {
-      await createSub.mutateAsync(payload);
+    try {
+      if (isEdit && editingSubscription) {
+        await updateSub.mutateAsync({ id: editingSubscription.id, data: payload });
+      } else {
+        await createSub.mutateAsync(payload);
+      }
+      onOpenChange(false);
+    } catch {
+      // React Query exposes the server response through mutationError below.
     }
-    onOpenChange(false);
   };
+
+  const mutationError = createSub.error ?? updateSub.error;
 
   return (
     <Drawer open={open} onOpenChange={handleClose}>
@@ -205,6 +211,11 @@ export function SubscriptionForm({
         }
       >
         <form id="subscription-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {mutationError && (
+            <p role="alert" className="rounded-input bg-danger-soft p-3 text-sm font-medium text-danger">
+              {mutationError.message || "No se pudo guardar la suscripción. Revisa los datos y vuelve a intentar."}
+            </p>
+          )}
           {/* Cliente y servicio */}
           <Combobox
             controlKey="subscriptions.form.client"

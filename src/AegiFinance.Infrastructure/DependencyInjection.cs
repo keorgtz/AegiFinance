@@ -28,10 +28,10 @@ public static class DependencyInjection
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
-            options.UseSqlServer(connectionString, sql => sql.EnableRetryOnFailure(
-                maxRetryCount: 5,
-                maxRetryDelay: TimeSpan.FromSeconds(15),
-                errorNumbersToAdd: null));
+            // Financial write flows use explicit transactions to keep the operational
+            // record and its Major Ledger journal atomic. SQL Server's retrying
+            // execution strategy cannot be combined with those user transactions.
+            options.UseSqlServer(connectionString);
             options.AddInterceptors(
                 sp.GetRequiredService<AuditInterceptor>(),
                 sp.GetRequiredService<TenantSessionContextInterceptor>(),

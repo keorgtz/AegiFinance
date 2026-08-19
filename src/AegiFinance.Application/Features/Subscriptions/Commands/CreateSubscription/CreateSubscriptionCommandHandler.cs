@@ -55,9 +55,11 @@ public class CreateSubscriptionCommandHandler : IRequestHandler<CreateSubscripti
 
         var code = await _codeGenerator.GenerateAsync(cancellationToken);
         var currency = string.IsNullOrWhiteSpace(request.Currency) ? "MXN" : request.Currency.Trim().ToUpper();
+        var startDate = request.StartDate.Date;
+        var endDate = request.EndDate?.Date;
         var serviceVersion = request.ServiceVersionId.HasValue
-            ? service.Versions.FirstOrDefault(v => v.Id == request.ServiceVersionId && v.IsPublished)
-            : service.Versions.Where(v => v.IsPublished && v.EffectiveFrom <= request.StartDate).OrderByDescending(v => v.EffectiveFrom).FirstOrDefault();
+            ? service.Versions.FirstOrDefault(v => v.Id == request.ServiceVersionId && v.IsPublished && v.EffectiveFrom.Date <= startDate)
+            : ServiceVersionRules.ResolveApplicable(service.Versions, startDate);
         if (serviceVersion is null)
             throw new InvalidOperationException("El plan no tiene una versión publicada aplicable.");
         var pricing = SubscriptionPricingRules.Calculate(request.Price, request.DiscountPercent, request.TaxPercent);
@@ -75,8 +77,8 @@ public class CreateSubscriptionCommandHandler : IRequestHandler<CreateSubscripti
             BillingType = request.BillingType,
             Price = pricing.Total,
             Currency = currency,
-            StartDate = request.StartDate,
-            EndDate = request.EndDate,
+            StartDate = startDate,
+            EndDate = endDate,
             BillingDay = request.BillingDay,
             CustomIntervalDays = request.CustomIntervalDays,
             DiscountPercent = request.DiscountPercent,

@@ -114,12 +114,16 @@ export function BankAccountForm({ open, onOpenChange, account }: BankAccountForm
       bankName: values.bankName || null,
       accountNumber: values.accountNumber || null,
     };
-    if (isEdit && account) {
-      await update.mutateAsync({ id: account.id, data: payload });
-    } else {
-      await create.mutateAsync(payload);
+    try {
+      if (isEdit && account) {
+        await update.mutateAsync({ id: account.id, data: payload });
+      } else {
+        await create.mutateAsync(payload);
+      }
+      onOpenChange(false);
+    } catch {
+      // React Query exposes the server response through mutationError below.
     }
-    onOpenChange(false);
   };
 
   const mutationError = create.error ?? update.error;
@@ -194,7 +198,7 @@ export function BankAccountForm({ open, onOpenChange, account }: BankAccountForm
 
           {mutationError && (
             <p role="alert" className="rounded-input bg-danger-soft p-3 text-sm font-medium text-danger">
-              No se pudo guardar la cuenta. Revisa los datos y vuelve a intentar.
+              {mutationError.message || "No se pudo guardar la cuenta. Revisa los datos y vuelve a intentar."}
             </p>
           )}
 

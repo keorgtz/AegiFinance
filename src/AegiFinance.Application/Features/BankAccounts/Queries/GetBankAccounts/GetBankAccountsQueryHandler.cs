@@ -64,7 +64,7 @@ public class GetBankAccountsQueryHandler : IRequestHandler<GetBankAccountsQuery,
 
         foreach (var item in result.Items)
             item.MaskedAccountNumber = _accountNumberProtector.MaskFromProtected(item.MaskedAccountNumber);
-        if (!request.IncludeBalances) return result;
+        if (!request.IncludeBalances || result.Items.Count == 0) return result;
 
         var accountIds = result.Items.Select(item => item.Id).ToList();
         var ledgerBalances = await _context.JournalLines.AsNoTracking()
