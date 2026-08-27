@@ -17,12 +17,14 @@ import {
 } from "@/hooks/use-users";
 import { cn } from "@/lib/utils/cn";
 import { formatDateTime } from "@/lib/utils/format";
-import type { UserDto } from "@/types/api";
+import type { RoleDto, UserDto } from "@/types/api";
 import { Check, Laptop, ShieldAlert, Trash2 } from "lucide-react";
+
+const EMPTY_ROLES: RoleDto[] = [];
 
 export function UserAccessDialog({ open, onOpenChange, user }: { open: boolean; onOpenChange: (open: boolean) => void; user: UserDto | null }) {
   const userId = user?.id ?? "";
-  const { data: roles = [] } = useRoles();
+  const { data: roles = EMPTY_ROLES } = useRoles();
   const { data: permissions = [] } = usePermissionsData();
   const { data: clients } = useClients({ pageSize: 200 });
   const [selectedRoles, setSelectedRoles] = useState<Set<string>>(new Set());
@@ -52,16 +54,24 @@ export function UserAccessDialog({ open, onOpenChange, user }: { open: boolean; 
   });
   const saveRoles = async () => {
     if (!user) return;
-    await assignRoles.mutateAsync({ id: user.id, data: { roleIds: [...selectedRoles] } });
+    try {
+      await assignRoles.mutateAsync({ id: user.id, data: { roleIds: [...selectedRoles] } });
+    } catch {
+      // The mutation error remains visible in the current tab.
+    }
   };
   const saveOverride = async () => {
     if (!user || !permissionId) return;
-    await setPermission.mutateAsync({ id: user.id, data: {
-      permissionId, isGranted: effect === "grant", clientId: clientId === "all" ? null : clientId,
-      subscriptionId: subscriptionId === "all" ? null : subscriptionId,
-      expiresAt: expiresAt ? new Date(expiresAt).toISOString() : null,
-    }});
-    setPermissionId(""); setExpiresAt("");
+    try {
+      await setPermission.mutateAsync({ id: user.id, data: {
+        permissionId, isGranted: effect === "grant", clientId: clientId === "all" ? null : clientId,
+        subscriptionId: subscriptionId === "all" ? null : subscriptionId,
+        expiresAt: expiresAt ? new Date(expiresAt).toISOString() : null,
+      }});
+      setPermissionId(""); setExpiresAt("");
+    } catch {
+      // The mutation error remains visible in the current tab.
+    }
   };
 
   return (
@@ -75,6 +85,7 @@ export function UserAccessDialog({ open, onOpenChange, user }: { open: boolean; 
           </TabList>
 
           <TabPanel id="roles">
+            {assignRoles.error && <p role="alert" className="mb-3 rounded-input bg-danger-soft p-3 text-sm font-medium text-danger">{assignRoles.error.message}</p>}
             <p className="mb-3 text-sm text-muted">Asignación masiva compatible con el tipo de usuario.</p>
             <div className="grid gap-2 sm:grid-cols-2">
               {compatibleRoles.map((role) => (
@@ -88,6 +99,7 @@ export function UserAccessDialog({ open, onOpenChange, user }: { open: boolean; 
           </TabPanel>
 
           <TabPanel id="exceptions">
+            {setPermission.error && <p role="alert" className="mb-3 rounded-input bg-danger-soft p-3 text-sm font-medium text-danger">{setPermission.error.message}</p>}
             <div className="rounded-card border border-border bg-surface-subtle p-4">
               <div className="grid gap-4 sm:grid-cols-2">
                 <Select controlKey="users.access.exceptions.permission" permission="ManageUsers" label="Permiso" value={permissionId} onValueChange={setPermissionId} placeholder="Seleccioná un permiso">{permissions.map((item) => <SelectItem key={item.id} value={item.id}>{item.module} · {item.name}</SelectItem>)}</Select>

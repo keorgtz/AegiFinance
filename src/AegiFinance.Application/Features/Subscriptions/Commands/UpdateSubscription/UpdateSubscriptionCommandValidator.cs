@@ -21,6 +21,14 @@ public class UpdateSubscriptionCommandValidator : AbstractValidator<UpdateSubscr
         RuleFor(x => x.StartDate)
             .NotEmpty().WithMessage("La fecha de inicio es obligatoria.");
 
+        RuleFor(x => x.EndDate)
+            .GreaterThanOrEqualTo(x => x.StartDate)
+            .When(x => x.EndDate.HasValue)
+            .WithMessage("La fecha final no puede ser anterior a la fecha de inicio.");
+
+        RuleFor(x => x.Currency)
+            .NotEmpty().Length(3).WithMessage("La moneda debe ser un código ISO de 3 letras.");
+
         RuleFor(x => x.BillingType)
             .IsInEnum().WithMessage("El tipo de facturación no es válido.");
     }

@@ -17,6 +17,7 @@ import { RoleForm } from "@/components/modules/roles/role-form";
 import { UiPermissionManager } from "@/components/modules/roles/ui-permission-manager";
 import { AssignPermissionsDialog } from "@/components/modules/roles/assign-permissions-dialog";
 import { Can } from "@/lib/auth/can";
+import { usePermissions } from "@/lib/auth/use-permissions";
 import type { PermissionDto, RoleDto } from "@/types/api";
 import { MoreHorizontal, Plus, Shield, Trash2 } from "lucide-react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
@@ -30,6 +31,7 @@ import { formatDateTime } from "@/lib/utils/format";
 import { GitCompareArrows, History } from "lucide-react";
 
 export default function RolesPage() {
+  const { can } = usePermissions();
   const { data: roles = [], isLoading: rolesLoading } = useRoles();
   const { data: permissions = [], isLoading: permsLoading } = usePermissionsData();
   const deleteRole = useDeleteRole();
@@ -48,7 +50,7 @@ export default function RolesPage() {
     const handler = (e: KeyboardEvent) => {
       const tag = document.activeElement?.tagName ?? "";
       const isInput = tag === "INPUT" || tag === "TEXTAREA";
-      if (!isInput && (e.key === "n" || e.key === "N")) {
+      if (!isInput && (e.key === "n" || e.key === "N") && can("ManageRoles")) {
         e.preventDefault();
         setEditingRole(null);
         setRoleFormOpen(true);
@@ -56,7 +58,7 @@ export default function RolesPage() {
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, []);
+  }, [can]);
 
   const roleColumns: ColumnDef<RoleDto, unknown>[] = [
     {

@@ -100,7 +100,7 @@ export function BankAccountForm({ open, onOpenChange, account }: BankAccountForm
               accountNumber: account.maskedAccountNumber ?? "",
               currency: account.currency,
               openingBalance: account.openingBalance,
-              openingDate: account.openingDate,
+              openingDate: account.openingDate.slice(0, 10),
               isActive: account.isActive,
             }
           : { name: "", bankName: "", accountNumber: "", currency: "MXN", openingBalance: 0, openingDate: today, isActive: true }

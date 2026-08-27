@@ -1700,7 +1700,7 @@
     "label": "Cuenta bancaria *",
     "module": "ledger",
     "controlType": "select",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerAdjustments",
     "isSystemRequired": false
   },
   {
@@ -1708,7 +1708,7 @@
     "label": "Importe *",
     "module": "ledger",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerAdjustments",
     "isSystemRequired": false
   },
   {
@@ -1716,7 +1716,7 @@
     "label": "Moneda *",
     "module": "ledger",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerAdjustments",
     "isSystemRequired": false
   },
   {
@@ -1724,7 +1724,7 @@
     "label": "Fecha *",
     "module": "ledger",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerAdjustments",
     "isSystemRequired": false
   },
   {
@@ -1732,7 +1732,7 @@
     "label": "Descripción *",
     "module": "ledger",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerAdjustments",
     "isSystemRequired": false
   },
   {
@@ -1740,7 +1740,7 @@
     "label": "Motivo *",
     "module": "ledger",
     "controlType": "textarea",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerAdjustments",
     "isSystemRequired": false
   },
   {
@@ -1756,7 +1756,7 @@
     "label": "Button 2",
     "module": "ledger",
     "controlType": "button",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerAdjustments",
     "isSystemRequired": false
   },
   {
@@ -1868,7 +1868,7 @@
     "label": "Cuenta bancaria *",
     "module": "ledger",
     "controlType": "select",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerExpense",
     "isSystemRequired": false
   },
   {
@@ -1876,7 +1876,7 @@
     "label": "Importe *",
     "module": "ledger",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerExpense",
     "isSystemRequired": false
   },
   {
@@ -1884,7 +1884,7 @@
     "label": "Moneda *",
     "module": "ledger",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerExpense",
     "isSystemRequired": false
   },
   {
@@ -1892,7 +1892,7 @@
     "label": "Fecha *",
     "module": "ledger",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerExpense",
     "isSystemRequired": false
   },
   {
@@ -1900,7 +1900,7 @@
     "label": "Descripción *",
     "module": "ledger",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerExpense",
     "isSystemRequired": false
   },
   {
@@ -1908,7 +1908,7 @@
     "label": "Referencia",
     "module": "ledger",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerExpense",
     "isSystemRequired": false
   },
   {
@@ -1924,7 +1924,7 @@
     "label": "Button 2",
     "module": "ledger",
     "controlType": "button",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerExpense",
     "isSystemRequired": false
   },
   {
@@ -1932,7 +1932,7 @@
     "label": "Cuenta bancaria *",
     "module": "ledger",
     "controlType": "select",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerIncome",
     "isSystemRequired": false
   },
   {
@@ -1940,7 +1940,7 @@
     "label": "Importe *",
     "module": "ledger",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerIncome",
     "isSystemRequired": false
   },
   {
@@ -1948,7 +1948,7 @@
     "label": "Moneda *",
     "module": "ledger",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerIncome",
     "isSystemRequired": false
   },
   {
@@ -1956,7 +1956,7 @@
     "label": "Fecha *",
     "module": "ledger",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerIncome",
     "isSystemRequired": false
   },
   {
@@ -1964,7 +1964,7 @@
     "label": "Descripción *",
     "module": "ledger",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerIncome",
     "isSystemRequired": false
   },
   {
@@ -1972,7 +1972,7 @@
     "label": "Referencia",
     "module": "ledger",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerIncome",
     "isSystemRequired": false
   },
   {
@@ -1988,7 +1988,7 @@
     "label": "Button 2",
     "module": "ledger",
     "controlType": "button",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateLedgerIncome",
     "isSystemRequired": false
   },
   {
@@ -2684,7 +2684,7 @@
     "label": "Button 2",
     "module": "subscriptions",
     "controlType": "button",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ManageSubscriptions",
     "isSystemRequired": false
   },
   {
@@ -2692,7 +2692,7 @@
     "label": "Tipo *",
     "module": "subscriptions",
     "controlType": "select",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ManageSubscriptions",
     "isSystemRequired": false
   },
   {
@@ -2700,7 +2700,7 @@
     "label": "Día de facturación *",
     "module": "subscriptions",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ManageSubscriptions",
     "isSystemRequired": false
   },
   {
@@ -2708,7 +2708,7 @@
     "label": "Intervalo (días) *",
     "module": "subscriptions",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ManageSubscriptions",
     "isSystemRequired": false
   },
   {
@@ -2716,7 +2716,7 @@
     "label": "Precio *",
     "module": "subscriptions",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ManageSubscriptions",
     "isSystemRequired": false
   },
   {
@@ -2724,7 +2724,7 @@
     "label": "Moneda *",
     "module": "subscriptions",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ManageSubscriptions",
     "isSystemRequired": false
   },
   {
@@ -2732,7 +2732,7 @@
     "label": "Descuento (%)",
     "module": "subscriptions",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ManageSubscriptions",
     "isSystemRequired": false
   },
   {
@@ -2740,7 +2740,7 @@
     "label": "Impuesto (%)",
     "module": "subscriptions",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ManageSubscriptions",
     "isSystemRequired": false
   },
   {
@@ -2748,7 +2748,7 @@
     "label": "Prorrateo",
     "module": "subscriptions",
     "controlType": "select",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ManageSubscriptions",
     "isSystemRequired": false
   },
   {
@@ -2756,7 +2756,7 @@
     "label": "Inicio *",
     "module": "subscriptions",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ManageSubscriptions",
     "isSystemRequired": false
   },
   {
@@ -2764,7 +2764,7 @@
     "label": "Fin (opcional)",
     "module": "subscriptions",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ManageSubscriptions",
     "isSystemRequired": false
   },
   {
@@ -2772,7 +2772,7 @@
     "label": "Notas internas",
     "module": "subscriptions",
     "controlType": "textarea",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ManageSubscriptions",
     "isSystemRequired": false
   },
   {
@@ -2780,7 +2780,7 @@
     "label": "Condiciones contractuales",
     "module": "subscriptions",
     "controlType": "textarea",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ManageSubscriptions",
     "isSystemRequired": false
   },
   {
@@ -2980,7 +2980,7 @@
     "label": "Nombre completo",
     "module": "users",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ManageUsers",
     "isSystemRequired": false
   },
   {
@@ -2988,7 +2988,7 @@
     "label": "Nombre de usuario",
     "module": "users",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ManageUsers",
     "isSystemRequired": false
   },
   {
@@ -2996,7 +2996,7 @@
     "label": "Contraseña",
     "module": "users",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ManageUsers",
     "isSystemRequired": false
   },
   {
@@ -3004,7 +3004,7 @@
     "label": "Correo electrónico",
     "module": "users",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ManageUsers",
     "isSystemRequired": false
   },
   {
@@ -3012,7 +3012,7 @@
     "label": "Tipo de usuario",
     "module": "users",
     "controlType": "select",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ManageUsers",
     "isSystemRequired": false
   },
   {
@@ -3036,7 +3036,7 @@
     "label": "Button 2",
     "module": "users",
     "controlType": "button",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ManageUsers",
     "isSystemRequired": false
   },
   {

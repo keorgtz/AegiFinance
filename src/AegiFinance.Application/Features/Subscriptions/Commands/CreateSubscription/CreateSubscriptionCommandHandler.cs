@@ -57,6 +57,10 @@ public class CreateSubscriptionCommandHandler : IRequestHandler<CreateSubscripti
         var currency = string.IsNullOrWhiteSpace(request.Currency) ? "MXN" : request.Currency.Trim().ToUpper();
         var startDate = request.StartDate.Date;
         var endDate = request.EndDate?.Date;
+        if (!request.ServiceVersionId.HasValue)
+        {
+            EnsureApplicableVersion(service, startDate);
+        }
         var serviceVersion = request.ServiceVersionId.HasValue
             ? service.Versions.FirstOrDefault(v => v.Id == request.ServiceVersionId && v.IsPublished && v.EffectiveFrom.Date <= startDate)
             : ServiceVersionRules.ResolveApplicable(service.Versions, startDate);
@@ -123,6 +127,47 @@ public class CreateSubscriptionCommandHandler : IRequestHandler<CreateSubscripti
         await _context.SaveChangesAsync(cancellationToken);
 
         return MapToDto(subscription);
+    }
+
+    private static void EnsureApplicableVersion(Service service, DateTime subscriptionStartDate)
+    {
+        if (ServiceVersionRules.ResolveApplicable(service.Versions, subscriptionStartDate) is not null)
+        {
+            return;
+        }
+
+        var nextPublishedDate = service.Versions
+            .Where(version => version.IsPublished && version.EffectiveFrom.Date > subscriptionStartDate)
+            .Select(version => (DateTime?)version.EffectiveFrom.Date)
+            .OrderBy(date => date)
+            .FirstOrDefault();
+
+        var version = new ServiceVersion
+        {
+            Id = Guid.NewGuid(),
+            ServiceId = service.Id,
+            Service = service,
+            VersionNumber = service.Versions.Select(item => item.VersionNumber).DefaultIfEmpty(0).Max() + 1,
+            Name = service.Name,
+            Description = service.Description,
+            BillingType = service.BillingType,
+            BasePrice = service.DefaultPrice,
+            Currency = service.Currency,
+            EffectiveFrom = subscriptionStartDate,
+            EffectiveTo = nextPublishedDate?.AddTicks(-1),
+            IsPublished = true
+        };
+        version.Concepts.Add(new ServiceVersionConcept
+        {
+            Id = Guid.NewGuid(),
+            ServiceVersionId = version.Id,
+            ServiceVersion = version,
+            Code = "BASE",
+            Name = service.Name,
+            Quantity = 1,
+            UnitPrice = service.DefaultPrice
+        });
+        service.Versions.Add(version);
     }
 
     private static SubscriptionDto MapToDto(Subscription subscription)

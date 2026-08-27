@@ -25,6 +25,7 @@ import {
 import { BillingTypeBadge } from "@/components/modules/services/billing-type-badge";
 import { formatAmount, formatDate } from "@/lib/utils/format";
 import { Can } from "@/lib/auth/can";
+import { usePermissions } from "@/lib/auth/use-permissions";
 import type { SubscriptionListDto, SubscriptionStatus } from "@/types/api";
 import {
   Layers,
@@ -86,6 +87,7 @@ function FilterItem({ value, children }: { value: string; children: React.ReactN
 
 export default function SubscriptionsPage() {
   const router = useRouter();
+  const { can } = usePermissions();
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<SubscriptionStatus | "">("");
   const [formOpen, setFormOpen] = useState(false);
@@ -103,11 +105,11 @@ export default function SubscriptionsPage() {
     const handler = (e: KeyboardEvent) => {
       const tag = (document.activeElement as HTMLElement)?.tagName ?? "";
       if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
-      if (e.key === "n" || e.key === "N") { e.preventDefault(); setFormOpen(true); }
+      if ((e.key === "n" || e.key === "N") && can("ManageSubscriptions")) { e.preventDefault(); setFormOpen(true); }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, []);
+  }, [can]);
 
   const { data, isLoading } = useSubscriptions({
     status: statusFilter || undefined,

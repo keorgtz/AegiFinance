@@ -52,7 +52,7 @@ public class AccountBalanceCalculator : IAccountBalanceCalculator
             .FirstOrDefaultAsync(cancellationToken);
 
         var bankBalance = latestStatement?.ClosingBalance;
-        decimal? comparisonLedgerBalance = null;
+        decimal? comparisonLedgerBalance = latestStatement is null ? null : 0m;
         if (latestStatement is not null && ledgerAccountId.HasValue)
         {
             comparisonLedgerBalance = await _context.JournalLines.AsNoTracking()
@@ -69,6 +69,6 @@ public class AccountBalanceCalculator : IAccountBalanceCalculator
             bankBalance,
             latestStatement?.EndDate,
             comparisonLedgerBalance,
-            bankBalance.HasValue ? bankBalance.Value - comparisonLedgerBalance!.Value : null);
+            bankBalance.HasValue ? bankBalance.Value - (comparisonLedgerBalance ?? 0m) : null);
     }
 }

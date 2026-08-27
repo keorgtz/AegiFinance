@@ -15,6 +15,7 @@ import { ClientStatusBadge } from "@/components/modules/clients/client-status-ba
 import { TagChip } from "@/components/modules/clients/tag-chip";
 import { ClientDuplicateRulesDialog } from "@/components/modules/clients/client-duplicate-rules-dialog";
 import { Can } from "@/lib/auth/can";
+import { usePermissions } from "@/lib/auth/use-permissions";
 import type { ClientListDto, ClientStatus } from "@/types/api";
 import {
   Building2,
@@ -82,6 +83,7 @@ function FilterItem({ value, children }: { value: string; children: React.ReactN
 
 export default function ClientsPage() {
   const router = useRouter();
+  const { can } = usePermissions();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -117,12 +119,12 @@ export default function ClientsPage() {
       const tag = (document.activeElement as HTMLElement)?.tagName ?? "";
       const isInput = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
       if (isInput) return;
-      if (e.key === "n" || e.key === "N") { e.preventDefault(); setFormOpen(true); }
+      if ((e.key === "n" || e.key === "N") && can("ManageClients")) { e.preventDefault(); setFormOpen(true); }
       if (e.key === "/") { e.preventDefault(); searchRef.current?.focus(); }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, []);
+  }, [can]);
 
   const { data, isLoading } = useClients({
     searchTerm: debouncedSearch || undefined,

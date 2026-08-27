@@ -30,10 +30,10 @@ const schema = z.object({
   serviceId: z.string().min(1, "Selecciona un servicio"),
   billingType: z.enum(["Monthly", "Yearly", "OneTime", "Hourly", "Custom"] as const),
   price: z.coerce.number().min(0, "Debe ser ≥ 0"),
-  currency: z.string().min(1, "Requerido"),
+  currency: z.string().trim().length(3, "Usa un código ISO de 3 letras"),
   startDate: z.string().min(1, "Requerido"),
   endDate: z.string().optional(),
-  billingDay: z.coerce.number().int().min(1, "Min 1").max(31, "Máx 31"),
+  billingDay: z.coerce.number().int().min(1, "Mínimo 1").max(28, "Máximo 28"),
   customIntervalDays: z.coerce.number().int().min(1).max(3660).optional(),
   discountPercent: z.coerce.number().min(0).max(100),
   taxPercent: z.coerce.number().min(0).max(100),
@@ -41,6 +41,10 @@ const schema = z.object({
   contractTerms: z.string().max(4000).optional(),
   autoRenew: z.boolean(),
   notes: z.string().optional(),
+}).superRefine((value, context) => {
+  if (value.endDate && value.endDate < value.startDate) {
+    context.addIssue({ code: "custom", path: ["endDate"], message: "La fecha final no puede ser anterior al inicio" });
+  }
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -202,9 +206,9 @@ export function SubscriptionForm({
         footer={
           <>
             <DrawerClose asChild>
-              <Button controlKey="ui.components.modules.subscriptions.subscription.form.button.1" type="button" variant="secondary" onClick={handleClose}>Cancelar</Button>
+            <Button controlKey="ui.components.modules.subscriptions.subscription.form.button.1" systemRequired type="button" variant="secondary" onClick={handleClose}>Cancelar</Button>
             </DrawerClose>
-            <Button controlKey="ui.components.modules.subscriptions.subscription.form.button.2" form="subscription-form" type="submit" loading={isSubmitting}>
+            <Button controlKey="ui.components.modules.subscriptions.subscription.form.button.2" permission="ManageSubscriptions" form="subscription-form" type="submit" loading={isSubmitting}>
               {isEdit ? "Guardar cambios" : "Crear suscripción"}
             </Button>
           </>
@@ -219,6 +223,7 @@ export function SubscriptionForm({
           {/* Cliente y servicio */}
           <Combobox
             controlKey="subscriptions.form.client"
+            permission="ManageSubscriptions"
             label="Cliente *"
             value={clientId ?? ""}
             onValueChange={(v) => setValue("clientId", v, { shouldDirty: true })}
@@ -230,6 +235,7 @@ export function SubscriptionForm({
           />
           <Combobox
             controlKey="subscriptions.form.service"
+            permission="ManageSubscriptions"
             label="Servicio *"
             value={serviceId ?? ""}
             onValueChange={(v) => setValue("serviceId", v, { shouldDirty: true })}
@@ -248,6 +254,7 @@ export function SubscriptionForm({
           </p>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Select controlKey="ui.components.modules.subscriptions.subscription.form.select.1"
+              permission="ManageSubscriptions"
               label="Tipo *"
               value={billingType}
               onValueChange={(v) => setValue("billingType", v as BillingType)}
@@ -262,15 +269,17 @@ export function SubscriptionForm({
               label="Día de facturación *"
               type="number"
               min="1"
-              max="31"
+              max="28"
+              permission="ManageSubscriptions"
               inputMode="numeric"
               error={errors.billingDay?.message}
               disabled={isEdit}
             />
-            {billingType === "Custom" && <Input controlKey="subscriptions.form.custom-interval" {...register("customIntervalDays")} label="Intervalo (días) *" type="number" min="1" max="3660" disabled={isEdit} />}
+            {billingType === "Custom" && <Input controlKey="subscriptions.form.custom-interval" permission="ManageSubscriptions" {...register("customIntervalDays")} label="Intervalo (días) *" type="number" min="1" max="3660" disabled={isEdit} />}
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Input controlKey="ui.components.modules.subscriptions.subscription.form.input.3"
+              permission="ManageSubscriptions"
               {...register("price")}
               label="Precio *"
               type="number"
@@ -281,6 +290,7 @@ export function SubscriptionForm({
               disabled={isEdit}
             />
             <Input controlKey="ui.components.modules.subscriptions.subscription.form.input.4"
+              permission="ManageSubscriptions"
               {...register("currency")}
               label="Moneda *"
               placeholder="MXN"
@@ -289,9 +299,9 @@ export function SubscriptionForm({
             />
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Input controlKey="subscriptions.form.discount" {...register("discountPercent")} label="Descuento (%)" type="number" min="0" max="100" step="0.01" disabled={isEdit} />
-            <Input controlKey="subscriptions.form.tax" {...register("taxPercent")} label="Impuesto (%)" type="number" min="0" max="100" step="0.01" disabled={isEdit} />
-            <Select controlKey="subscriptions.form.proration" label="Prorrateo" value={prorationPolicy} onValueChange={(value) => setValue("prorationPolicy", value as "None" | "Daily")} disabled={isEdit}><SelectItem value="None">Sin prorrateo</SelectItem><SelectItem value="Daily">Diario</SelectItem></Select>
+            <Input controlKey="subscriptions.form.discount" permission="ManageSubscriptions" {...register("discountPercent")} label="Descuento (%)" type="number" min="0" max="100" step="0.01" disabled={isEdit} />
+            <Input controlKey="subscriptions.form.tax" permission="ManageSubscriptions" {...register("taxPercent")} label="Impuesto (%)" type="number" min="0" max="100" step="0.01" disabled={isEdit} />
+            <Select controlKey="subscriptions.form.proration" permission="ManageSubscriptions" label="Prorrateo" value={prorationPolicy} onValueChange={(value) => setValue("prorationPolicy", value as "None" | "Daily")} disabled={isEdit}><SelectItem value="None">Sin prorrateo</SelectItem><SelectItem value="Daily">Diario</SelectItem></Select>
           </div>
 
           <hr className="border-surface-subtle" />
@@ -302,6 +312,7 @@ export function SubscriptionForm({
           </p>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Input controlKey="ui.components.modules.subscriptions.subscription.form.input.7"
+              permission="ManageSubscriptions"
               {...register("startDate")}
               label="Inicio *"
               type="date"
@@ -309,6 +320,7 @@ export function SubscriptionForm({
               disabled={isEdit}
             />
             <Input controlKey="ui.components.modules.subscriptions.subscription.form.input.8"
+              permission="ManageSubscriptions"
               {...register("endDate")}
               label="Fin (opcional)"
               type="date"
@@ -325,6 +337,7 @@ export function SubscriptionForm({
             </label>
             <RadixSwitch.Root
               data-ui-control="subscriptions.form.auto-renew"
+              data-ui-permission="ManageSubscriptions"
               id="auto-renew"
               checked={autoRenew}
               onCheckedChange={(v) => setValue("autoRenew", v)}
@@ -337,12 +350,13 @@ export function SubscriptionForm({
           <hr className="border-surface-subtle" />
 
           <Textarea controlKey="ui.components.modules.subscriptions.subscription.form.textarea.1"
+            permission="ManageSubscriptions"
             {...register("notes")}
             label="Notas internas"
             placeholder="Observaciones sobre esta suscripción…"
             rows={3}
           />
-          <Textarea controlKey="subscriptions.form.contract-terms" {...register("contractTerms")} label="Condiciones contractuales" rows={4} disabled={isEdit} />
+          <Textarea controlKey="subscriptions.form.contract-terms" permission="ManageSubscriptions" {...register("contractTerms")} label="Condiciones contractuales" rows={4} disabled={isEdit} />
         </form>
       </DrawerContent>
     </Drawer>

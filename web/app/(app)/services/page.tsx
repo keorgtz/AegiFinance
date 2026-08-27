@@ -27,6 +27,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as RadixSelect from "@radix-ui/react-select";
 import { ChevronDown, Check } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { usePermissions } from "@/lib/auth/use-permissions";
 
 const PAGE_SIZE = 15;
 
@@ -84,6 +85,7 @@ function FilterItem({ value, children }: { value: string; children: React.ReactN
 
 export default function ServicesPage() {
   const router = useRouter();
+  const { can } = usePermissions();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -107,12 +109,12 @@ export default function ServicesPage() {
       const tag = (document.activeElement as HTMLElement)?.tagName ?? "";
       const isInput = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
       if (isInput) return;
-      if (e.key === "n" || e.key === "N") { e.preventDefault(); setFormOpen(true); }
+      if ((e.key === "n" || e.key === "N") && can("ManageServices")) { e.preventDefault(); setFormOpen(true); }
       if (e.key === "/") { e.preventDefault(); searchRef.current?.focus(); }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, []);
+  }, [can]);
 
   const { data, isLoading } = useServices({
     searchTerm: debouncedSearch || undefined,

@@ -76,8 +76,9 @@ export function UserForm({ open, onOpenChange, editingUser }: UserFormProps) {
   }, [open, editingUser, reset]);
 
   const onSubmit = async (values: CreateValues) => {
-    if (isEdit && editingUser) {
-      await updateUser.mutateAsync({
+    try {
+      if (isEdit && editingUser) {
+        await updateUser.mutateAsync({
         id: editingUser.id,
         data: {
           name: values.name,
@@ -85,12 +86,20 @@ export function UserForm({ open, onOpenChange, editingUser }: UserFormProps) {
           userType: values.userType,
           clientId: values.userType === "Client" ? values.clientId : null,
         },
-      });
-    } else {
-      await createUser.mutateAsync(values);
+        });
+      } else {
+        await createUser.mutateAsync({
+          ...values,
+          clientId: values.userType === "Client" ? values.clientId : null,
+        });
+      }
+      onOpenChange(false);
+    } catch {
+      // The mutation error remains visible in the dialog.
     }
-    onOpenChange(false);
   };
+
+  const mutationError = createUser.error ?? updateUser.error;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -99,7 +108,9 @@ export function UserForm({ open, onOpenChange, editingUser }: UserFormProps) {
         description={isEdit ? `Editando ${editingUser?.userName}` : undefined}
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {mutationError && <p role="alert" className="rounded-input bg-danger-soft p-3 text-sm font-medium text-danger">{mutationError.message || "No se pudo guardar el usuario."}</p>}
           <Input controlKey="ui.components.modules.users.user.form.input.1"
+            permission="ManageUsers"
             {...register("name")}
             label="Nombre completo"
             placeholder="Ej. Juan Pérez"
@@ -110,6 +121,7 @@ export function UserForm({ open, onOpenChange, editingUser }: UserFormProps) {
           {!isEdit && (
             <>
               <Input controlKey="ui.components.modules.users.user.form.input.2"
+                permission="ManageUsers"
                 {...register("userName")}
                 label="Nombre de usuario"
                 placeholder="Ej. jperez"
@@ -117,6 +129,7 @@ export function UserForm({ open, onOpenChange, editingUser }: UserFormProps) {
                 error={(errors as { userName?: { message?: string } }).userName?.message}
               />
               <Input controlKey="ui.components.modules.users.user.form.input.3"
+                permission="ManageUsers"
                 {...register("password")}
                 label="Contraseña"
                 type="password"
@@ -128,6 +141,7 @@ export function UserForm({ open, onOpenChange, editingUser }: UserFormProps) {
           )}
 
           <Input controlKey="ui.components.modules.users.user.form.input.4"
+            permission="ManageUsers"
             {...register("email")}
             label="Correo electrónico"
             type="email"
@@ -136,6 +150,7 @@ export function UserForm({ open, onOpenChange, editingUser }: UserFormProps) {
           />
 
           <Select controlKey="ui.components.modules.users.user.form.select.1"
+            permission="ManageUsers"
             label="Tipo de usuario"
             value={userType}
             onValueChange={(v) => setValue("userType", v as "Administrator" | "Client")}
@@ -153,11 +168,11 @@ export function UserForm({ open, onOpenChange, editingUser }: UserFormProps) {
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button controlKey="ui.components.modules.users.user.form.button.1" type="button" variant="secondary">
+              <Button controlKey="ui.components.modules.users.user.form.button.1" systemRequired type="button" variant="secondary">
                 Cancelar
               </Button>
             </DialogClose>
-            <Button controlKey="ui.components.modules.users.user.form.button.2" type="submit" loading={isSubmitting}>
+            <Button controlKey="ui.components.modules.users.user.form.button.2" permission="ManageUsers" type="submit" loading={isSubmitting}>
               {isEdit ? "Guardar cambios" : "Crear usuario"}
             </Button>
           </DialogFooter>

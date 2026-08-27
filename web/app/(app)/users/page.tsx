@@ -12,6 +12,7 @@ import { UserForm } from "@/components/modules/users/user-form";
 import { UserAccessDialog } from "@/components/modules/users/user-access-dialog";
 import { ResetPasswordDialog } from "@/components/modules/users/reset-password-dialog";
 import { Can } from "@/lib/auth/can";
+import { usePermissions } from "@/lib/auth/use-permissions";
 import { formatDate, getUserTypeLabel } from "@/lib/utils/format";
 import type { UserDto } from "@/types/api";
 import {
@@ -29,18 +30,18 @@ import {
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
 const PAGE_SIZE = 15;
+type UserDialog =
+  | { kind: "create" }
+  | { kind: "edit" | "access" | "password"; user: UserDto }
+  | null;
 
 export default function UsersPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [formOpen, setFormOpen] = useState(false);
-  const [accessOpen, setAccessOpen] = useState(false);
-  const [editingUser, setEditingUser] = useState<UserDto | null>(null);
-  const [accessUser, setAccessUser] = useState<UserDto | null>(null);
-  const [passwordUser, setPasswordUser] = useState<UserDto | null>(null);
-  const [passwordOpen, setPasswordOpen] = useState(false);
+  const [dialog, setDialog] = useState<UserDialog>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+  const { can } = usePermissions();
 
   // Debounce search
   useEffect(() => {
@@ -55,10 +56,9 @@ export default function UsersPage() {
       const isInput = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
 
       if (!isInput) {
-        if (e.key === "n" || e.key === "N") {
+        if ((e.key === "n" || e.key === "N") && can("ManageUsers")) {
           e.preventDefault();
-          setEditingUser(null);
-          setFormOpen(true);
+          setDialog({ kind: "create" });
         }
         if (e.key === "/") {
           e.preventDefault();
@@ -68,7 +68,7 @@ export default function UsersPage() {
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, []);
+  }, [can]);
 
   const { data, isLoading } = useUsers({
     searchTerm: debouncedSearch || undefined,
@@ -81,13 +81,11 @@ export default function UsersPage() {
   const unlockUser = useUnlockUser();
 
   const openEdit = (user: UserDto) => {
-    setEditingUser(user);
-    setFormOpen(true);
+    if (can("ManageUsers")) setDialog({ kind: "edit", user });
   };
 
   const openRoles = (user: UserDto) => {
-    setAccessUser(user);
-    setAccessOpen(true);
+    setDialog({ kind: "access", user });
   };
 
   const columns: ColumnDef<UserDto, unknown>[] = [
@@ -183,26 +181,32 @@ export default function UsersPage() {
                   sideOffset={4}
                 >
                   <DropdownMenu.Item
+                    data-ui-control="users.actions.edit"
+                    data-ui-permission="ManageUsers"
                     onSelect={() => openEdit(user)}
-                    className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle cursor-pointer focus:outline-none"
+                    className="flex min-h-11 items-center gap-2 px-3 py-2 text-[13px] text-foreground-secondary hover:bg-surface-subtle cursor-pointer focus:outline-none"
                   >
                     Editar
                   </DropdownMenu.Item>
                   <DropdownMenu.Item
+                    data-ui-control="users.actions.access"
+                    data-ui-permission="ManageUsers"
                     onSelect={() => openRoles(user)}
-                    className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle cursor-pointer focus:outline-none"
+                    className="flex min-h-11 items-center gap-2 px-3 py-2 text-[13px] text-foreground-secondary hover:bg-surface-subtle cursor-pointer focus:outline-none"
                   >
                     <ShieldCheck className="h-3.5 w-3.5" />
                     Acceso y sesiones
                   </DropdownMenu.Item>
-                  <DropdownMenu.Item data-ui-control="users.actions.reset-password" data-ui-permission="ManageUsers" onSelect={() => { setPasswordUser(user); setPasswordOpen(true); }} className="flex min-h-11 items-center gap-2 px-3 py-2 text-[13px] text-foreground-secondary hover:bg-surface-subtle cursor-pointer focus:outline-none">
+                  <DropdownMenu.Item data-ui-control="users.actions.reset-password" data-ui-permission="ManageUsers" onSelect={() => setDialog({ kind: "password", user })} className="flex min-h-11 items-center gap-2 px-3 py-2 text-[13px] text-foreground-secondary hover:bg-surface-subtle cursor-pointer focus:outline-none">
                     <KeyRound className="h-3.5 w-3.5" />Restablecer contraseña
                   </DropdownMenu.Item>
                   {user.lockoutEnd && new Date(user.lockoutEnd) > new Date() && <DropdownMenu.Item data-ui-control="users.actions.unlock" data-ui-permission="ManageUsers" onSelect={() => unlockUser.mutate(user.id)} className="flex min-h-11 items-center gap-2 px-3 py-2 text-[13px] text-foreground-secondary hover:bg-surface-subtle cursor-pointer focus:outline-none"><LockOpen className="h-3.5 w-3.5 text-warning" />Desbloquear</DropdownMenu.Item>}
                   <DropdownMenu.Separator className="my-1 h-px bg-surface-subtle" />
                   <DropdownMenu.Item
+                    data-ui-control="users.actions.toggle-active"
+                    data-ui-permission="ManageUsers"
                     onSelect={() => toggleActive.mutate({ id: user.id, active: !user.isActive })}
-                    className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle cursor-pointer focus:outline-none"
+                    className="flex min-h-11 items-center gap-2 px-3 py-2 text-[13px] text-foreground-secondary hover:bg-surface-subtle cursor-pointer focus:outline-none"
                   >
                     {user.isActive ? (
                       <><UserX className="h-3.5 w-3.5 text-warning" /> Desactivar</>
@@ -211,12 +215,14 @@ export default function UsersPage() {
                     )}
                   </DropdownMenu.Item>
                   <DropdownMenu.Item
+                    data-ui-control="users.actions.delete"
+                    data-ui-permission="ManageUsers"
                     onSelect={() => {
                       if (confirm(`¿Eliminar al usuario "${user.userName}"? Esta acción es irreversible.`)) {
                         deleteUser.mutate(user.id);
                       }
                     }}
-                    className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-danger hover:bg-danger-soft cursor-pointer focus:outline-none"
+                    className="flex min-h-11 items-center gap-2 px-3 py-2 text-[13px] text-danger hover:bg-danger-soft cursor-pointer focus:outline-none"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                     Eliminar
@@ -243,7 +249,7 @@ export default function UsersPage() {
         </div>
         <Can permission="ManageUsers">
           <Button controlKey="ui.app.app.users.page.button.2"
-            onClick={() => { setEditingUser(null); setFormOpen(true); }}
+            onClick={() => setDialog({ kind: "create" })}
             size="md"
           >
             <Plus className="h-4 w-4" />
@@ -292,16 +298,16 @@ export default function UsersPage() {
 
       {/* Dialogs */}
       <UserForm
-        open={formOpen}
-        onOpenChange={setFormOpen}
-        editingUser={editingUser}
+        open={dialog?.kind === "create" || dialog?.kind === "edit"}
+        onOpenChange={(open) => { if (!open) setDialog(null); }}
+        editingUser={dialog?.kind === "edit" ? dialog.user : null}
       />
       <UserAccessDialog
-        open={accessOpen}
-        onOpenChange={setAccessOpen}
-        user={accessUser}
+        open={dialog?.kind === "access"}
+        onOpenChange={(open) => { if (!open) setDialog(null); }}
+        user={dialog?.kind === "access" ? dialog.user : null}
       />
-      <ResetPasswordDialog open={passwordOpen} onOpenChange={setPasswordOpen} user={passwordUser} />
+      <ResetPasswordDialog open={dialog?.kind === "password"} onOpenChange={(open) => { if (!open) setDialog(null); }} user={dialog?.kind === "password" ? dialog.user : null} />
     </div>
   );
 }
