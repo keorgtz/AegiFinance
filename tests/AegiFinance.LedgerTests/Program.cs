@@ -103,7 +103,25 @@ if (importHash != repeatedHash)
 if (importHash == BankImportRules.DeduplicationHash(importAccountId, new DateTime(2026, 8, 26), "Pago cliente 42", "REF-42", 1250.50m, "MXN", 2))
     throw new InvalidOperationException("Failed: legitimate repeated rows collapse into one import hash.");
 
-Console.WriteLine("Major Ledger, bank-account, client-identity, subscription pricing and bank-import rules passed.");
+var reconciliationSettings = new ReconciliationSettings();
+var reconciliationScore = ReconciliationRules.Score(
+    1250m, new DateTime(2026, 8, 27), "Pago Compañía Norte", "REF-900",
+    1250m, new DateTime(2026, 8, 27), "Cobro mensual", "ref 900",
+    "Compania Norte", reconciliationSettings);
+if (!reconciliationScore.AmountExact || !reconciliationScore.ReferenceExact || reconciliationScore.Score < reconciliationSettings.SuggestionThreshold)
+    throw new InvalidOperationException("Failed: an exact reconciliation does not reach the configured suggestion threshold.");
+if (!reconciliationScore.Factors.Any(item => item.Code == "amount") || !reconciliationScore.Factors.Any(item => item.Code == "reference"))
+    throw new InvalidOperationException("Failed: reconciliation score does not explain its amount and reference evidence.");
+
+var invalidThresholds = new ReconciliationSettings { SuggestionThreshold = 90m, AutoConfirmThreshold = 80m };
+AssertThrows(() => ReconciliationRules.ValidateSettings(invalidThresholds), "automatic threshold below suggestion threshold");
+AssertThrows(() => ReconciliationRules.ValidateDifference(5m, 0.01m, ReconciliationDifferenceType.None, null), "unclassified reconciliation difference");
+ReconciliationRules.ValidateDifference(5m, 0.01m, ReconciliationDifferenceType.Commission, "Comisión identificada en estado bancario");
+if (ReconciliationRules.SignedAmount(new LedgerEntry { EntryType = LedgerEntryType.Expense, Amount = 100m }) != -100m ||
+    ReconciliationRules.SignedAmount(new LedgerEntry { EntryType = LedgerEntryType.Income, Amount = 100m }) != 100m)
+    throw new InvalidOperationException("Failed: reconciliation directions do not follow cash flow signs.");
+
+Console.WriteLine("Major Ledger, bank-account, client-identity, subscription pricing, bank-import and reconciliation rules passed.");
 
 static JournalEntry Entry(params JournalLine[] lines) => new()
 {

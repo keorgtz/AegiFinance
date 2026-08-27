@@ -67,27 +67,3 @@ export function useRegisterAdjustment() {
     onError: () => toast.error("Error al registrar ajuste"),
   });
 }
-
-export function useReconcileLedgerEntry() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (id: string) => ledgerApi.reconcile(id),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: LEDGER_KEY });
-      toast.success("Entrada conciliada");
-    },
-    onError: () => toast.error("Error al conciliar"),
-  });
-}
-
-export function useUnreconcileLedgerEntry() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (id: string) => ledgerApi.unreconcile(id),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: LEDGER_KEY });
-      toast.success("Conciliación revertida");
-    },
-    onError: () => toast.error("Error al desconciliar"),
-  });
-}

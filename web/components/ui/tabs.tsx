@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils/cn";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useUiControl, type UiControlPermissionProps } from "@/lib/auth/ui-control";
 
 interface TabsContextValue {
@@ -19,6 +19,7 @@ interface TabsProps {
 
 export function Tabs({ defaultTab, children, className }: TabsProps) {
   const [active, setActive] = useState(defaultTab);
+  useEffect(() => setActive(defaultTab), [defaultTab]);
   return (
     <TabsContext.Provider value={{ active, setActive }}>
       <div className={className}>{children}</div>

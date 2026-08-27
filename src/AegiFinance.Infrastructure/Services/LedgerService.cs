@@ -162,48 +162,6 @@ public class LedgerService : ILedgerService
         return entry;
     }
 
-    public async Task ReconcileAsync(Guid ledgerEntryId, CancellationToken cancellationToken = default)
-    {
-        var entry = await _context.LedgerEntries
-            .FirstOrDefaultAsync(le => le.Id == ledgerEntryId, cancellationToken);
-
-        if (entry is null)
-        {
-            throw new InvalidOperationException("El movimiento no existe.");
-        }
-
-        if (entry.IsReconciled)
-        {
-            throw new InvalidOperationException("El movimiento ya está conciliado.");
-        }
-
-        entry.IsReconciled = true;
-        entry.ReconciledAt = DateTime.UtcNow;
-
-        await _context.SaveChangesAsync(cancellationToken);
-    }
-
-    public async Task UnreconcileAsync(Guid ledgerEntryId, CancellationToken cancellationToken = default)
-    {
-        var entry = await _context.LedgerEntries
-            .FirstOrDefaultAsync(le => le.Id == ledgerEntryId, cancellationToken);
-
-        if (entry is null)
-        {
-            throw new InvalidOperationException("El movimiento no existe.");
-        }
-
-        if (!entry.IsReconciled)
-        {
-            throw new InvalidOperationException("El movimiento no está conciliado.");
-        }
-
-        entry.IsReconciled = false;
-        entry.ReconciledAt = null;
-
-        await _context.SaveChangesAsync(cancellationToken);
-    }
-
     private async Task ValidateBankAccountAsync(Guid bankAccountId, string currency, CancellationToken cancellationToken)
     {
         var account = await GetBankAccountAsync(bankAccountId, cancellationToken);

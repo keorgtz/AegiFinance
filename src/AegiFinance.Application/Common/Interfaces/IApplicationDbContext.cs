@@ -56,6 +56,11 @@ public interface IApplicationDbContext
     DbSet<BankImportAttempt> BankImportAttempts { get; }
     DbSet<BankImportProfile> BankImportProfiles { get; }
     DbSet<BankImportRow> BankImportRows { get; }
+    DbSet<ReconciliationSettings> ReconciliationSettings { get; }
+    DbSet<ReconciliationCase> ReconciliationCases { get; }
+    DbSet<ReconciliationCaseBankLine> ReconciliationCaseBankLines { get; }
+    DbSet<ReconciliationCaseLedgerEntry> ReconciliationCaseLedgerEntries { get; }
+    DbSet<ReconciliationPeriod> ReconciliationPeriods { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);

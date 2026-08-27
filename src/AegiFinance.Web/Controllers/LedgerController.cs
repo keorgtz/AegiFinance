@@ -1,11 +1,9 @@
 using AegiFinance.Application.Common.Models;
 using AegiFinance.Application.Dtos;
-using AegiFinance.Application.Features.Ledger.Commands.ReconcileLedgerEntry;
 using AegiFinance.Application.Features.Ledger.Commands.RegisterAdjustment;
 using AegiFinance.Application.Features.Ledger.Commands.RegisterExpense;
 using AegiFinance.Application.Features.Ledger.Commands.RegisterIncome;
 using AegiFinance.Application.Features.Ledger.Commands.RegisterTransfer;
-using AegiFinance.Application.Features.Ledger.Commands.UnreconcileLedgerEntry;
 using AegiFinance.Application.Features.Ledger.Queries.GetLedgerEntries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -60,19 +58,4 @@ public class LedgerController : ControllerBase
         return Ok(await _mediator.Send(query, cancellationToken));
     }
 
-    [HttpPost("{id:guid}/reconcile")]
-    [Authorize(Policy = "ManageReconciliation")]
-    public async Task<IActionResult> Reconcile(Guid id, CancellationToken cancellationToken)
-    {
-        await _mediator.Send(new ReconcileLedgerEntryCommand(id), cancellationToken);
-        return NoContent();
-    }
-
-    [HttpPost("{id:guid}/unreconcile")]
-    [Authorize(Policy = "ManageReconciliation")]
-    public async Task<IActionResult> Unreconcile(Guid id, CancellationToken cancellationToken)
-    {
-        await _mediator.Send(new UnreconcileLedgerEntryCommand(id), cancellationToken);
-        return NoContent();
-    }
 }

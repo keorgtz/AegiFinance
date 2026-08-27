@@ -35,10 +35,4 @@ export const ledgerApi = {
 
   registerAdjustment: (data: RegisterAdjustmentRequest) =>
     api.post<LedgerEntryDto>("/ledger/adjustment", data),
-
-  reconcile: (id: string) =>
-    api.post<void>(`/ledger/${id}/reconcile`, {}),
-
-  unreconcile: (id: string) =>
-    api.post<void>(`/ledger/${id}/unreconcile`, {}),
 };

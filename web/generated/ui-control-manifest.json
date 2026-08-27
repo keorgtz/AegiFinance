@@ -456,16 +456,8 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.ledger.page.button.1",
-    "label": "Opciones",
-    "module": "ledger",
-    "controlType": "button",
-    "requiredPermissionCode": null,
-    "isSystemRequired": false
-  },
-  {
     "controlKey": "ledger.bankAccounts.table.actions",
-    "label": "Button 2",
+    "label": "Button 1",
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": "ViewBankAccounts",
@@ -512,8 +504,8 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.ledger.page.button.3",
-    "label": "Button 3",
+    "controlKey": "ui.app.app.ledger.page.button.2",
+    "label": "Button 2",
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": null,
@@ -521,7 +513,7 @@
   },
   {
     "controlKey": "dashboard.importFailures.close",
-    "label": "Button 4",
+    "label": "Button 3",
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": null,
@@ -529,23 +521,7 @@
   },
   {
     "controlKey": "dashboard.importFailures.retry",
-    "label": "Button 5",
-    "module": "ledger",
-    "controlType": "button",
-    "requiredPermissionCode": null,
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "dashboard.reconciliationLines.close",
-    "label": "Button 6",
-    "module": "ledger",
-    "controlType": "button",
-    "requiredPermissionCode": null,
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "dashboard.reconciliationLines.retry",
-    "label": "Button 7",
+    "label": "Button 4",
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": null,
@@ -576,15 +552,15 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ledger.major.tabs.journal",
+    "controlKey": "ledger.reconciliation.tabs.workspace",
     "label": "Tab 4",
     "module": "ledger",
     "controlType": "tab",
-    "requiredPermissionCode": "ViewMajorLedger",
+    "requiredPermissionCode": "ViewReconciliation",
     "isSystemRequired": false
   },
   {
-    "controlKey": "ledger.major.tabs.chart",
+    "controlKey": "ledger.major.tabs.journal",
     "label": "Tab 5",
     "module": "ledger",
     "controlType": "tab",
@@ -592,7 +568,7 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ledger.major.tabs.trial",
+    "controlKey": "ledger.major.tabs.chart",
     "label": "Tab 6",
     "module": "ledger",
     "controlType": "tab",
@@ -600,8 +576,16 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ledger.major.tabs.periods",
+    "controlKey": "ledger.major.tabs.trial",
     "label": "Tab 7",
+    "module": "ledger",
+    "controlType": "tab",
+    "requiredPermissionCode": "ViewMajorLedger",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.major.tabs.periods",
+    "label": "Tab 8",
     "module": "ledger",
     "controlType": "tab",
     "requiredPermissionCode": "ViewMajorLedger",
@@ -648,8 +632,8 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.ledger.page.button.8",
-    "label": "button 8",
+    "controlKey": "ui.app.app.ledger.page.button.5",
+    "label": "button 5",
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": null,
@@ -665,7 +649,7 @@
   },
   {
     "controlKey": "ledger.bankAccounts.create",
-    "label": "Button 9",
+    "label": "Button 6",
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": "CreateBankAccounts",
@@ -673,7 +657,7 @@
   },
   {
     "controlKey": "ledger.bankAccounts.retry",
-    "label": "Button 10",
+    "label": "Button 7",
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": "ViewBankAccounts",
@@ -681,7 +665,7 @@
   },
   {
     "controlKey": "ledger.bankAccounts.card.transfer",
-    "label": "Button 11",
+    "label": "Button 8",
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": "CreateLedgerTransfers",
@@ -689,7 +673,7 @@
   },
   {
     "controlKey": "ledger.bankAccounts.card.edit",
-    "label": "Button 12",
+    "label": "Button 9",
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": "UpdateBankAccounts",
@@ -697,7 +681,7 @@
   },
   {
     "controlKey": "ledger.bankAccounts.card.bankBalance",
-    "label": "Button 13",
+    "label": "Button 10",
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": "UpdateBankAccountBalances",
@@ -2485,6 +2469,254 @@
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": "ReverseJournalEntries",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.reconciliation.panel.input.1",
+    "label": "input 1",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.settings.open",
+    "label": "Button 1",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageReconciliationSettings",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.period.open",
+    "label": "Button 2",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "CloseReconciliationPeriods",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.filters.account",
+    "label": "Cuenta bancaria",
+    "module": "ledger",
+    "controlType": "select",
+    "requiredPermissionCode": "ViewReconciliation",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.filters.from",
+    "label": "Desde",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": "ViewReconciliation",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.filters.to",
+    "label": "Hasta",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": "ViewReconciliation",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.run",
+    "label": "Button 3",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "RunReconciliation",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.filters.status",
+    "label": "Estado",
+    "module": "ledger",
+    "controlType": "select",
+    "requiredPermissionCode": "ViewReconciliation",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.list.retry",
+    "label": "Button 4",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewReconciliation",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.confirm.differenceType",
+    "label": "Tratamiento de diferencia",
+    "module": "ledger",
+    "controlType": "select",
+    "requiredPermissionCode": "ConfirmReconciliation",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.confirm.reason",
+    "label": "Justificación *",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": "ConfirmReconciliation",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.confirm.cancel",
+    "label": "Button 5",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.confirm.submit",
+    "label": "Button 6",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "ConfirmReconciliation",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.reverse.reason",
+    "label": "Motivo *",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": "ReverseReconciliation",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.reverse.cancel",
+    "label": "Button 7",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.reverse.submit",
+    "label": "Button 8",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "ReverseReconciliation",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.case.reject",
+    "label": "Button 9",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "ConfirmReconciliation",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.case.review",
+    "label": "Button 10",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "ConfirmReconciliation",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.case.reverse",
+    "label": "Button 11",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "ReverseReconciliation",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.settings.dateTolerance",
+    "label": "Tolerancia de fecha (días)",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageReconciliationSettings",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.settings.amountTolerance",
+    "label": "Tolerancia de importe",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageReconciliationSettings",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.settings.suggestionThreshold",
+    "label": "Umbral de sugerencia",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageReconciliationSettings",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.settings.autoThreshold",
+    "label": "Umbral automático exacto",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageReconciliationSettings",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.settings.cancel",
+    "label": "Button 12",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.settings.save",
+    "label": "Button 13",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageReconciliationSettings",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.period.from",
+    "label": "Desde",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": "CloseReconciliationPeriods",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.period.to",
+    "label": "Hasta",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": "CloseReconciliationPeriods",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.period.differenceType",
+    "label": "Clasificación si existe diferencia",
+    "module": "ledger",
+    "controlType": "select",
+    "requiredPermissionCode": "CloseReconciliationPeriods",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.period.justification",
+    "label": "Justificación",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": "CloseReconciliationPeriods",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.period.cancel",
+    "label": "Button 14",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.reconciliation.period.close",
+    "label": "Button 15",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "CloseReconciliationPeriods",
     "isSystemRequired": false
   },
   {

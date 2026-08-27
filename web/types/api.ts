@@ -1117,6 +1117,29 @@ export interface BankImportProfileDto {
   dateFormat?: string | null; delimiter: string; headerRow: number;
 }
 
+export type ReconciliationStatus = "Suggested" | "Confirmed" | "Rejected" | "Reversed";
+export type ReconciliationMatchType = "Exact" | "Suggested" | "OneToMany" | "ManyToOne" | "Partial" | "Difference";
+export type ReconciliationDifferenceType = "None" | "Commission" | "Refund" | "Transfer" | "Timing" | "Other";
+export interface ReconciliationFactorDto { code: string; label: string; points: number; detail: string; }
+export interface ReconciliationBankLineDto { id: string; date: string; description: string; reference?: string | null; amount: number; appliedAmount: number; currency: string; }
+export interface ReconciliationLedgerEntryDto { id: string; date: string; description: string; reference?: string | null; clientName?: string | null; amount: number; appliedAmount: number; currency: string; }
+export interface ReconciliationCaseDto {
+  id: string; bankAccountId: string; bankAccountName: string; status: ReconciliationStatus; matchType: ReconciliationMatchType;
+  score: number; bankAmount: number; ledgerAmount: number; differenceAmount: number; differenceType: ReconciliationDifferenceType;
+  differenceReason?: string | null; isAutomatic: boolean; generatedAt: string; confirmedAt?: string | null; reversedAt?: string | null;
+  factors: ReconciliationFactorDto[]; bankLines: ReconciliationBankLineDto[]; ledgerEntries: ReconciliationLedgerEntryDto[];
+}
+export interface ReconciliationSettingsDto {
+  dateToleranceDays: number; amountTolerance: number; suggestionThreshold: number; autoConfirmThreshold: number;
+  allowAutoConfirmExact: boolean; amountWeight: number; dateWeight: number; referenceWeight: number; clientWeight: number; patternWeight: number;
+}
+export interface ReconciliationRunResultDto { suggestionsCreated: number; exactMatches: number; combinedMatches: number; partialMatches: number; autoConfirmed: number; }
+export interface ReconciliationPeriodDto {
+  id: string; bankAccountId: string; bankAccountName: string; startDate: string; endDate: string; currency: string;
+  bankAmount: number; ledgerAmount: number; differenceAmount: number; differenceType: ReconciliationDifferenceType;
+  justification?: string | null; status: "Open" | "Closed"; closedAt?: string | null;
+}
+
 // ── ACCOUNT STATEMENTS ────────────────────────────────────────────────────────
 
 export interface AccountStatementItemDto {

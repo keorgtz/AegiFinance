@@ -3,11 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { useQuery } from "@tanstack/react-query";
-import {
-  useLedgerEntries,
-  useReconcileLedgerEntry,
-  useUnreconcileLedgerEntry,
-} from "@/hooks/use-ledger";
+import { useLedgerEntries } from "@/hooks/use-ledger";
 import {
   useBankAccounts,
 } from "@/hooks/use-bank-accounts";
@@ -27,6 +23,7 @@ import { AdjustmentForm } from "@/components/modules/ledger/adjustment-form";
 import { MajorLedgerPanel } from "@/components/modules/ledger/major-ledger-panel";
 import { BankImportDialog } from "@/components/modules/ledger/bank-import-dialog";
 import { BankImportsPanel } from "@/components/modules/ledger/bank-imports-panel";
+import { ReconciliationPanel } from "@/components/modules/ledger/reconciliation-panel";
 import { PermissionMenuItem } from "@/components/ui/permission-dropdown-item";
 import { Can } from "@/lib/auth/can";
 import { dashboardApi } from "@/lib/api/dashboard";
@@ -80,7 +77,7 @@ export default function LedgerPage() {
   const [reconciledFilter, setReconciledFilter] = useState<"" | "true" | "false">("");
   const [hasUnappliedBalance, setHasUnappliedBalance] = useState(false);
   const [showImportAttempts, setShowImportAttempts] = useState(false);
-  const [showReconciliationLines, setShowReconciliationLines] = useState(false);
+  const [defaultTab, setDefaultTab] = useState("entries");
 
   // ── Bank accounts state ────────────────────────────────────────────────────
   const [accountsPage, setAccountsPage] = useState(1);
@@ -119,8 +116,9 @@ export default function LedgerPage() {
     setReconciledFilter(reconciled === "true" || reconciled === "false" ? reconciled : "");
     setEntryTypeFilter((params.get("entryType") as LedgerEntryType | null) ?? "");
     setHasUnappliedBalance(params.get("hasUnappliedBalance") === "true");
-    setShowImportAttempts(params.get("view") === "imports");
-    setShowReconciliationLines(params.get("view") === "reconciliation");
+    const view = params.get("view");
+    setShowImportAttempts(view === "imports");
+    setDefaultTab(view === "reconciliation" ? "reconciliation" : view === "imports" ? "bank-imports" : "entries");
   }, []);
 
   // ── Data ───────────────────────────────────────────────────────────────────
@@ -155,23 +153,10 @@ export default function LedgerPage() {
     enabled: showImportAttempts,
   });
 
-  const reconciliationLines = useQuery({
-    queryKey: ["dashboard", "unreconciled-lines", dateFromFilter, dateToFilter, accountFilter],
-    queryFn: () => dashboardApi.unreconciledLines({
-      from: dateFromFilter || undefined,
-      to: dateToFilter || undefined,
-      bankAccountId: accountFilter || undefined,
-      currency: currencyFilter || "MXN",
-    }),
-    enabled: showReconciliationLines,
-  });
-
   // Also load all active accounts for filter dropdowns + form defaults
   const { data: allAccountsPage } = useBankAccounts({ isActive: true, includeBalances: false, pageSize: 100 });
   const allAccounts: BankAccountListDto[] = allAccountsPage?.items ?? [];
 
-  const reconcile = useReconcileLedgerEntry();
-  const unreconcile = useUnreconcileLedgerEntry();
   const hasEntryFilters = !!entryTypeFilter || !!accountFilter || !!dateFromFilter || !!dateToFilter || !!clientIdFilter || !!currencyFilter || !!reconciledFilter || hasUnappliedBalance;
 
   const openActionDialog = useCallback((action: EntryAction, accountId = "") => {
@@ -247,49 +232,6 @@ export default function LedgerPage() {
             <Circle className="h-3.5 w-3.5" />
             No
           </span>
-        );
-      },
-    },
-    {
-      id: "actions",
-      size: 48,
-      cell: ({ row }) => {
-        const e = row.original;
-        return (
-          <Can permission="ManageReconciliation">
-            <DropdownMenu.Root>
-              <DropdownMenu.Trigger asChild>
-                <Button controlKey="ui.app.app.ledger.page.button.1" variant="ghost" size="icon" aria-label="Opciones">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Portal>
-                <DropdownMenu.Content
-                  className="z-50 min-w-[160px] overflow-hidden rounded-table border border-border bg-surface p-1 shadow-dp2"
-                  sideOffset={4}
-                  align="end"
-                >
-                  {e.isReconciled ? (
-                    <DropdownMenu.Item
-                      className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle focus:outline-none"
-                      onSelect={() => unreconcile.mutate(e.id)}
-                    >
-                      <RefreshCw className="h-3.5 w-3.5" />
-                      Deshacer conciliación
-                    </DropdownMenu.Item>
-                  ) : (
-                    <DropdownMenu.Item
-                      className="flex cursor-pointer items-center gap-2 rounded-[6px] px-3 py-1.5 text-[13px] text-foreground-secondary hover:bg-surface-subtle focus:outline-none"
-                      onSelect={() => reconcile.mutate(e.id)}
-                    >
-                      <CheckCircle2 className="h-3.5 w-3.5" />
-                      Marcar conciliado
-                    </DropdownMenu.Item>
-                  )}
-                </DropdownMenu.Content>
-              </DropdownMenu.Portal>
-            </DropdownMenu.Root>
-          </Can>
         );
       },
     },
@@ -440,7 +382,7 @@ export default function LedgerPage() {
           <div className="flex items-center gap-2">
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
-                <Button controlKey="ui.app.app.ledger.page.button.3" size="md">
+                <Button controlKey="ui.app.app.ledger.page.button.2" size="md">
                   <Plus className="h-4 w-4" />
                   Registrar movimiento
                 </Button>
@@ -529,38 +471,7 @@ export default function LedgerPage() {
         </Can>
       )}
 
-      {showReconciliationLines && (
-        <Can permission="ManageReconciliation">
-          <section className="mb-5 rounded-card border border-warning/30 bg-warning-soft p-4" aria-labelledby="reconciliation-lines-title">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex min-w-0 gap-3">
-                <RefreshCw className="mt-0.5 h-5 w-5 shrink-0 text-warning" aria-hidden="true" />
-                <div>
-                  <h2 id="reconciliation-lines-title" className="font-display text-base font-bold text-foreground">Líneas bancarias por conciliar</h2>
-                  <p className="mt-1 text-[13px] text-foreground-secondary">Movimientos del estado bancario sin conciliación confirmada.</p>
-                </div>
-              </div>
-              <Button controlKey="dashboard.reconciliationLines.close" variant="ghost" size="sm" onClick={() => setShowReconciliationLines(false)}>Cerrar</Button>
-            </div>
-            {reconciliationLines.isLoading ? (
-              <p className="mt-4 text-[13px] text-muted">Cargando diferencias…</p>
-            ) : reconciliationLines.isError ? (
-              <div className="mt-4 flex items-center justify-between gap-3 rounded-input bg-surface p-3"><p className="text-[13px] text-danger">No se pudieron cargar las líneas.</p><Button controlKey="dashboard.reconciliationLines.retry" variant="outline" size="sm" onClick={() => reconciliationLines.refetch()}>Reintentar</Button></div>
-            ) : reconciliationLines.data?.length ? (
-              <div className="mt-4 grid gap-2">
-                {reconciliationLines.data.map((line) => (
-                  <article key={line.id} className="grid gap-2 rounded-input border border-border bg-surface p-3 sm:grid-cols-[1fr_auto] sm:items-center">
-                    <div className="min-w-0"><p className="truncate font-semibold text-foreground">{line.description}</p><p className="mt-1 text-[12px] text-muted">{line.bankAccountName}{line.reference ? ` · Ref: ${line.reference}` : ""} · {formatDate(line.transactionDate)}</p></div>
-                    <p className={cn("font-bold", line.amount < 0 ? "text-danger" : "text-success")}>{formatAmount(Math.abs(line.amount), line.currency)}</p>
-                  </article>
-                ))}
-              </div>
-            ) : <p className="mt-4 text-[13px] font-semibold text-success">No hay diferencias pendientes en este periodo.</p>}
-          </section>
-        </Can>
-      )}
-
-      <Tabs defaultTab="entries">
+      <Tabs defaultTab={defaultTab}>
         <TabList>
           <Tab controlKey="ui.app.app.ledger.page.tab.1" id="entries">
             Movimientos
@@ -579,6 +490,7 @@ export default function LedgerPage() {
             )}
           </Tab>
           <Tab controlKey="ledger.bankImports.tabs.imports" permission="ViewBankStatementImports" id="bank-imports">Importaciones</Tab>
+          <Tab controlKey="ledger.reconciliation.tabs.workspace" permission="ViewReconciliation" id="reconciliation">Conciliación</Tab>
           <Tab controlKey="ledger.major.tabs.journal" permission="ViewMajorLedger" id="journal">Libro diario</Tab>
           <Tab controlKey="ledger.major.tabs.chart" permission="ViewMajorLedger" id="chart">Catálogo contable</Tab>
           <Tab controlKey="ledger.major.tabs.trial" permission="ViewMajorLedger" id="trial">Balanza</Tab>
@@ -640,7 +552,7 @@ export default function LedgerPage() {
             {hasUnappliedBalance && <Badge variant="saffron">Saldo sin aplicar</Badge>}
 
             {hasEntryFilters && (
-              <button data-ui-control="ui.app.app.ledger.page.button.8"
+              <button data-ui-control="ui.app.app.ledger.page.button.5"
                 onClick={() => {
                   setEntryTypeFilter("");
                   setAccountFilter("");
@@ -789,6 +701,7 @@ export default function LedgerPage() {
           )}
         </TabPanel>
         <TabPanel id="bank-imports"><BankImportsPanel onImport={() => { setDefaultAccountId(accountFilter); setBankImportOpen(true); }} /></TabPanel>
+        <TabPanel id="reconciliation"><ReconciliationPanel accounts={allAccounts} /></TabPanel>
         <TabPanel id="journal"><MajorLedgerPanel view="journal" /></TabPanel>
         <TabPanel id="chart"><MajorLedgerPanel view="chart" /></TabPanel>
         <TabPanel id="trial"><MajorLedgerPanel view="trial" /></TabPanel>

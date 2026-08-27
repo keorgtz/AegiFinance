@@ -8,8 +8,6 @@ public interface ILedgerService
     Task<LedgerEntry> RegisterExpenseAsync(RegisterExpenseRequest request, CancellationToken cancellationToken = default);
     Task<TransferGroup> RegisterTransferAsync(RegisterTransferRequest request, CancellationToken cancellationToken = default);
     Task<LedgerEntry> RegisterAdjustmentAsync(RegisterAdjustmentRequest request, CancellationToken cancellationToken = default);
-    Task ReconcileAsync(Guid ledgerEntryId, CancellationToken cancellationToken = default);
-    Task UnreconcileAsync(Guid ledgerEntryId, CancellationToken cancellationToken = default);
 }
 
 public record RegisterIncomeRequest(Guid BankAccountId, decimal Amount, string Currency, DateTime Date, string Description, string? Reference, Guid? ClientId, Guid? BillingItemId);

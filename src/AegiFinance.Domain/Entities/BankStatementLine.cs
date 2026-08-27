@@ -16,6 +16,7 @@ public class BankStatementLine : AuditableEntity
     public int? SourceRowNumber { get; set; }
     
     public bool IsReconciled { get; set; }
+    public int ReconciliationVersion { get; set; }
     
     public Guid? LedgerEntryId { get; set; }
     public LedgerEntry? LedgerEntry { get; set; }

@@ -279,6 +279,8 @@ Evolucionar el registro actual de caja hacia un libro mayor real sin perder traz
 
 ## Fase 10 — Motor de conciliación
 
+**Estado:** implementada el 27 de agosto de 2026. Incluye coincidencias explicables por importe, fecha, referencia, cliente y patrón; casos exactos, sugeridos, combinados y parciales; confirmación humana; clasificación de diferencias; reversión auditable; cierres de periodo protegidos; concurrencia optimista; aislamiento multiempresa en EF y SQL RLS; permisos declarativos y experiencia AegiPulse responsive. Gate automatizado: `scripts/verify-phase10.ps1`.
+
 ### Entregables
 
 - coincidencia exacta y sugerida por importe, fecha, referencia, cliente y patrón;

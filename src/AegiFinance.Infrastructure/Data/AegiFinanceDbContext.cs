@@ -72,6 +72,11 @@ public class AegiFinanceDbContext : DbContext
     public DbSet<BankImportAttempt> BankImportAttempts => Set<BankImportAttempt>();
     public DbSet<BankImportProfile> BankImportProfiles => Set<BankImportProfile>();
     public DbSet<BankImportRow> BankImportRows => Set<BankImportRow>();
+    public DbSet<ReconciliationSettings> ReconciliationSettings => Set<ReconciliationSettings>();
+    public DbSet<ReconciliationCase> ReconciliationCases => Set<ReconciliationCase>();
+    public DbSet<ReconciliationCaseBankLine> ReconciliationCaseBankLines => Set<ReconciliationCaseBankLine>();
+    public DbSet<ReconciliationCaseLedgerEntry> ReconciliationCaseLedgerEntries => Set<ReconciliationCaseLedgerEntry>();
+    public DbSet<ReconciliationPeriod> ReconciliationPeriods => Set<ReconciliationPeriod>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -126,6 +131,7 @@ public class AegiFinanceDbContext : DbContext
         ConfigureBankImportAttempt(modelBuilder);
         ConfigureBankImportProfile(modelBuilder);
         ConfigureBankImportRow(modelBuilder);
+        ConfigureReconciliation(modelBuilder);
 
         ApplySoftDeleteQueryFilters(modelBuilder);
         ApplyTenantQueryFilters(modelBuilder);
@@ -894,6 +900,7 @@ public class AegiFinanceDbContext : DbContext
             entity.Property(e => e.Date).IsRequired();
             entity.Property(e => e.Description).HasMaxLength(500).IsRequired();
             entity.Property(e => e.Reference).HasMaxLength(200);
+            entity.Property(e => e.ReconciliationVersion).IsConcurrencyToken();
 
             entity.HasIndex(e => new { e.BankAccountId, e.Date });
 
@@ -1081,6 +1088,7 @@ public class AegiFinanceDbContext : DbContext
             entity.Property(e => e.Currency).HasMaxLength(3).IsRequired();
             entity.Property(e => e.BankBalance).HasPrecision(18, 2);
             entity.Property(e => e.DeduplicationHash).HasMaxLength(64);
+            entity.Property(e => e.ReconciliationVersion).IsConcurrencyToken();
             entity.HasIndex(e => e.DeduplicationHash).IsUnique()
                 .HasFilter("[DeduplicationHash] IS NOT NULL AND [IsDeleted] = 0");
             
@@ -1165,6 +1173,72 @@ public class AegiFinanceDbContext : DbContext
                 .HasForeignKey(item => item.ImportAttemptId).OnDelete(DeleteBehavior.Cascade);
             entity.HasOne(item => item.BankStatementLine).WithMany()
                 .HasForeignKey(item => item.BankStatementLineId).OnDelete(DeleteBehavior.Restrict);
+        });
+    }
+
+    private static void ConfigureReconciliation(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<ReconciliationSettings>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.AmountTolerance).HasPrecision(18, 2);
+            entity.Property(item => item.SuggestionThreshold).HasPrecision(5, 2);
+            entity.Property(item => item.AutoConfirmThreshold).HasPrecision(5, 2);
+            entity.HasIndex(item => item.OrganizationId).IsUnique().HasFilter("[IsDeleted] = 0");
+            entity.HasOne(item => item.Organization).WithMany().HasForeignKey(item => item.OrganizationId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<ReconciliationCase>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.Status).HasConversion<string>().HasMaxLength(30);
+            entity.Property(item => item.MatchType).HasConversion<string>().HasMaxLength(30);
+            entity.Property(item => item.Score).HasPrecision(5, 2);
+            entity.Property(item => item.ExplanationJson).HasColumnType("nvarchar(max)").IsRequired();
+            entity.Property(item => item.BankAmount).HasPrecision(18, 2);
+            entity.Property(item => item.LedgerAmount).HasPrecision(18, 2);
+            entity.Property(item => item.DifferenceAmount).HasPrecision(18, 2);
+            entity.Property(item => item.DifferenceType).HasConversion<string>().HasMaxLength(30);
+            entity.Property(item => item.DifferenceReason).HasMaxLength(1000);
+            entity.Property(item => item.ReversalReason).HasMaxLength(1000);
+            entity.HasIndex(item => new { item.BankAccountId, item.Status, item.GeneratedAt });
+            entity.HasOne(item => item.Organization).WithMany().HasForeignKey(item => item.OrganizationId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.BankAccount).WithMany().HasForeignKey(item => item.BankAccountId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<ReconciliationCaseBankLine>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.AppliedAmount).HasPrecision(18, 2);
+            entity.HasIndex(item => new { item.ReconciliationCaseId, item.BankStatementLineId }).IsUnique().HasFilter("[IsDeleted] = 0");
+            entity.HasIndex(item => item.BankStatementLineId);
+            entity.HasOne(item => item.ReconciliationCase).WithMany(item => item.BankLines).HasForeignKey(item => item.ReconciliationCaseId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.BankStatementLine).WithMany().HasForeignKey(item => item.BankStatementLineId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<ReconciliationCaseLedgerEntry>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.AppliedAmount).HasPrecision(18, 2);
+            entity.HasIndex(item => new { item.ReconciliationCaseId, item.LedgerEntryId }).IsUnique().HasFilter("[IsDeleted] = 0");
+            entity.HasIndex(item => item.LedgerEntryId);
+            entity.HasOne(item => item.ReconciliationCase).WithMany(item => item.LedgerEntries).HasForeignKey(item => item.ReconciliationCaseId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.LedgerEntry).WithMany().HasForeignKey(item => item.LedgerEntryId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<ReconciliationPeriod>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.Currency).HasMaxLength(3).IsRequired();
+            entity.Property(item => item.BankAmount).HasPrecision(18, 2);
+            entity.Property(item => item.LedgerAmount).HasPrecision(18, 2);
+            entity.Property(item => item.DifferenceAmount).HasPrecision(18, 2);
+            entity.Property(item => item.DifferenceType).HasConversion<string>().HasMaxLength(30);
+            entity.Property(item => item.Status).HasConversion<string>().HasMaxLength(30);
+            entity.Property(item => item.Justification).HasMaxLength(1000);
+            entity.HasIndex(item => new { item.BankAccountId, item.StartDate, item.EndDate }).IsUnique().HasFilter("[IsDeleted] = 0");
+            entity.HasOne(item => item.Organization).WithMany().HasForeignKey(item => item.OrganizationId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.BankAccount).WithMany().HasForeignKey(item => item.BankAccountId).OnDelete(DeleteBehavior.Restrict);
         });
     }
 
@@ -1279,6 +1353,16 @@ public class AegiFinanceDbContext : DbContext
             !IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId);
         AppendQueryFilter<BankImportRow>(modelBuilder, entity =>
             !IsOrganizationScope || entity.ImportAttempt.BankAccount.OrganizationId == CurrentOrganizationId);
+        AppendQueryFilter<ReconciliationSettings>(modelBuilder, entity =>
+            !IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId);
+        AppendQueryFilter<ReconciliationCase>(modelBuilder, entity =>
+            !IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId);
+        AppendQueryFilter<ReconciliationCaseBankLine>(modelBuilder, entity =>
+            !IsOrganizationScope || entity.ReconciliationCase.OrganizationId == CurrentOrganizationId);
+        AppendQueryFilter<ReconciliationCaseLedgerEntry>(modelBuilder, entity =>
+            !IsOrganizationScope || entity.ReconciliationCase.OrganizationId == CurrentOrganizationId);
+        AppendQueryFilter<ReconciliationPeriod>(modelBuilder, entity =>
+            !IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId);
         AppendQueryFilter<TransferGroup>(modelBuilder, entity =>
             !IsOrganizationScope || entity.FromEntry.BankAccount.OrganizationId == CurrentOrganizationId);
         AppendQueryFilter<UiControlPolicy>(modelBuilder, entity =>
