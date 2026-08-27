@@ -10,6 +10,10 @@ public class BankStatementLine : AuditableEntity
     
     // Positive = Income, Negative = Expense
     public decimal Amount { get; set; }
+    public string Currency { get; set; } = "MXN";
+    public decimal? BankBalance { get; set; }
+    public string? DeduplicationHash { get; set; }
+    public int? SourceRowNumber { get; set; }
     
     public bool IsReconciled { get; set; }
     

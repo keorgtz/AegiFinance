@@ -568,15 +568,15 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ledger.major.tabs.journal",
+    "controlKey": "ledger.bankImports.tabs.imports",
     "label": "Tab 3",
     "module": "ledger",
     "controlType": "tab",
-    "requiredPermissionCode": "ViewMajorLedger",
+    "requiredPermissionCode": "ViewBankStatementImports",
     "isSystemRequired": false
   },
   {
-    "controlKey": "ledger.major.tabs.chart",
+    "controlKey": "ledger.major.tabs.journal",
     "label": "Tab 4",
     "module": "ledger",
     "controlType": "tab",
@@ -584,7 +584,7 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ledger.major.tabs.trial",
+    "controlKey": "ledger.major.tabs.chart",
     "label": "Tab 5",
     "module": "ledger",
     "controlType": "tab",
@@ -592,8 +592,16 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ledger.major.tabs.periods",
+    "controlKey": "ledger.major.tabs.trial",
     "label": "Tab 6",
+    "module": "ledger",
+    "controlType": "tab",
+    "requiredPermissionCode": "ViewMajorLedger",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.major.tabs.periods",
+    "label": "Tab 7",
     "module": "ledger",
     "controlType": "tab",
     "requiredPermissionCode": "ViewMajorLedger",
@@ -2085,6 +2093,166 @@
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": "UpdateBankAccountBalances",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.components.modules.ledger.bank.import.dialog.input.1",
+    "label": "input 1",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankImports.form.account",
+    "label": "Cuenta bancaria *",
+    "module": "ledger",
+    "controlType": "select",
+    "requiredPermissionCode": "CreateBankStatementImports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankImports.form.adapter",
+    "label": "Formato del banco",
+    "module": "ledger",
+    "controlType": "select",
+    "requiredPermissionCode": "CreateBankStatementImports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankImports.form.profile",
+    "label": "Perfil de columnas (opcional)",
+    "module": "ledger",
+    "controlType": "select",
+    "requiredPermissionCode": "CreateBankStatementImports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankImports.form.mapping.toggle",
+    "label": "Button 1",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "CreateBankStatementImports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankImports.profile.delimiter",
+    "label": "Separador CSV",
+    "module": "ledger",
+    "controlType": "select",
+    "requiredPermissionCode": "ManageBankImportProfiles",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankImports.profile.headerRow",
+    "label": "Fila de encabezados",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageBankImportProfiles",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankImports.profile.dateFormat",
+    "label": "Formato de fecha",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageBankImportProfiles",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankImports.profile.name",
+    "label": "Nombre para guardar este perfil",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageBankImportProfiles",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankImports.profile.save",
+    "label": "Button 2",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageBankImportProfiles",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankImports.form.cancel",
+    "label": "Button 3",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankImports.form.preview",
+    "label": "Button 4",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "CreateBankStatementImports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankImports.preview.back",
+    "label": "Button 5",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankImports.preview.confirm",
+    "label": "Button 6",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "ConfirmBankStatementImports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankImports.success.close",
+    "label": "Button 7",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankImports.list.retry",
+    "label": "Button 1",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewBankStatementImports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankImports.create",
+    "label": "Button 2",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "CreateBankStatementImports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankImports.list.rollback",
+    "label": "Button 3",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "RollbackBankStatementImports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankImports.rollback.cancel",
+    "label": "Button 4",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.bankImports.rollback.confirm",
+    "label": "Button 5",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "RollbackBankStatementImports",
     "isSystemRequired": false
   },
   {

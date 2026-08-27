@@ -1074,6 +1074,49 @@ export interface RecordBankBalanceRequest {
   balance: number;
 }
 
+export type BankImportStatus = "Preview" | "Committed" | "RolledBack" | "Failed";
+export type BankImportRowStatus = "Valid" | "Duplicate" | "Incomplete" | "Rejected";
+
+export interface BankImportIssueDto { field: string; message: string; correction: string; }
+export interface BankImportRowDto {
+  id: string;
+  rowNumber: number;
+  transactionDate?: string | null;
+  description?: string | null;
+  reference?: string | null;
+  amount?: number | null;
+  currency?: string | null;
+  balance?: number | null;
+  status: BankImportRowStatus;
+  issues: BankImportIssueDto[];
+}
+export interface BankImportBatchDto {
+  id: string;
+  bankAccountId: string;
+  bankAccountName: string;
+  fileName: string;
+  fileHash: string;
+  adapterCode: string;
+  status: BankImportStatus;
+  totalRecords: number;
+  validRecords: number;
+  duplicateRecords: number;
+  incompleteRecords: number;
+  rejectedRecords: number;
+  recordsImported: number;
+  bankStatementId?: string | null;
+  attemptedAt: string;
+  completedAt?: string | null;
+  rows: BankImportRowDto[];
+}
+export interface BankImportAdapterDto { code: string; name: string; description: string; }
+export interface BankImportProfileDto {
+  id: string; name: string; adapterCode: string; dateColumn: string; descriptionColumn: string;
+  referenceColumn?: string | null; amountColumn?: string | null; debitColumn?: string | null;
+  creditColumn?: string | null; currencyColumn?: string | null; balanceColumn?: string | null;
+  dateFormat?: string | null; delimiter: string; headerRow: number;
+}
+
 // ── ACCOUNT STATEMENTS ────────────────────────────────────────────────────────
 
 export interface AccountStatementItemDto {

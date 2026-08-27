@@ -11,6 +11,8 @@ public class BankStatement : AuditableEntity
     public decimal ClosingBalance { get; set; }
     public bool IsBalanceVerified { get; set; }
     public string? FileUrl { get; set; }
+    public string? FileHash { get; set; }
+    public Guid? ImportAttemptId { get; set; }
     
     // Navigation property
     public ICollection<BankStatementLine> Lines { get; set; } = new List<BankStatementLine>();

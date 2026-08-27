@@ -25,6 +25,8 @@ import { ExpenseForm } from "@/components/modules/ledger/expense-form";
 import { TransferForm } from "@/components/modules/ledger/transfer-form";
 import { AdjustmentForm } from "@/components/modules/ledger/adjustment-form";
 import { MajorLedgerPanel } from "@/components/modules/ledger/major-ledger-panel";
+import { BankImportDialog } from "@/components/modules/ledger/bank-import-dialog";
+import { BankImportsPanel } from "@/components/modules/ledger/bank-imports-panel";
 import { PermissionMenuItem } from "@/components/ui/permission-dropdown-item";
 import { Can } from "@/lib/auth/can";
 import { dashboardApi } from "@/lib/api/dashboard";
@@ -91,6 +93,7 @@ export default function LedgerPage() {
   // ── Register dialogs ───────────────────────────────────────────────────────
   const [openAction, setOpenAction] = useState<EntryAction | null>(null);
   const [defaultAccountId, setDefaultAccountId] = useState("");
+  const [bankImportOpen, setBankImportOpen] = useState(false);
 
   // ── Keyboard shortcuts ─────────────────────────────────────────────────────
   const searchRef = useRef<HTMLInputElement>(null);
@@ -575,6 +578,7 @@ export default function LedgerPage() {
               </span>
             )}
           </Tab>
+          <Tab controlKey="ledger.bankImports.tabs.imports" permission="ViewBankStatementImports" id="bank-imports">Importaciones</Tab>
           <Tab controlKey="ledger.major.tabs.journal" permission="ViewMajorLedger" id="journal">Libro diario</Tab>
           <Tab controlKey="ledger.major.tabs.chart" permission="ViewMajorLedger" id="chart">Catálogo contable</Tab>
           <Tab controlKey="ledger.major.tabs.trial" permission="ViewMajorLedger" id="trial">Balanza</Tab>
@@ -784,6 +788,7 @@ export default function LedgerPage() {
             />
           )}
         </TabPanel>
+        <TabPanel id="bank-imports"><BankImportsPanel onImport={() => { setDefaultAccountId(accountFilter); setBankImportOpen(true); }} /></TabPanel>
         <TabPanel id="journal"><MajorLedgerPanel view="journal" /></TabPanel>
         <TabPanel id="chart"><MajorLedgerPanel view="chart" /></TabPanel>
         <TabPanel id="trial"><MajorLedgerPanel view="trial" /></TabPanel>
@@ -804,6 +809,7 @@ export default function LedgerPage() {
         onOpenChange={(open) => { setBalanceFormOpen(open); if (!open) setBalanceAccount(null); }}
         account={balanceAccount}
       />
+      <BankImportDialog open={bankImportOpen} onOpenChange={setBankImportOpen} accounts={allAccounts} defaultAccountId={defaultAccountId} />
 
       {/* Entry registration dialogs */}
       <IncomeForm

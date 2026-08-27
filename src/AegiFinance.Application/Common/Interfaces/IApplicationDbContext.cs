@@ -54,6 +54,8 @@ public interface IApplicationDbContext
     DbSet<BankStatement> BankStatements { get; }
     DbSet<BankStatementLine> BankStatementLines { get; }
     DbSet<BankImportAttempt> BankImportAttempts { get; }
+    DbSet<BankImportProfile> BankImportProfiles { get; }
+    DbSet<BankImportRow> BankImportRows { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);

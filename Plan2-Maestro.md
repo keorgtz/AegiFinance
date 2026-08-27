@@ -259,6 +259,8 @@ Evolucionar el registro actual de caja hacia un libro mayor real sin perder traz
 
 ## Fase 9 — Importación de estados bancarios
 
+**Estado:** implementada el 27 de agosto de 2026. Gate automatizado: `scripts/verify-phase9.ps1`.
+
 ### Entregables
 
 - importadores CSV/XLSX y adaptadores por banco;

@@ -95,7 +95,7 @@ public sealed class GetDashboardAttentionQueryHandler : IRequestHandler<GetDashb
                 });
             }
 
-            var failedImports = _context.BankImportAttempts.AsNoTracking().Where(item => item.Status == "Failed" &&
+            var failedImports = _context.BankImportAttempts.AsNoTracking().Where(item => item.Status == AegiFinance.Domain.Enums.BankImportStatus.Failed &&
                 item.AttemptedAt >= normalized.From && item.AttemptedAt < normalized.To.AddDays(1) &&
                 item.BankAccount.Currency == normalized.Currency);
             if (request.BankAccountId.HasValue) failedImports = failedImports.Where(item => item.BankAccountId == request.BankAccountId.Value);

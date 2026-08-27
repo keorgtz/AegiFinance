@@ -2,6 +2,7 @@ using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using AegiFinance.Domain.Enums;
 
 namespace AegiFinance.Application.Features.Dashboard;
 
@@ -30,8 +31,8 @@ public sealed class GetBankImportAttemptsQueryHandler : IRequestHandler<GetBankI
 
         if (request.BankAccountId.HasValue)
             query = query.Where(item => item.BankAccountId == request.BankAccountId.Value);
-        if (!string.IsNullOrWhiteSpace(request.Status))
-            query = query.Where(item => item.Status == request.Status);
+        if (!string.IsNullOrWhiteSpace(request.Status) && Enum.TryParse<BankImportStatus>(request.Status, true, out var status))
+            query = query.Where(item => item.Status == status);
 
         return await query.OrderByDescending(item => item.AttemptedAt).Take(100)
             .Select(item => new BankImportAttemptDto
@@ -39,7 +40,7 @@ public sealed class GetBankImportAttemptsQueryHandler : IRequestHandler<GetBankI
                 Id = item.Id,
                 BankAccountName = item.BankAccount.Name,
                 FileName = item.FileName,
-                Status = item.Status,
+                Status = item.Status.ToString(),
                 Error = item.Error,
                 RecordsImported = item.RecordsImported,
                 AttemptedAt = item.AttemptedAt

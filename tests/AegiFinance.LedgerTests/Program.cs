@@ -95,7 +95,15 @@ if (ReceivableRules.Balance(receivable) != 750m)
     throw new InvalidOperationException("Failed: receivable balance does not include credits, fees and payments.");
 AssertThrows(() => ReceivableRules.ValidateCredit(receivable, 751m), "credit note above outstanding balance");
 
-Console.WriteLine("Major Ledger, bank-account, client-identity and subscription pricing rules passed.");
+var importAccountId = Guid.NewGuid();
+var importHash = BankImportRules.DeduplicationHash(importAccountId, new DateTime(2026, 8, 26), "Pago cliente 42", "REF-42", 1250.50m, "mxn", 1);
+var repeatedHash = BankImportRules.DeduplicationHash(importAccountId, new DateTime(2026, 8, 26, 23, 59, 0), " Pago cliente 42 ", "ref-42", 1250.5m, "MXN", 1);
+if (importHash != repeatedHash)
+    throw new InvalidOperationException("Failed: bank import deduplication hash is not stable.");
+if (importHash == BankImportRules.DeduplicationHash(importAccountId, new DateTime(2026, 8, 26), "Pago cliente 42", "REF-42", 1250.50m, "MXN", 2))
+    throw new InvalidOperationException("Failed: legitimate repeated rows collapse into one import hash.");
+
+Console.WriteLine("Major Ledger, bank-account, client-identity, subscription pricing and bank-import rules passed.");
 
 static JournalEntry Entry(params JournalLine[] lines) => new()
 {

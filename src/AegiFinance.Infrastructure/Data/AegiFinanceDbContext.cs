@@ -70,6 +70,8 @@ public class AegiFinanceDbContext : DbContext
     public DbSet<BankStatement> BankStatements => Set<BankStatement>();
     public DbSet<BankStatementLine> BankStatementLines => Set<BankStatementLine>();
     public DbSet<BankImportAttempt> BankImportAttempts => Set<BankImportAttempt>();
+    public DbSet<BankImportProfile> BankImportProfiles => Set<BankImportProfile>();
+    public DbSet<BankImportRow> BankImportRows => Set<BankImportRow>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -122,6 +124,8 @@ public class AegiFinanceDbContext : DbContext
         ConfigureBankStatement(modelBuilder);
         ConfigureBankStatementLine(modelBuilder);
         ConfigureBankImportAttempt(modelBuilder);
+        ConfigureBankImportProfile(modelBuilder);
+        ConfigureBankImportRow(modelBuilder);
 
         ApplySoftDeleteQueryFilters(modelBuilder);
         ApplyTenantQueryFilters(modelBuilder);
@@ -1050,6 +1054,9 @@ public class AegiFinanceDbContext : DbContext
             entity.Property(e => e.OpeningBalance).HasPrecision(18, 2);
             entity.Property(e => e.ClosingBalance).HasPrecision(18, 2);
             entity.Property(e => e.FileUrl).HasMaxLength(1000);
+            entity.Property(e => e.FileHash).HasMaxLength(64);
+            entity.HasIndex(e => new { e.BankAccountId, e.FileHash })
+                .HasFilter("[FileHash] IS NOT NULL AND [IsDeleted] = 0");
 
             entity.HasOne(bs => bs.BankAccount)
                 .WithMany()
@@ -1071,6 +1078,11 @@ public class AegiFinanceDbContext : DbContext
             entity.Property(e => e.Description).HasMaxLength(1000).IsRequired();
             entity.Property(e => e.Reference).HasMaxLength(200);
             entity.Property(e => e.Amount).HasPrecision(18, 2);
+            entity.Property(e => e.Currency).HasMaxLength(3).IsRequired();
+            entity.Property(e => e.BankBalance).HasPrecision(18, 2);
+            entity.Property(e => e.DeduplicationHash).HasMaxLength(64);
+            entity.HasIndex(e => e.DeduplicationHash).IsUnique()
+                .HasFilter("[DeduplicationHash] IS NOT NULL AND [IsDeleted] = 0");
             
             entity.HasOne(bsl => bsl.LedgerEntry)
                 .WithMany()
@@ -1085,14 +1097,74 @@ public class AegiFinanceDbContext : DbContext
         {
             entity.HasKey(item => item.Id);
             entity.Property(item => item.FileName).HasMaxLength(260).IsRequired();
-            entity.Property(item => item.Status).HasMaxLength(30).IsRequired();
+            entity.Property(item => item.Status).HasConversion<string>().HasMaxLength(30).IsRequired();
             entity.Property(item => item.Error).HasMaxLength(2000);
+            entity.Property(item => item.FileHash).HasMaxLength(64).IsRequired();
+            entity.Property(item => item.FileType).HasMaxLength(20).IsRequired();
+            entity.Property(item => item.AdapterCode).HasMaxLength(50).IsRequired();
             entity.Property(item => item.AttemptedAt).IsRequired();
             entity.HasIndex(item => new { item.Status, item.AttemptedAt });
+            entity.HasIndex(item => new { item.BankAccountId, item.FileHash });
             entity.HasOne(item => item.BankAccount)
                 .WithMany()
                 .HasForeignKey(item => item.BankAccountId)
                 .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.Profile)
+                .WithMany()
+                .HasForeignKey(item => item.ProfileId)
+                .OnDelete(DeleteBehavior.SetNull);
+            entity.HasOne(item => item.BankStatement)
+                .WithMany()
+                .HasForeignKey(item => item.BankStatementId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+    }
+
+    private static void ConfigureBankImportProfile(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<BankImportProfile>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.Name).HasMaxLength(120).IsRequired();
+            entity.Property(item => item.AdapterCode).HasMaxLength(50).IsRequired();
+            entity.Property(item => item.DateColumn).HasMaxLength(120).IsRequired();
+            entity.Property(item => item.DescriptionColumn).HasMaxLength(120).IsRequired();
+            entity.Property(item => item.ReferenceColumn).HasMaxLength(120);
+            entity.Property(item => item.AmountColumn).HasMaxLength(120);
+            entity.Property(item => item.DebitColumn).HasMaxLength(120);
+            entity.Property(item => item.CreditColumn).HasMaxLength(120);
+            entity.Property(item => item.CurrencyColumn).HasMaxLength(120);
+            entity.Property(item => item.BalanceColumn).HasMaxLength(120);
+            entity.Property(item => item.DateFormat).HasMaxLength(50);
+            entity.Property(item => item.Delimiter).HasMaxLength(4).IsRequired();
+            entity.HasIndex(item => new { item.OrganizationId, item.Name }).IsUnique()
+                .HasFilter("[IsDeleted] = 0");
+            entity.HasOne(item => item.Organization).WithMany().HasForeignKey(item => item.OrganizationId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+    }
+
+    private static void ConfigureBankImportRow(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<BankImportRow>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.RawDataJson).HasColumnType("nvarchar(max)").IsRequired();
+            entity.Property(item => item.Description).HasMaxLength(1000);
+            entity.Property(item => item.Reference).HasMaxLength(200);
+            entity.Property(item => item.Amount).HasPrecision(18, 2);
+            entity.Property(item => item.Currency).HasMaxLength(3);
+            entity.Property(item => item.Balance).HasPrecision(18, 2);
+            entity.Property(item => item.DeduplicationHash).HasMaxLength(64);
+            entity.Property(item => item.Status).HasConversion<string>().HasMaxLength(30).IsRequired();
+            entity.Property(item => item.IssuesJson).HasColumnType("nvarchar(max)").IsRequired();
+            entity.HasIndex(item => new { item.ImportAttemptId, item.RowNumber }).IsUnique()
+                .HasFilter("[IsDeleted] = 0");
+            entity.HasIndex(item => new { item.Status, item.DeduplicationHash });
+            entity.HasOne(item => item.ImportAttempt).WithMany(item => item.Rows)
+                .HasForeignKey(item => item.ImportAttemptId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(item => item.BankStatementLine).WithMany()
+                .HasForeignKey(item => item.BankStatementLineId).OnDelete(DeleteBehavior.Restrict);
         });
     }
 
@@ -1203,6 +1275,10 @@ public class AegiFinanceDbContext : DbContext
             !IsOrganizationScope || entity.BankStatement.BankAccount.OrganizationId == CurrentOrganizationId);
         AppendQueryFilter<BankImportAttempt>(modelBuilder, entity =>
             !IsOrganizationScope || entity.BankAccount.OrganizationId == CurrentOrganizationId);
+        AppendQueryFilter<BankImportProfile>(modelBuilder, entity =>
+            !IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId);
+        AppendQueryFilter<BankImportRow>(modelBuilder, entity =>
+            !IsOrganizationScope || entity.ImportAttempt.BankAccount.OrganizationId == CurrentOrganizationId);
         AppendQueryFilter<TransferGroup>(modelBuilder, entity =>
             !IsOrganizationScope || entity.FromEntry.BankAccount.OrganizationId == CurrentOrganizationId);
         AppendQueryFilter<UiControlPolicy>(modelBuilder, entity =>
