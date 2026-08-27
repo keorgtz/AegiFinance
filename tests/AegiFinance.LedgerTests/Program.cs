@@ -88,6 +88,13 @@ var proratedTerms = new SubscriptionTermsVersion { BillingType = BillingType.Mon
 if (SubscriptionPricingRules.FirstPeriodFactor(proratedSubscription, proratedTerms) != 0.5m)
     throw new InvalidOperationException("Failed: daily first-period proration is incorrect.");
 
+var receivable = new BillingItem { Amount = 1000m, PaidAmount = 200m };
+receivable.Adjustments.Add(new BillingAdjustment { Type = BillingAdjustmentType.CreditNote, Amount = 100m });
+receivable.Adjustments.Add(new BillingAdjustment { Type = BillingAdjustmentType.LateFee, Amount = 50m });
+if (ReceivableRules.Balance(receivable) != 750m)
+    throw new InvalidOperationException("Failed: receivable balance does not include credits, fees and payments.");
+AssertThrows(() => ReceivableRules.ValidateCredit(receivable, 751m), "credit note above outstanding balance");
+
 Console.WriteLine("Major Ledger, bank-account, client-identity and subscription pricing rules passed.");
 
 static JournalEntry Entry(params JournalLine[] lines) => new()

@@ -147,6 +147,7 @@ public class BillingGenerationService : IBillingGenerationService
             return result;
         }
 
+        var originalCycleStatus = cycle.Status;
         cycle.Status = BillingCycleStatus.Reprocessing;
         _context.BillingCycles.Update(cycle);
 
@@ -174,14 +175,14 @@ public class BillingGenerationService : IBillingGenerationService
             {
                 try
                 {
-                    var existingItem = existingItems.FirstOrDefault(bi => bi.SubscriptionId == subscription.Id);
+                    var existingItem = existingItems.FirstOrDefault(bi => bi.IdempotencyKey == $"scheduled:{subscription.Id}:{cycle.Id}");
 
                     if (existingItem is null)
                     {
                         await GenerateItemForSubscriptionAsync(subscription, cycle, triggeredBy, cancellationToken);
                         result.ItemsGenerated++;
                     }
-                    else if (!onlyPending || existingItem.Status is BillingItemStatus.Pending or BillingItemStatus.Partial or BillingItemStatus.Cancelled)
+                    else if (existingItem.Status is BillingItemStatus.Pending or BillingItemStatus.Partial)
                     {
                         var hasPostedCharge = await _context.JournalEntries.AsNoTracking()
                             .AnyAsync(entry => entry.IdempotencyKey == $"charge:{existingItem.Id}", cancellationToken);
@@ -199,7 +200,7 @@ public class BillingGenerationService : IBillingGenerationService
                         existingItem.TaxAmount = pricing.TaxAmount;
                         existingItem.ProrationFactor = pricing.ProrationFactor;
                         existingItem.Amount = pricing.Total;
-                        existingItem.Description = BuildDescription(subscription, terms);
+                        existingItem.Description = BuildDescription(subscription, terms, cycle);
                         existingItem.DueDate = CalculateDueDate(subscription, terms);
                         existingItem.Currency = terms.Currency;
                         _context.BillingItems.Update(existingItem);
@@ -211,7 +212,7 @@ public class BillingGenerationService : IBillingGenerationService
                 }
             }
 
-            cycle.Status = BillingCycleStatus.Open;
+            cycle.Status = originalCycleStatus == BillingCycleStatus.Closed ? BillingCycleStatus.Closed : BillingCycleStatus.Open;
             _context.BillingCycles.Update(cycle);
 
             await _context.SaveChangesAsync(cancellationToken);
@@ -224,6 +225,10 @@ public class BillingGenerationService : IBillingGenerationService
         catch (Exception ex)
         {
             await transaction.RollbackAsync(cancellationToken);
+            _context.ChangeTracker.Clear();
+            cycle.Status = originalCycleStatus;
+            _context.BillingCycles.Update(cycle);
+            await _context.SaveChangesAsync(cancellationToken);
             result.Success = false;
             result.Errors.Add($"Error general: {ex.Message}");
             await FinishLogAsync(log, result, cancellationToken);
@@ -235,7 +240,7 @@ public class BillingGenerationService : IBillingGenerationService
     {
         var exists = await _context.BillingItems
             .AsNoTracking()
-            .AnyAsync(bi => bi.SubscriptionId == subscription.Id && bi.BillingCycleId == cycle.Id, cancellationToken);
+            .AnyAsync(bi => bi.IdempotencyKey == $"scheduled:{subscription.Id}:{cycle.Id}", cancellationToken);
 
         if (exists)
         {
@@ -258,11 +263,13 @@ public class BillingGenerationService : IBillingGenerationService
         var billingItem = new BillingItem
         {
             Id = Guid.NewGuid(),
+            Type = BillingItemType.SubscriptionCharge,
+            IdempotencyKey = $"scheduled:{subscription.Id}:{cycle.Id}",
             SubscriptionId = subscription.Id,
             BillingCycleId = cycle.Id,
             ClientId = subscription.ClientId,
             SubscriptionTermsVersionId = terms.Id,
-            Description = BuildDescription(subscription, terms),
+            Description = BuildDescription(subscription, terms, cycle),
             BaseAmount = pricing.BaseAmount,
             DiscountAmount = pricing.DiscountAmount,
             TaxAmount = pricing.TaxAmount,
@@ -270,6 +277,8 @@ public class BillingGenerationService : IBillingGenerationService
             Amount = pricing.Total,
             Currency = terms.Currency,
             DueDate = CalculateDueDate(subscription, terms),
+            PeriodStart = cycle.StartDate,
+            PeriodEnd = cycle.EndDate,
             Status = BillingItemStatus.Pending,
             PaidAmount = 0,
             GeneratedAt = DateTime.UtcNow,
@@ -306,10 +315,10 @@ public class BillingGenerationService : IBillingGenerationService
         }
     }
 
-    private static string BuildDescription(Subscription subscription, SubscriptionTermsVersion terms)
+    private static string BuildDescription(Subscription subscription, SubscriptionTermsVersion terms, BillingCycle cycle)
     {
         var serviceName = subscription.Service?.Name ?? subscription.ServiceId.ToString();
-        return $"Cargo por servicio {serviceName} - Suscripción {subscription.Code} - Condiciones v{terms.VersionNumber}";
+        return $"{serviceName} · {subscription.Code} · {cycle.StartDate:yyyy-MM-dd}–{cycle.EndDate:yyyy-MM-dd} · {terms.BillingType} · condiciones v{terms.VersionNumber}";
     }
 
     private static DateTime CalculateDueDate(Subscription subscription, SubscriptionTermsVersion terms)
@@ -347,6 +356,8 @@ public class BillingGenerationService : IBillingGenerationService
 
         if (cycle is not null)
         {
+            if (cycle.Status == BillingCycleStatus.Closed)
+                throw new InvalidOperationException("El ciclo de facturación está cerrado.");
             return cycle;
         }
 

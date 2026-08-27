@@ -64,11 +64,67 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.billing.page.button.1",
-    "label": "Cancelar cargo",
+    "controlKey": "billing.items.actions",
+    "label": "Acciones del cargo",
     "module": "billing",
     "controlType": "button",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ViewPayments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.items.credit-note",
+    "label": "PermissionMenuItem 1",
+    "module": "billing",
+    "controlType": "permissionmenuitem",
+    "requiredPermissionCode": "AdjustBillingItems",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.items.late-fee",
+    "label": "PermissionMenuItem 2",
+    "module": "billing",
+    "controlType": "permissionmenuitem",
+    "requiredPermissionCode": "AdjustBillingItems",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.items.promise",
+    "label": "PermissionMenuItem 3",
+    "module": "billing",
+    "controlType": "permissionmenuitem",
+    "requiredPermissionCode": "ManagePaymentPromises",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.items.promise-fulfilled",
+    "label": "PermissionMenuItem 4",
+    "module": "billing",
+    "controlType": "permissionmenuitem",
+    "requiredPermissionCode": "ManagePaymentPromises",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.items.promise-broken",
+    "label": "PermissionMenuItem 5",
+    "module": "billing",
+    "controlType": "permissionmenuitem",
+    "requiredPermissionCode": "ManagePaymentPromises",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.items.promise-cancel",
+    "label": "PermissionMenuItem 6",
+    "module": "billing",
+    "controlType": "permissionmenuitem",
+    "requiredPermissionCode": "ManagePaymentPromises",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.items.cancel",
+    "label": "PermissionMenuItem 7",
+    "module": "billing",
+    "controlType": "permissionmenuitem",
+    "requiredPermissionCode": "CancelBillingItems",
     "isSystemRequired": false
   },
   {
@@ -76,7 +132,7 @@
     "label": "Button 2",
     "module": "billing",
     "controlType": "button",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CloseBillingCycles",
     "isSystemRequired": false
   },
   {
@@ -84,7 +140,7 @@
     "label": "Button 3",
     "module": "billing",
     "controlType": "button",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ReprocessBilling",
     "isSystemRequired": false
   },
   {
@@ -92,15 +148,23 @@
     "label": "Button 4",
     "module": "billing",
     "controlType": "button",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ViewPayments",
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.billing.page.button.5",
+    "controlKey": "billing.header.manual-charge",
     "label": "Button 5",
     "module": "billing",
     "controlType": "button",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateBillingItems",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.billing.page.button.6",
+    "label": "Button 6",
+    "module": "billing",
+    "controlType": "button",
+    "requiredPermissionCode": "GenerateBilling",
     "isSystemRequired": false
   },
   {
@@ -108,7 +172,7 @@
     "label": "Tab 1",
     "module": "billing",
     "controlType": "tab",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ViewPayments",
     "isSystemRequired": false
   },
   {
@@ -116,7 +180,7 @@
     "label": "Tab 2",
     "module": "billing",
     "controlType": "tab",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ViewPayments",
     "isSystemRequired": false
   },
   {
@@ -124,7 +188,7 @@
     "label": "Tab 3",
     "module": "billing",
     "controlType": "tab",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ViewPayments",
     "isSystemRequired": false
   },
   {
@@ -132,7 +196,7 @@
     "label": "Select 1",
     "module": "billing",
     "controlType": "select",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ViewPayments",
     "isSystemRequired": false
   },
   {
@@ -140,7 +204,7 @@
     "label": "Select 2",
     "module": "billing",
     "controlType": "select",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ViewPayments",
     "isSystemRequired": false
   },
   {
@@ -160,11 +224,11 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.billing.page.button.6",
-    "label": "button 6",
+    "controlKey": "ui.app.app.billing.page.button.7",
+    "label": "button 7",
     "module": "billing",
     "controlType": "button",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ViewPayments",
     "isSystemRequired": false
   },
   {
@@ -172,7 +236,7 @@
     "label": "Select 3",
     "module": "billing",
     "controlType": "select",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ViewPayments",
     "isSystemRequired": false
   },
   {
@@ -180,7 +244,7 @@
     "label": "Select 4",
     "module": "billing",
     "controlType": "select",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ViewPayments",
     "isSystemRequired": false
   },
   {
@@ -1340,7 +1404,7 @@
     "label": "Motivo *",
     "module": "billing",
     "controlType": "textarea",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CancelBillingItems",
     "isSystemRequired": false
   },
   {
@@ -1356,7 +1420,7 @@
     "label": "Button 2",
     "module": "billing",
     "controlType": "button",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CancelBillingItems",
     "isSystemRequired": false
   },
   {
@@ -1364,15 +1428,15 @@
     "label": "Año *",
     "module": "billing",
     "controlType": "select",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "GenerateBilling",
     "isSystemRequired": false
   },
   {
     "controlKey": "ui.components.modules.billing.generate.billing.dialog.select.2",
-    "label": "Mes (vacío = anual)",
+    "label": "Mes *",
     "module": "billing",
     "controlType": "select",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "GenerateBilling",
     "isSystemRequired": false
   },
   {
@@ -1388,7 +1452,167 @@
     "label": "Button 2",
     "module": "billing",
     "controlType": "button",
+    "requiredPermissionCode": "GenerateBilling",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.manual.subscription",
+    "label": "Suscripción *",
+    "module": "billing",
+    "controlType": "select",
+    "requiredPermissionCode": "CreateBillingItems",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.manual.description",
+    "label": "Concepto *",
+    "module": "billing",
+    "controlType": "textarea",
+    "requiredPermissionCode": "CreateBillingItems",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.manual.amount",
+    "label": "Importe *",
+    "module": "billing",
+    "controlType": "input",
+    "requiredPermissionCode": "CreateBillingItems",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.manual.currency",
+    "label": "Moneda",
+    "module": "billing",
+    "controlType": "input",
+    "requiredPermissionCode": "CreateBillingItems",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.manual.charge-date",
+    "label": "Fecha del cargo *",
+    "module": "billing",
+    "controlType": "input",
+    "requiredPermissionCode": "CreateBillingItems",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.manual.due-date",
+    "label": "Vencimiento *",
+    "module": "billing",
+    "controlType": "input",
+    "requiredPermissionCode": "CreateBillingItems",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.manual.period-start",
+    "label": "Periodo desde *",
+    "module": "billing",
+    "controlType": "input",
+    "requiredPermissionCode": "CreateBillingItems",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.manual.period-end",
+    "label": "Periodo hasta *",
+    "module": "billing",
+    "controlType": "input",
+    "requiredPermissionCode": "CreateBillingItems",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.manual.cancel",
+    "label": "Button 1",
+    "module": "billing",
+    "controlType": "button",
     "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.manual.save",
+    "label": "Button 2",
+    "module": "billing",
+    "controlType": "button",
+    "requiredPermissionCode": "CreateBillingItems",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.adjustment.amount",
+    "label": "Importe *",
+    "module": "billing",
+    "controlType": "input",
+    "requiredPermissionCode": "AdjustBillingItems",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.adjustment.date",
+    "label": "Fecha efectiva *",
+    "module": "billing",
+    "controlType": "input",
+    "requiredPermissionCode": "AdjustBillingItems",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.adjustment.reason",
+    "label": "Motivo *",
+    "module": "billing",
+    "controlType": "textarea",
+    "requiredPermissionCode": "AdjustBillingItems",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.adjustment.cancel",
+    "label": "Button 1",
+    "module": "billing",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.adjustment.save",
+    "label": "Button 2",
+    "module": "billing",
+    "controlType": "button",
+    "requiredPermissionCode": "AdjustBillingItems",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.promise.amount",
+    "label": "Importe prometido *",
+    "module": "billing",
+    "controlType": "input",
+    "requiredPermissionCode": "ManagePaymentPromises",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.promise.date",
+    "label": "Fecha prometida *",
+    "module": "billing",
+    "controlType": "input",
+    "requiredPermissionCode": "ManagePaymentPromises",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.promise.notes",
+    "label": "Notas *",
+    "module": "billing",
+    "controlType": "textarea",
+    "requiredPermissionCode": "ManagePaymentPromises",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.promise.cancel",
+    "label": "Button 3",
+    "module": "billing",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "billing.promise.save",
+    "label": "Button 4",
+    "module": "billing",
+    "controlType": "button",
+    "requiredPermissionCode": "ManagePaymentPromises",
     "isSystemRequired": false
   },
   {

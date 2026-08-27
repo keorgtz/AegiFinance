@@ -20,7 +20,7 @@ const MONTHS = [
 
 const schema = z.object({
   year: z.coerce.number().int().min(2020).max(2099),
-  month: z.string().optional(),
+  month: z.string().min(1, "Selecciona un mes"),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -47,11 +47,10 @@ export function GenerateBillingDialog({ open, onOpenChange }: GenerateBillingDia
   }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onSubmit = async (values: FormValues) => {
-    await generate.mutateAsync({
-      year: values.year,
-      month: values.month ? Number(values.month) : null,
-    });
-    onOpenChange(false);
+    try {
+      await generate.mutateAsync({ year: values.year, month: values.month ? Number(values.month) : null });
+      onOpenChange(false);
+    } catch { /* Inline error below. */ }
   };
 
   const currentYear = now.getFullYear();
@@ -64,8 +63,10 @@ export function GenerateBillingDialog({ open, onOpenChange }: GenerateBillingDia
           Genera los cargos de facturación para el período indicado. Los cargos ya existentes no se duplican.
         </p>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {generate.error && <p role="alert" className="rounded-input bg-danger-soft p-3 text-sm text-danger">{generate.error.message}</p>}
           <div className="grid grid-cols-2 gap-3">
             <Select controlKey="ui.components.modules.billing.generate.billing.dialog.select.1"
+              permission="GenerateBilling"
               label="Año *"
               value={String(watch("year"))}
               onValueChange={(v) => setValue("year", Number(v))}
@@ -75,11 +76,11 @@ export function GenerateBillingDialog({ open, onOpenChange }: GenerateBillingDia
               ))}
             </Select>
             <Select controlKey="ui.components.modules.billing.generate.billing.dialog.select.2"
-              label="Mes (vacío = anual)"
+              permission="GenerateBilling"
+              label="Mes *"
               value={month ?? ""}
               onValueChange={(v) => setValue("month", v)}
             >
-              <SelectItem value="">Sin mes (anual)</SelectItem>
               {MONTHS.map((m) => (
                 <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
               ))}
@@ -88,9 +89,9 @@ export function GenerateBillingDialog({ open, onOpenChange }: GenerateBillingDia
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button controlKey="ui.components.modules.billing.generate.billing.dialog.button.1" type="button" variant="secondary">Cancelar</Button>
+              <Button controlKey="ui.components.modules.billing.generate.billing.dialog.button.1" systemRequired type="button" variant="secondary">Cancelar</Button>
             </DialogClose>
-            <Button controlKey="ui.components.modules.billing.generate.billing.dialog.button.2" type="submit" loading={isSubmitting}>
+            <Button controlKey="ui.components.modules.billing.generate.billing.dialog.button.2" permission="GenerateBilling" type="submit" loading={isSubmitting}>
               Generar cargos
             </Button>
           </DialogFooter>

@@ -8,6 +8,8 @@ import {
   useBillingLogs,
   useCloseBillingCycle,
   useReprocessBillingCycle,
+  useReceivablesAging,
+  useUpdatePaymentPromiseStatus,
 } from "@/hooks/use-billing";
 import { Tabs, TabList, Tab, TabPanel } from "@/components/ui/tabs";
 import { DataTable } from "@/components/ui/data-table";
@@ -19,7 +21,11 @@ import { BillingCycleStatusBadge } from "@/components/modules/billing/billing-cy
 import { BillingItemStatusBadge } from "@/components/modules/billing/billing-item-status-badge";
 import { GenerateBillingDialog } from "@/components/modules/billing/generate-billing-dialog";
 import { CancelItemDialog } from "@/components/modules/billing/cancel-item-dialog";
+import { ManualChargeDialog } from "@/components/modules/billing/manual-charge-dialog";
+import { ReceivableActionDialog } from "@/components/modules/billing/receivable-action-dialog";
+import { PermissionMenuItem } from "@/components/ui/permission-dropdown-item";
 import { Can } from "@/lib/auth/can";
+import { usePermissions } from "@/lib/auth/use-permissions";
 import { formatAmount, formatDate, formatDateTime } from "@/lib/utils/format";
 import type {
   BillingCycleDto,
@@ -35,6 +41,10 @@ import {
   Play,
   RefreshCw,
   XCircle,
+  Plus,
+  CreditCard,
+  CalendarClock,
+  ReceiptText,
 } from "lucide-react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { cn } from "@/lib/utils/cn";
@@ -52,6 +62,7 @@ function cycleLabel(c: BillingCycleDto): string {
 }
 
 export default function BillingPage() {
+  const { can } = usePermissions();
   const now = new Date();
   const currentYear = now.getFullYear();
 
@@ -65,6 +76,8 @@ export default function BillingPage() {
   const [currencyFilter, setCurrencyFilter] = useState("");
   const [outstandingOnly, setOutstandingOnly] = useState(false);
   const [cancelTarget, setCancelTarget] = useState<BillingItemListDto | null>(null);
+  const [manualOpen, setManualOpen] = useState(false);
+  const [receivableAction, setReceivableAction] = useState<{ item: BillingItemListDto; action: "credit" | "lateFee" | "promise" } | null>(null);
 
   // Cycles tab state
   const [cyclesYear, setCyclesYear] = useState(String(currentYear));
@@ -106,6 +119,8 @@ export default function BillingPage() {
 
   const closeCycle = useCloseBillingCycle();
   const reprocess = useReprocessBillingCycle();
+  const aging = useReceivablesAging(currencyFilter || "MXN", can("ViewReceivables"));
+  const updatePromise = useUpdatePaymentPromiseStatus();
 
   const years = Array.from({ length: 5 }, (_, i) => currentYear - 2 + i);
 
@@ -123,6 +138,9 @@ export default function BillingPage() {
             <p className="text-[11px] text-muted">
               {item.clientName} · <span className="font-mono">{item.subscriptionCode}</span>
             </p>
+            <p className="mt-1 text-[11px] text-muted">{item.type === "ManualCharge" ? "Cargo manual" : "Cargo del plan"} · {formatDate(item.periodStart)}–{formatDate(item.periodEnd)}</p>
+            {(item.discountAmount > 0 || item.taxAmount > 0 || item.prorationFactor !== 1) && <p className="mt-1 text-[10px] text-muted">Base {formatAmount(item.baseAmount, item.currency)} · Desc. {formatAmount(item.discountAmount, item.currency)} · Imp. {formatAmount(item.taxAmount, item.currency)} · Factor {item.prorationFactor}</p>}
+            {item.activePromise && <p className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold text-warning"><CalendarClock className="h-3 w-3" />Promesa {formatDate(item.activePromise.promiseDate)} · {formatAmount(item.activePromise.promisedAmount, item.currency)}</p>}
           </div>
         );
       },
@@ -166,9 +184,7 @@ export default function BillingPage() {
         const balance = row.original.balance;
         const cancelled = row.original.status === "Cancelled";
         return (
-          <span className={cn("text-[13px] font-semibold", cancelled ? "text-muted line-through" : balance > 0 ? "text-danger" : "text-success")}>
-            {formatAmount(balance, row.original.currency)}
-          </span>
+          <div><span className={cn("text-[13px] font-semibold", cancelled ? "text-muted line-through" : balance > 0 ? "text-danger" : "text-success")}>{formatAmount(balance, row.original.currency)}</span>{(row.original.creditAmount > 0 || row.original.lateFeeAmount > 0) && <p className="mt-1 text-[10px] text-muted">NC −{formatAmount(row.original.creditAmount, row.original.currency)} · Rec. +{formatAmount(row.original.lateFeeAmount, row.original.currency)}</p>}</div>
         );
       },
     },
@@ -183,19 +199,19 @@ export default function BillingPage() {
       size: 48,
       cell: ({ row }) => {
         const item = row.original;
-        const canCancel = item.status === "Pending" || item.status === "Partial";
-        if (!canCancel) return null;
+        const canOperate = item.status === "Pending" || item.status === "Partial";
+        if (!canOperate) return null;
         return (
-          <Can permission="ManageBilling">
-            <Button controlKey="ui.app.app.billing.page.button.1"
-              variant="ghost"
-              size="icon"
-              aria-label="Cancelar cargo"
-              onClick={(e) => { e.stopPropagation(); setCancelTarget(item); }}
-            >
-              <XCircle className="h-4 w-4 text-danger" />
-            </Button>
-          </Can>
+          <DropdownMenu.Root><DropdownMenu.Trigger asChild><Button controlKey="billing.items.actions" permission="ViewPayments" variant="ghost" size="icon" aria-label="Acciones del cargo" onClick={(e) => e.stopPropagation()}><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenu.Trigger><DropdownMenu.Portal><DropdownMenu.Content align="end" className="z-50 min-w-56 rounded-table border border-border bg-surface p-1 shadow-dp2">
+            <PermissionMenuItem controlKey="billing.items.credit-note" permission="AdjustBillingItems" onSelect={() => setReceivableAction({ item, action: "credit" })}><CreditCard className="h-4 w-4" />Nota de crédito</PermissionMenuItem>
+            <PermissionMenuItem controlKey="billing.items.late-fee" permission="AdjustBillingItems" onSelect={() => setReceivableAction({ item, action: "lateFee" })}><ReceiptText className="h-4 w-4" />Agregar recargo</PermissionMenuItem>
+            {!item.activePromise && <PermissionMenuItem controlKey="billing.items.promise" permission="ManagePaymentPromises" onSelect={() => setReceivableAction({ item, action: "promise" })}><CalendarClock className="h-4 w-4" />Promesa de pago</PermissionMenuItem>}
+            {item.activePromise && <PermissionMenuItem controlKey="billing.items.promise-fulfilled" permission="ManagePaymentPromises" onSelect={() => updatePromise.mutate({ promiseId: item.activePromise!.id, status: "Fulfilled" })}><CheckCircle2 className="h-4 w-4 text-success" />Marcar promesa cumplida</PermissionMenuItem>}
+            {item.activePromise && <PermissionMenuItem controlKey="billing.items.promise-broken" permission="ManagePaymentPromises" onSelect={() => updatePromise.mutate({ promiseId: item.activePromise!.id, status: "Broken" })}><AlertCircle className="h-4 w-4 text-warning" />Marcar promesa incumplida</PermissionMenuItem>}
+            {item.activePromise && <PermissionMenuItem controlKey="billing.items.promise-cancel" permission="ManagePaymentPromises" onSelect={() => updatePromise.mutate({ promiseId: item.activePromise!.id, status: "Cancelled" })}><XCircle className="h-4 w-4" />Cancelar promesa</PermissionMenuItem>}
+            <DropdownMenu.Separator className="my-1 h-px bg-border" />
+            <PermissionMenuItem controlKey="billing.items.cancel" permission="CancelBillingItems" className="text-danger" disabled={item.paidAmount > 0} onSelect={() => setCancelTarget(item)}><XCircle className="h-4 w-4" />Cancelar por reversión</PermissionMenuItem>
+          </DropdownMenu.Content></DropdownMenu.Portal></DropdownMenu.Root>
         );
       },
     },
@@ -249,10 +265,10 @@ export default function BillingPage() {
         const cycle = row.original;
         const isOpen = cycle.status === "Open";
         return (
-          <Can permission="ManageBilling">
             <div className="flex items-center gap-1.5">
               {isOpen && (
                 <Button controlKey="ui.app.app.billing.page.button.2"
+                  permission="CloseBillingCycles"
                   size="sm"
                   variant="secondary"
                   onClick={(e) => {
@@ -266,6 +282,7 @@ export default function BillingPage() {
                 </Button>
               )}
               <Button controlKey="ui.app.app.billing.page.button.3"
+                permission="ReprocessBilling"
                 size="sm"
                 variant="ghost"
                 onClick={(e) => {
@@ -277,6 +294,7 @@ export default function BillingPage() {
                 Reprocesar
               </Button>
               <Button controlKey="ui.app.app.billing.page.button.4"
+                permission="ViewPayments"
                 size="sm"
                 variant="ghost"
                 onClick={(e) => {
@@ -287,7 +305,6 @@ export default function BillingPage() {
                 Ver cargos
               </Button>
             </div>
-          </Can>
         );
       },
     },
@@ -358,24 +375,28 @@ export default function BillingPage() {
   return (
     <div>
       {/* Header */}
-      <div className="mb-5 flex items-center justify-between gap-4">
+      <div className="mb-5 flex flex-col gap-4 rounded-hero border border-border bg-gradient-to-br from-action-soft via-surface to-accent-soft p-5 sm:flex-row sm:items-end sm:justify-between sm:p-6">
         <div>
           <h1 className="font-display text-[22px] font-bold text-foreground">Facturación</h1>
           <p className="mt-0.5 text-[13px] text-muted">
             Motor de cargos y ciclos de cobro
           </p>
         </div>
-        <Can permission="ManageBilling">
-          <Button controlKey="ui.app.app.billing.page.button.5" onClick={() => setGenerateOpen(true)} size="md">
+        <div className="flex flex-col gap-2 sm:flex-row"><Can permission="CreateBillingItems"><Button controlKey="billing.header.manual-charge" permission="CreateBillingItems" variant="secondary" onClick={() => setManualOpen(true)} size="md"><Plus className="h-4 w-4" />Cargo manual</Button></Can><Can permission="GenerateBilling">
+          <Button controlKey="ui.app.app.billing.page.button.6" permission="GenerateBilling" onClick={() => setGenerateOpen(true)} size="md">
             <Play className="h-4 w-4" />
             Generar facturación
           </Button>
-        </Can>
+        </Can></div>
       </div>
+
+      <Can permission="ViewReceivables"><section aria-labelledby="aging-title" className="mb-6"><div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between"><div><h2 id="aging-title" className="text-base font-bold text-foreground">Antigüedad de saldos</h2><p className="mt-1 text-xs text-muted">Cartera pendiente al día de hoy · {aging.data?.currency ?? "MXN"}</p></div><div className="text-left sm:text-right"><p className="text-sm font-bold text-foreground">{formatAmount(aging.data?.totalOutstanding ?? 0, aging.data?.currency ?? "MXN")}</p>{aging.data && <p className={cn("mt-1 text-xs font-semibold", aging.data.isReconciled ? "text-success" : "text-warning")}>{aging.data.isReconciled ? "Auxiliar conciliado con el Major Ledger" : `Diferencia contra ledger: ${formatAmount(aging.data.difference, aging.data.currency)}`}</p>}</div></div>
+        {aging.isError ? <p role="alert" className="rounded-card bg-danger-soft p-4 text-sm text-danger">No se pudo calcular la antigüedad de saldos.</p> : <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">{(aging.data?.buckets ?? Array.from({ length: 5 }, (_, i) => ({ key: String(i), label: "Cargando…", count: 0, amount: 0 }))).map((bucket) => <div key={bucket.key} className="rounded-card border border-border bg-surface p-4"><p className="text-xs font-semibold text-muted">{bucket.label}</p><p className="mt-2 text-lg font-bold text-foreground">{formatAmount(bucket.amount, aging.data?.currency ?? "MXN")}</p><p className="mt-1 text-xs text-muted">{bucket.count} cargo{bucket.count === 1 ? "" : "s"}</p></div>)}</div>}
+      </section></Can>
 
       <Tabs defaultTab="items">
         <TabList>
-          <Tab controlKey="ui.app.app.billing.page.tab.1" id="items">
+          <Tab controlKey="ui.app.app.billing.page.tab.1" permission="ViewPayments" id="items">
             Cargos
             {itemsData && itemsData.totalCount > 0 && (
               <span className="ml-1.5 rounded-full bg-border px-1.5 py-0.5 text-[10px] font-bold text-muted">
@@ -383,7 +404,7 @@ export default function BillingPage() {
               </span>
             )}
           </Tab>
-          <Tab controlKey="ui.app.app.billing.page.tab.2" id="cycles">
+          <Tab controlKey="ui.app.app.billing.page.tab.2" permission="ViewPayments" id="cycles">
             Ciclos
             {cycles.length > 0 && (
               <span className="ml-1.5 rounded-full bg-border px-1.5 py-0.5 text-[10px] font-bold text-muted">
@@ -391,7 +412,7 @@ export default function BillingPage() {
               </span>
             )}
           </Tab>
-          <Tab controlKey="ui.app.app.billing.page.tab.3" id="logs">Registro de generación</Tab>
+          <Tab controlKey="ui.app.app.billing.page.tab.3" permission="ViewPayments" id="logs">Registro de generación</Tab>
         </TabList>
 
         {/* ── CARGOS ── */}
@@ -400,6 +421,7 @@ export default function BillingPage() {
             {outstandingOnly && <Badge variant="saffron">Sólo saldos pendientes</Badge>}
             {currencyFilter && <Badge variant="muted">Moneda: {currencyFilter}</Badge>}
             <Select controlKey="ui.app.app.billing.page.select.1"
+              permission="ViewPayments"
               label=""
               value={statusFilter}
               onValueChange={(v) => { setStatusFilter(v as BillingItemStatus | ""); setItemsPage(1); }}
@@ -408,11 +430,13 @@ export default function BillingPage() {
               <SelectItem value="Pending">Pendiente</SelectItem>
               <SelectItem value="Partial">Parcial</SelectItem>
               <SelectItem value="Paid">Pagado</SelectItem>
+              <SelectItem value="Settled">Saldado</SelectItem>
               <SelectItem value="Cancelled">Cancelado</SelectItem>
             </Select>
 
             {cycles.length > 0 && (
               <Select controlKey="ui.app.app.billing.page.select.2"
+                permission="ViewPayments"
                 label=""
                 value={cycleIdFilter}
                 onValueChange={(v) => { setCycleIdFilter(v); setItemsPage(1); }}
@@ -428,7 +452,8 @@ export default function BillingPage() {
             <input data-ui-control="billing.filters.due-to" data-ui-permission="ViewPayments" type="date" value={dueDateToFilter} onChange={(event) => { setDueDateToFilter(event.target.value); setItemsPage(1); }} aria-label="Vencimiento hasta" className="min-h-11 rounded-input border border-border-strong bg-field px-3 text-xs text-foreground" />
 
             {hasItemFilters && (
-              <button data-ui-control="ui.app.app.billing.page.button.6"
+              <button data-ui-control="ui.app.app.billing.page.button.7"
+                data-ui-permission="ViewPayments"
                 onClick={() => { setStatusFilter(""); setCycleIdFilter(""); setDueDateFromFilter(""); setDueDateToFilter(""); setClientIdFilter(""); setCurrencyFilter(""); setOutstandingOnly(false); setItemsPage(1); }}
                 className="text-[12px] text-muted hover:text-action underline"
               >
@@ -460,6 +485,7 @@ export default function BillingPage() {
         <TabPanel id="cycles">
           <div className="mb-4 flex items-center gap-3">
             <Select controlKey="ui.app.app.billing.page.select.3"
+              permission="ViewPayments"
               label=""
               value={cyclesYear}
               onValueChange={setCyclesYear}
@@ -483,6 +509,7 @@ export default function BillingPage() {
         <TabPanel id="logs">
           <div className="mb-4 flex items-center gap-3">
             <Select controlKey="ui.app.app.billing.page.select.4"
+              permission="ViewPayments"
               label=""
               value={logsYear}
               onValueChange={setLogsYear}
@@ -505,6 +532,8 @@ export default function BillingPage() {
 
       {/* Dialogs */}
       <GenerateBillingDialog open={generateOpen} onOpenChange={setGenerateOpen} />
+      <ManualChargeDialog open={manualOpen} onOpenChange={setManualOpen} />
+      {receivableAction && <ReceivableActionDialog item={receivableAction.item} action={receivableAction.action} onClose={() => setReceivableAction(null)} />}
 
       {cancelTarget && (
         <CancelItemDialog

@@ -47,9 +47,13 @@ public sealed class GetDashboardSummaryQueryHandler : IRequestHandler<GetDashboa
         if (canViewPayments)
         {
             var charges = _context.BillingItems.AsNoTracking().ApplyOperationalScope(clientId, from, to, currency).Outstanding();
-            var outstanding = await charges.Select(item => new { Remaining = item.Amount - item.PaidAmount }).ToListAsync(cancellationToken);
+            var outstanding = await charges.Select(item => new { Remaining = item.Amount - item.PaidAmount
+                + (item.Adjustments.Where(x => !x.ReversedAt.HasValue && x.Type == BillingAdjustmentType.LateFee).Sum(x => (decimal?)x.Amount) ?? 0m)
+                - (item.Adjustments.Where(x => !x.ReversedAt.HasValue && x.Type == BillingAdjustmentType.CreditNote).Sum(x => (decimal?)x.Amount) ?? 0m) }).ToListAsync(cancellationToken);
             var overdue = await charges.Where(item => item.DueDate < DateTime.UtcNow.Date)
-                .Select(item => new { Remaining = item.Amount - item.PaidAmount }).ToListAsync(cancellationToken);
+                .Select(item => new { Remaining = item.Amount - item.PaidAmount
+                    + (item.Adjustments.Where(x => !x.ReversedAt.HasValue && x.Type == BillingAdjustmentType.LateFee).Sum(x => (decimal?)x.Amount) ?? 0m)
+                    - (item.Adjustments.Where(x => !x.ReversedAt.HasValue && x.Type == BillingAdjustmentType.CreditNote).Sum(x => (decimal?)x.Amount) ?? 0m) }).ToListAsync(cancellationToken);
             var movements = _context.LedgerEntries.AsNoTracking()
                 .ApplyOperationalScope(clientId, request.BankAccountId, from, to, currency);
             result.OutstandingCharges = new DashboardMetricDto { Count = outstanding.Count, Amount = outstanding.Sum(item => item.Remaining), Currency = currency };

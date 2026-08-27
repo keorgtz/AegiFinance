@@ -36,5 +36,8 @@ public static class DashboardQueryFilters
     }
 
     public static IQueryable<BillingItem> Outstanding(this IQueryable<BillingItem> query) =>
-        query.Where(item => item.Status == BillingItemStatus.Pending || item.Status == BillingItemStatus.Partial);
+        query.Where(item => (item.Status == BillingItemStatus.Pending || item.Status == BillingItemStatus.Partial) &&
+            item.Amount + (item.Adjustments.Where(x => !x.ReversedAt.HasValue && x.Type == BillingAdjustmentType.LateFee).Sum(x => (decimal?)x.Amount) ?? 0m)
+            - (item.Adjustments.Where(x => !x.ReversedAt.HasValue && x.Type == BillingAdjustmentType.CreditNote).Sum(x => (decimal?)x.Amount) ?? 0m)
+            - item.PaidAmount > 0);
 }

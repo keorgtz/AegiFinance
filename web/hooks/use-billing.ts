@@ -9,6 +9,9 @@ import type {
   GetBillingCyclesParams,
   GetBillingItemsParams,
   GetBillingLogsParams,
+  CreateManualChargeRequest,
+  AddBillingAdjustmentRequest,
+  CreatePaymentPromiseRequest,
 } from "@/types/api";
 import { toast } from "sonner";
 
@@ -48,6 +51,20 @@ export function useBillingLogs(params: GetBillingLogsParams = {}) {
     queryFn: () => billingApi.getLogs(params),
   });
 }
+
+export function useReceivablesAging(currency = "MXN", enabled = true) {
+  return useQuery({ queryKey: ["billing", "aging", currency], queryFn: () => billingApi.getAging({ currency }), enabled });
+}
+
+function useBillingMutation<T>(mutationFn: (data: T) => Promise<unknown>, successMessage: string) {
+  const qc = useQueryClient();
+  return useMutation({ mutationFn, onSuccess: () => { qc.invalidateQueries({ queryKey: ["billing"] }); toast.success(successMessage); }, onError: (err: Error) => toast.error(err.message) });
+}
+
+export function useCreateManualCharge() { return useBillingMutation<CreateManualChargeRequest>(billingApi.createManualCharge, "Cargo manual creado."); }
+export function useAddBillingAdjustment(itemId: string) { return useBillingMutation<AddBillingAdjustmentRequest>((data) => billingApi.addAdjustment(itemId, data), "Ajuste contable registrado."); }
+export function useCreatePaymentPromise(itemId: string) { return useBillingMutation<CreatePaymentPromiseRequest>((data) => billingApi.createPromise(itemId, data), "Promesa de pago registrada."); }
+export function useUpdatePaymentPromiseStatus() { return useBillingMutation<{ promiseId: string; status: "Fulfilled" | "Broken" | "Cancelled" }>((data) => billingApi.updatePromiseStatus(data.promiseId, data.status), "Promesa actualizada."); }
 
 export function useGenerateBilling() {
   const qc = useQueryClient();

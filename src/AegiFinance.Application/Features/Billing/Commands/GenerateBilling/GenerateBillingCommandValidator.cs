@@ -10,7 +10,8 @@ public class GenerateBillingCommandValidator : AbstractValidator<GenerateBilling
             .GreaterThan(2000).WithMessage("El año debe ser mayor a 2000.");
 
         RuleFor(x => x.Month)
-            .InclusiveBetween(1, 12).When(x => x.Month.HasValue)
+            .NotNull().WithMessage("El mes es obligatorio para evitar periodos superpuestos.")
+            .InclusiveBetween(1, 12)
             .WithMessage("El mes debe estar entre 1 y 12.");
     }
 }

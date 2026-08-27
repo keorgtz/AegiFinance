@@ -1,4 +1,6 @@
 using AegiFinance.Application.Common.Interfaces;
+using AegiFinance.Domain.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace AegiFinance.Worker;
 
@@ -49,11 +51,17 @@ public class BillingGenerationHostedService : BackgroundService
         {
             using var scope = _serviceProvider.CreateScope();
             var billingService = scope.ServiceProvider.GetRequiredService<IBillingGenerationService>();
+            var context = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
 
             var now = DateTime.UtcNow;
             _logger.LogInformation("Iniciando generación de cargos para {year}/{month}", now.Year, now.Month);
 
             var result = await billingService.GenerateForCycleAsync(now.Year, now.Month, null, cancellationToken);
+            await context.PaymentPromises
+                .Where(item => item.Status == PaymentPromiseStatus.Pending && item.PromiseDate < now.Date)
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(item => item.Status, PaymentPromiseStatus.Broken)
+                    .SetProperty(item => item.ResolvedAt, now), cancellationToken);
 
             if (result.Success)
             {

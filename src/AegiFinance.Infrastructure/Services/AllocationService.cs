@@ -1,6 +1,7 @@
 using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Domain.Entities;
 using AegiFinance.Domain.Enums;
+using AegiFinance.Domain.Accounting;
 using AegiFinance.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,6 +30,8 @@ public class AllocationService : IAllocationService
         if (available <= 0) return result;
 
         var items = await _context.BillingItems
+            .Include(x => x.Adjustments)
+            .Include(x => x.PaymentPromises)
             .Where(x => x.ClientId == entry.ClientId.Value && (x.Status == BillingItemStatus.Pending || x.Status == BillingItemStatus.Partial))
             .OrderBy(x => x.DueDate)
             .ThenBy(x => x.GeneratedAt)
@@ -38,7 +41,7 @@ public class AllocationService : IAllocationService
         foreach (var item in items)
         {
             if (available <= 0) break;
-            var remainingItem = item.Amount - item.PaidAmount;
+            var remainingItem = ReceivableRules.Balance(item);
             if (remainingItem <= 0) continue;
             var amount = Math.Min(available, remainingItem);
             await CreateAllocationAsync(entry, item, amount, true, cancellationToken);
@@ -62,7 +65,7 @@ public class AllocationService : IAllocationService
             throw new InvalidOperationException("La suma de asignaciones supera el monto disponible del pago.");
 
         var itemIds = allocations.Select(x => x.BillingItemId).Distinct().ToList();
-        var items = await _context.BillingItems.Where(x => itemIds.Contains(x.Id)).ToDictionaryAsync(x => x.Id, cancellationToken);
+        var items = await _context.BillingItems.Include(x => x.Adjustments).Include(x => x.PaymentPromises).Where(x => itemIds.Contains(x.Id)).ToDictionaryAsync(x => x.Id, cancellationToken);
         await using var tx = await _context.Database.BeginTransactionAsync(cancellationToken);
 
         foreach (var allocation in allocations)
@@ -70,7 +73,7 @@ public class AllocationService : IAllocationService
             if (!items.TryGetValue(allocation.BillingItemId, out var item))
                 throw new InvalidOperationException("Uno de los cargos no existe.");
 
-            var remainingItem = item.Amount - item.PaidAmount;
+            var remainingItem = ReceivableRules.Balance(item);
             if (allocation.Amount > remainingItem)
                 throw new InvalidOperationException("La asignación supera el saldo pendiente del cargo.");
 
@@ -92,7 +95,7 @@ public class AllocationService : IAllocationService
     {
         var allocation = await _context.SubscriptionAllocations
             .Include(x => x.LedgerEntry)
-            .Include(x => x.BillingItem)
+            .Include(x => x.BillingItem).ThenInclude(x => x.Adjustments)
             .FirstOrDefaultAsync(x => x.Id == allocationId, cancellationToken)
             ?? throw new InvalidOperationException("La asignación no existe.");
 
@@ -142,11 +145,19 @@ public class AllocationService : IAllocationService
     private static void UpdateBillingItemStatus(BillingItem item)
     {
         if (item.Status == BillingItemStatus.Cancelled) return;
-        if (item.PaidAmount >= item.Amount)
-            item.Status = BillingItemStatus.Paid;
+        if (item.PaidAmount >= ReceivableRules.EffectiveAmount(item))
+        {
+            item.Status = item.PaidAmount > 0 ? BillingItemStatus.Paid : BillingItemStatus.Settled;
+            foreach (var promise in item.PaymentPromises.Where(x => x.Status == PaymentPromiseStatus.Pending))
+            {
+                promise.Status = PaymentPromiseStatus.Fulfilled;
+                promise.ResolvedAt = DateTime.UtcNow;
+            }
+        }
         else if (item.PaidAmount > 0)
             item.Status = BillingItemStatus.Partial;
         else
             item.Status = BillingItemStatus.Pending;
     }
+
 }

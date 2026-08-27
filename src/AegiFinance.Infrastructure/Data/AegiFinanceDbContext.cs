@@ -56,6 +56,8 @@ public class AegiFinanceDbContext : DbContext
     public DbSet<SubscriptionChangeLog> SubscriptionChangeLogs => Set<SubscriptionChangeLog>();
     public DbSet<BillingCycle> BillingCycles => Set<BillingCycle>();
     public DbSet<BillingItem> BillingItems => Set<BillingItem>();
+    public DbSet<BillingAdjustment> BillingAdjustments => Set<BillingAdjustment>();
+    public DbSet<PaymentPromise> PaymentPromises => Set<PaymentPromise>();
     public DbSet<BillingGenerationLog> BillingGenerationLogs => Set<BillingGenerationLog>();
     public DbSet<BankAccount> BankAccounts => Set<BankAccount>();
     public DbSet<LedgerEntry> LedgerEntries => Set<LedgerEntry>();
@@ -106,6 +108,8 @@ public class AegiFinanceDbContext : DbContext
         ConfigureSubscriptionChangeLog(modelBuilder);
         ConfigureBillingCycle(modelBuilder);
         ConfigureBillingItem(modelBuilder);
+        ConfigureBillingAdjustment(modelBuilder);
+        ConfigurePaymentPromise(modelBuilder);
         ConfigureBillingGenerationLog(modelBuilder);
         ConfigureBankAccount(modelBuilder);
         ConfigureLedgerEntry(modelBuilder);
@@ -775,7 +779,10 @@ public class AegiFinanceDbContext : DbContext
                     v => (BillingItemStatus)Enum.Parse(typeof(BillingItemStatus), v));
             entity.Property(e => e.GeneratedAt).IsRequired();
 
-            entity.HasIndex(e => new { e.SubscriptionId, e.BillingCycleId }).IsUnique();
+            entity.Property(e => e.Type).HasConversion<string>().HasMaxLength(32);
+            entity.Property(e => e.IdempotencyKey).HasMaxLength(160).IsRequired();
+            entity.HasIndex(e => e.IdempotencyKey).IsUnique();
+            entity.HasIndex(e => new { e.SubscriptionId, e.BillingCycleId });
             entity.HasIndex(e => new { e.ClientId, e.Status });
             entity.HasIndex(e => e.DueDate);
 
@@ -802,6 +809,36 @@ public class AegiFinanceDbContext : DbContext
                 .HasForeignKey(bi => bi.SubscriptionTermsVersionId)
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+    }
+
+    private static void ConfigureBillingAdjustment(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<BillingAdjustment>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Type).HasConversion<string>().HasMaxLength(24);
+            entity.Property(e => e.Amount).HasPrecision(18, 2);
+            entity.Property(e => e.Reason).HasMaxLength(500).IsRequired();
+            entity.Property(e => e.IdempotencyKey).HasMaxLength(160).IsRequired();
+            entity.Property(e => e.ReversalReason).HasMaxLength(500);
+            entity.HasIndex(e => e.IdempotencyKey).IsUnique();
+            entity.HasOne(e => e.BillingItem).WithMany(e => e.Adjustments)
+                .HasForeignKey(e => e.BillingItemId).OnDelete(DeleteBehavior.Restrict);
+        });
+    }
+
+    private static void ConfigurePaymentPromise(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<PaymentPromise>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.PromisedAmount).HasPrecision(18, 2);
+            entity.Property(e => e.Status).HasConversion<string>().HasMaxLength(24);
+            entity.Property(e => e.Notes).HasMaxLength(1000);
+            entity.HasIndex(e => new { e.BillingItemId, e.Status, e.PromiseDate });
+            entity.HasOne(e => e.BillingItem).WithMany(e => e.PaymentPromises)
+                .HasForeignKey(e => e.BillingItemId).OnDelete(DeleteBehavior.Restrict);
         });
     }
 
@@ -1134,6 +1171,12 @@ public class AegiFinanceDbContext : DbContext
         AppendQueryFilter<BillingItem>(modelBuilder, entity =>
             (!IsOrganizationScope || entity.Client.OrganizationId == CurrentOrganizationId) &&
             (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId)));
+        AppendQueryFilter<BillingAdjustment>(modelBuilder, entity =>
+            (!IsOrganizationScope || entity.BillingItem.Client.OrganizationId == CurrentOrganizationId) &&
+            (!IsClientScope || (CurrentClientId.HasValue && entity.BillingItem.ClientId == CurrentClientId)));
+        AppendQueryFilter<PaymentPromise>(modelBuilder, entity =>
+            (!IsOrganizationScope || entity.BillingItem.Client.OrganizationId == CurrentOrganizationId) &&
+            (!IsClientScope || (CurrentClientId.HasValue && entity.BillingItem.ClientId == CurrentClientId)));
         AppendQueryFilter<LedgerEntry>(modelBuilder, entity =>
             (!IsOrganizationScope || entity.BankAccount.OrganizationId == CurrentOrganizationId) &&
             (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId)));

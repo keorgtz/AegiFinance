@@ -10,11 +10,13 @@ public class CancelBillingItemCommandHandler : IRequestHandler<CancelBillingItem
 {
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IMajorLedgerService _majorLedger;
 
-    public CancelBillingItemCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
+    public CancelBillingItemCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService, IMajorLedgerService majorLedger)
     {
         _context = context;
         _currentUserService = currentUserService;
+        _majorLedger = majorLedger;
     }
 
     public async Task Handle(CancelBillingItemCommand request, CancellationToken cancellationToken)
@@ -25,6 +27,7 @@ public class CancelBillingItemCommandHandler : IRequestHandler<CancelBillingItem
         }
 
         var item = await _context.BillingItems
+            .Include(bi => bi.Adjustments)
             .FirstOrDefaultAsync(bi => bi.Id == request.BillingItemId, cancellationToken);
 
         if (item is null)
@@ -32,9 +35,9 @@ public class CancelBillingItemCommandHandler : IRequestHandler<CancelBillingItem
             throw new InvalidOperationException("El cargo no existe.");
         }
 
-        if (item.Status == BillingItemStatus.Paid)
+        if (item.PaidAmount > 0)
         {
-            throw new InvalidOperationException("No se puede cancelar un cargo pagado.");
+            throw new InvalidOperationException("Desasigna los pagos aplicados antes de cancelar el cargo.");
         }
 
         if (item.Status == BillingItemStatus.Cancelled)
@@ -42,8 +45,28 @@ public class CancelBillingItemCommandHandler : IRequestHandler<CancelBillingItem
             return;
         }
 
+        await using var transaction = await _context.BeginTransactionAsync(cancellationToken);
+        var journalEntry = await _context.JournalEntries
+            .AsNoTracking()
+            .FirstOrDefaultAsync(entry => entry.IdempotencyKey == $"charge:{item.Id}", cancellationToken);
+        if (journalEntry is not null && journalEntry.Status != JournalEntryStatus.Reversed)
+        {
+            await _majorLedger.ReverseAsync(journalEntry.Id, DateTime.UtcNow, request.Reason, cancellationToken);
+        }
+        foreach (var adjustment in item.Adjustments.Where(value => !value.ReversedAt.HasValue))
+        {
+            var adjustmentEntry = await _context.JournalEntries.AsNoTracking()
+                .FirstOrDefaultAsync(entry => entry.IdempotencyKey == $"billing-adjustment:{adjustment.Id}", cancellationToken);
+            if (adjustmentEntry is not null && adjustmentEntry.Status != JournalEntryStatus.Reversed)
+                await _majorLedger.ReverseAsync(adjustmentEntry.Id, DateTime.UtcNow, request.Reason, cancellationToken);
+            adjustment.ReversedAt = DateTime.UtcNow;
+            adjustment.ReversedBy = _currentUserService.UserId;
+            adjustment.ReversalReason = request.Reason;
+        }
+
         item.Status = BillingItemStatus.Cancelled;
         item.CancellationReason = request.Reason;
         await _context.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
     }
 }

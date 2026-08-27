@@ -1,6 +1,10 @@
 using AegiFinance.Application.Common.Models;
 using AegiFinance.Application.Dtos;
 using AegiFinance.Application.Features.Billing.Commands.CancelBillingItem;
+using AegiFinance.Application.Features.Billing.Commands.AddBillingAdjustment;
+using AegiFinance.Application.Features.Billing.Commands.CreateManualCharge;
+using AegiFinance.Application.Features.Billing.Commands.CreatePaymentPromise;
+using AegiFinance.Application.Features.Billing.Commands.UpdatePaymentPromiseStatus;
 using AegiFinance.Application.Features.Billing.Commands.CloseBillingCycle;
 using AegiFinance.Application.Features.Billing.Commands.GenerateBilling;
 using AegiFinance.Application.Features.Billing.Commands.GenerateBillingForSubscription;
@@ -8,6 +12,7 @@ using AegiFinance.Application.Features.Billing.Commands.ReprocessBillingCycle;
 using AegiFinance.Application.Features.Billing.Queries.GetBillingCycles;
 using AegiFinance.Application.Features.Billing.Queries.GetBillingGenerationLogs;
 using AegiFinance.Application.Features.Billing.Queries.GetBillingItems;
+using AegiFinance.Application.Features.Billing.Queries.GetReceivablesAging;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -38,6 +43,36 @@ public class BillingController : ControllerBase
     public async Task<ActionResult<BillingGenerationResult>> GenerateForSubscription(GenerateBillingForSubscriptionCommand command, CancellationToken cancellationToken)
     {
         return Ok(await _mediator.Send(command, cancellationToken));
+    }
+
+    [HttpPost("items/manual")]
+    [Authorize(Policy = "CreateBillingItems")]
+    public async Task<ActionResult<BillingItemListDto>> CreateManualCharge(CreateManualChargeCommand command, CancellationToken cancellationToken)
+        => Ok(await _mediator.Send(command, cancellationToken));
+
+    [HttpPost("items/{itemId:guid}/adjustments")]
+    [Authorize(Policy = "AdjustBillingItems")]
+    public async Task<ActionResult<BillingAdjustmentDto>> AddAdjustment(Guid itemId, AddBillingAdjustmentCommand command, CancellationToken cancellationToken)
+    {
+        command.BillingItemId = itemId;
+        return Ok(await _mediator.Send(command, cancellationToken));
+    }
+
+    [HttpPost("items/{itemId:guid}/payment-promises")]
+    [Authorize(Policy = "ManagePaymentPromises")]
+    public async Task<ActionResult<PaymentPromiseDto>> CreatePromise(Guid itemId, CreatePaymentPromiseCommand command, CancellationToken cancellationToken)
+    {
+        command.BillingItemId = itemId;
+        return Ok(await _mediator.Send(command, cancellationToken));
+    }
+
+    [HttpPost("payment-promises/{promiseId:guid}/status")]
+    [Authorize(Policy = "ManagePaymentPromises")]
+    public async Task<IActionResult> UpdatePromise(Guid promiseId, UpdatePaymentPromiseStatusCommand command, CancellationToken cancellationToken)
+    {
+        command.PaymentPromiseId = promiseId;
+        await _mediator.Send(command, cancellationToken);
+        return NoContent();
     }
 
     [HttpPost("reprocess/{cycleId:guid}")]
@@ -90,6 +125,11 @@ public class BillingController : ControllerBase
     {
         return Ok(await _mediator.Send(query, cancellationToken));
     }
+
+    [HttpGet("receivables/aging")]
+    [Authorize(Policy = "ViewReceivables")]
+    public async Task<ActionResult<ReceivablesAgingDto>> GetAging([FromQuery] GetReceivablesAgingQuery query, CancellationToken cancellationToken)
+        => Ok(await _mediator.Send(query, cancellationToken));
 
     [HttpGet("generation-logs")]
     [Authorize(Policy = "ViewPayments")]

@@ -40,6 +40,8 @@ public interface IApplicationDbContext
     DbSet<SubscriptionChangeLog> SubscriptionChangeLogs { get; }
     DbSet<BillingCycle> BillingCycles { get; }
     DbSet<BillingItem> BillingItems { get; }
+    DbSet<BillingAdjustment> BillingAdjustments { get; }
+    DbSet<PaymentPromise> PaymentPromises { get; }
     DbSet<BillingGenerationLog> BillingGenerationLogs { get; }
     DbSet<BankAccount> BankAccounts { get; }
     DbSet<LedgerEntry> LedgerEntries { get; }

@@ -63,7 +63,9 @@ public sealed class GetDashboardAttentionQueryHandler : IRequestHandler<GetDashb
             var overdue = _context.BillingItems.AsNoTracking()
                 .ApplyOperationalScope(normalized.ClientId, normalized.From, normalized.To, normalized.Currency)
                 .Outstanding().Where(item => item.DueDate < DateTime.UtcNow.Date);
-            var overdueData = await overdue.Select(item => item.Amount - item.PaidAmount).ToListAsync(cancellationToken);
+            var overdueData = await overdue.Select(item => item.Amount - item.PaidAmount
+                + (item.Adjustments.Where(x => !x.ReversedAt.HasValue && x.Type == BillingAdjustmentType.LateFee).Sum(x => (decimal?)x.Amount) ?? 0m)
+                - (item.Adjustments.Where(x => !x.ReversedAt.HasValue && x.Type == BillingAdjustmentType.CreditNote).Sum(x => (decimal?)x.Amount) ?? 0m)).ToListAsync(cancellationToken);
             if (overdueData.Count > 0)
             {
                 result.Items.Add(new DashboardAttentionItemDto

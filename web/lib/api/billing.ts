@@ -5,6 +5,12 @@ import type {
   BillingGenerationResult,
   BillingItemListDto,
   CancelBillingItemRequest,
+  CreateManualChargeRequest,
+  AddBillingAdjustmentRequest,
+  CreatePaymentPromiseRequest,
+  BillingAdjustmentDto,
+  PaymentPromiseDto,
+  ReceivablesAgingDto,
   GenerateBillingRequest,
   GenerateForSubscriptionRequest,
   GetBillingCyclesParams,
@@ -42,6 +48,11 @@ export const billingApi = {
 
   cancelItem: (itemId: string, data: CancelBillingItemRequest) =>
     api.post<void>(`/billing/cancel-item/${itemId}`, data),
+  createManualCharge: (data: CreateManualChargeRequest) => api.post<BillingItemListDto>("/billing/items/manual", data),
+  addAdjustment: (itemId: string, data: AddBillingAdjustmentRequest) => api.post<BillingAdjustmentDto>(`/billing/items/${itemId}/adjustments`, data),
+  createPromise: (itemId: string, data: CreatePaymentPromiseRequest) => api.post<PaymentPromiseDto>(`/billing/items/${itemId}/payment-promises`, data),
+  updatePromiseStatus: (promiseId: string, status: "Fulfilled" | "Broken" | "Cancelled") => api.post<void>(`/billing/payment-promises/${promiseId}/status`, { status }),
+  getAging: (params: { asOfDate?: string; clientId?: string; currency?: string } = {}) => api.get<ReceivablesAgingDto>(`/billing/receivables/aging${qs(params)}`),
 
   // Generation
   generate: (data: GenerateBillingRequest) =>

@@ -623,7 +623,7 @@ export interface AddSubscriptionPermissionRequest {
 // ── BILLING ───────────────────────────────────────────────────────────────────
 
 export type BillingCycleStatus = "Open" | "Closed" | "Reprocessing";
-export type BillingItemStatus = "Pending" | "Partial" | "Paid" | "Cancelled";
+export type BillingItemStatus = "Pending" | "Partial" | "Paid" | "Settled" | "Cancelled";
 
 export interface BillingCycleDto {
   id: string;
@@ -642,14 +642,32 @@ export interface BillingItemListDto {
   subscriptionCode: string;
   clientName: string;
   description: string;
+  type: "SubscriptionCharge" | "ManualCharge";
   amount: number;
+  baseAmount: number;
+  discountAmount: number;
+  taxAmount: number;
+  prorationFactor: number;
   currency: string;
   dueDate: string;
+  periodStart: string;
+  periodEnd: string;
   status: BillingItemStatus;
   paidAmount: number;
+  creditAmount: number;
+  lateFeeAmount: number;
   balance: number;
+  activePromise?: PaymentPromiseDto | null;
   cancellationReason?: string | null;
 }
+
+export interface PaymentPromiseDto { id: string; promisedAmount: number; promiseDate: string; status: "Pending" | "Fulfilled" | "Broken" | "Cancelled"; notes?: string | null; resolvedAt?: string | null; }
+export interface BillingAdjustmentDto { id: string; type: "CreditNote" | "LateFee"; amount: number; reason: string; effectiveDate: string; reversedAt?: string | null; }
+export interface AgingBucketDto { key: string; label: string; count: number; amount: number; }
+export interface ReceivablesAgingDto { asOfDate: string; currency: string; totalOutstanding: number; ledgerBalance: number; difference: number; isReconciled: boolean; buckets: AgingBucketDto[]; }
+export interface CreateManualChargeRequest { subscriptionId: string; amount: number; currency: string; description: string; chargeDate: string; dueDate: string; periodStart: string; periodEnd: string; idempotencyKey: string; }
+export interface AddBillingAdjustmentRequest { type: "CreditNote" | "LateFee"; amount: number; effectiveDate: string; reason: string; idempotencyKey: string; }
+export interface CreatePaymentPromiseRequest { promisedAmount: number; promiseDate: string; notes?: string | null; }
 
 export interface BillingGenerationLogDto {
   id: string;

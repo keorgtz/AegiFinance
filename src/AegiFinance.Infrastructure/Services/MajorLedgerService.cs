@@ -339,6 +339,30 @@ public sealed class MajorLedgerService : IMajorLedgerService
             }, cancellationToken);
     }
 
+    public async Task<JournalEntry> PostBillingAdjustmentAsync(BillingAdjustment adjustment, CancellationToken cancellationToken = default)
+    {
+        await EnsureBaseChartAsync(cancellationToken);
+        var item = adjustment.BillingItem;
+        var key = $"billing-adjustment:{adjustment.Id}";
+        var existing = await LoadByIdempotencyKeyAsync(key, cancellationToken);
+        if (existing is not null) return existing;
+        var receivable = await GetAccountByCodeAsync(ReceivableCode, item.Currency, cancellationToken);
+        var revenue = await GetAccountByCodeAsync(RevenueCode, item.Currency, cancellationToken);
+        var lines = adjustment.Type == BillingAdjustmentType.CreditNote
+            ? new[]
+            {
+                new JournalLine { Id = Guid.NewGuid(), AccountId = revenue.Id, Debit = adjustment.Amount, ClientId = item.ClientId, BillingItemId = item.Id },
+                new JournalLine { Id = Guid.NewGuid(), AccountId = receivable.Id, Credit = adjustment.Amount, ClientId = item.ClientId, BillingItemId = item.Id }
+            }
+            : new[]
+            {
+                new JournalLine { Id = Guid.NewGuid(), AccountId = receivable.Id, Debit = adjustment.Amount, ClientId = item.ClientId, BillingItemId = item.Id },
+                new JournalLine { Id = Guid.NewGuid(), AccountId = revenue.Id, Credit = adjustment.Amount, ClientId = item.ClientId, BillingItemId = item.Id }
+            };
+        return await AddPostedEntryAsync(adjustment.EffectiveDate, $"{adjustment.Type}: {adjustment.Reason}", null,
+            item.Currency, item.ClientId, JournalSourceType.Adjustment, adjustment.Id.ToString(), key, lines, cancellationToken);
+    }
+
     public async Task<JournalEntry?> PostOpeningBalanceAsync(BankAccount bankAccount, CancellationToken cancellationToken = default)
     {
         if (bankAccount.OpeningBalance == 0) return null;

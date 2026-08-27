@@ -62,11 +62,22 @@ public class GetBillingItemsQueryHandler : IRequestHandler<GetBillingItemsQuery,
             SubscriptionCode = bi.Subscription.Code,
             ClientName = bi.Client.Name,
             Description = bi.Description,
+            Type = bi.Type.ToString(),
             Amount = bi.Amount,
+            BaseAmount = bi.BaseAmount,
+            DiscountAmount = bi.DiscountAmount,
+            TaxAmount = bi.TaxAmount,
+            ProrationFactor = bi.ProrationFactor,
             Currency = bi.Currency,
             DueDate = bi.DueDate,
+            PeriodStart = bi.PeriodStart,
+            PeriodEnd = bi.PeriodEnd,
             Status = bi.Status.ToString(),
             PaidAmount = bi.PaidAmount,
+            CreditAmount = bi.Adjustments.Where(x => !x.ReversedAt.HasValue && x.Type == Domain.Enums.BillingAdjustmentType.CreditNote).Sum(x => (decimal?)x.Amount) ?? 0m,
+            LateFeeAmount = bi.Adjustments.Where(x => !x.ReversedAt.HasValue && x.Type == Domain.Enums.BillingAdjustmentType.LateFee).Sum(x => (decimal?)x.Amount) ?? 0m,
+            ActivePromise = bi.PaymentPromises.Where(x => x.Status == Domain.Enums.PaymentPromiseStatus.Pending)
+                .OrderBy(x => x.PromiseDate).Select(x => new PaymentPromiseDto(x.Id, x.PromisedAmount, x.PromiseDate, x.Status.ToString(), x.Notes, x.ResolvedAt)).FirstOrDefault(),
             CancellationReason = bi.CancellationReason
         });
 

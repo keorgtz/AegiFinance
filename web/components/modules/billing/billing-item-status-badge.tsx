@@ -7,6 +7,7 @@ const MAP: Record<BillingItemStatus, { label: string; variant: V }> = {
   Pending:   { label: "Pendiente",  variant: "saffron"    },
   Partial:   { label: "Parcial",    variant: "periwinkle" },
   Paid:      { label: "Pagado",     variant: "jade"       },
+  Settled:   { label: "Saldado",    variant: "jade"       },
   Cancelled: { label: "Cancelado",  variant: "terracotta" },
 };
 

@@ -20,5 +20,6 @@ public interface IMajorLedgerService
     Task<JournalEntry> PostLegacyEntryAsync(LedgerEntry ledgerEntry, CancellationToken cancellationToken = default);
     Task<JournalEntry> PostTransferAsync(LedgerEntry fromEntry, LedgerEntry toEntry, CancellationToken cancellationToken = default);
     Task<JournalEntry> PostChargeAsync(BillingItem billingItem, CancellationToken cancellationToken = default);
+    Task<JournalEntry> PostBillingAdjustmentAsync(BillingAdjustment adjustment, CancellationToken cancellationToken = default);
     Task<JournalEntry?> PostOpeningBalanceAsync(BankAccount bankAccount, CancellationToken cancellationToken = default);
 }

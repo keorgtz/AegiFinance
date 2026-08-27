@@ -1,10 +1,9 @@
 namespace AegiFinance.Domain.Enums;
 
-public enum BillingItemStatus
+public enum PaymentPromiseStatus
 {
     Pending,
-    Partial,
-    Paid,
-    Settled,
+    Fulfilled,
+    Broken,
     Cancelled
 }

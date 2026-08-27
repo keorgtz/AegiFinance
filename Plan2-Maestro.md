@@ -239,6 +239,8 @@ Evolucionar el registro actual de caja hacia un libro mayor real sin perder traz
 
 ## Fase 8 — Cargos y cuentas por cobrar
 
+**Estado:** implementada el 27 de agosto de 2026. Gate automatizado: `scripts/verify-phase8.ps1`.
+
 ### Entregables
 
 - generación programada y manual;
