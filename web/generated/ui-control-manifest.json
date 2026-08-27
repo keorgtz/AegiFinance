@@ -344,6 +344,246 @@
     "isSystemRequired": false
   },
   {
+    "controlKey": "audit.tabs.overview",
+    "label": "Tab 1",
+    "module": "audit",
+    "controlType": "tab",
+    "requiredPermissionCode": "ViewAccountingAudit",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.tabs.periods",
+    "label": "Tab 2",
+    "module": "audit",
+    "controlType": "tab",
+    "requiredPermissionCode": "ViewAccountingIntegrity",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.tabs.approvals",
+    "label": "Tab 3",
+    "module": "audit",
+    "controlType": "tab",
+    "requiredPermissionCode": "ViewAccountingAudit",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.tabs.events",
+    "label": "Tab 4",
+    "module": "audit",
+    "controlType": "tab",
+    "requiredPermissionCode": "ViewAccountingAudit",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.overview.from",
+    "label": "Desde",
+    "module": "audit",
+    "controlType": "input",
+    "requiredPermissionCode": "ViewAccountingAudit",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.overview.to",
+    "label": "Hasta",
+    "module": "audit",
+    "controlType": "input",
+    "requiredPermissionCode": "ViewAccountingAudit",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.overview.reset",
+    "label": "Button 1",
+    "module": "audit",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewAccountingAudit",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.period.close.open",
+    "label": "Button 2",
+    "module": "audit",
+    "controlType": "button",
+    "requiredPermissionCode": "CloseAccountingPeriods",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.period.reopen.open",
+    "label": "Button 3",
+    "module": "audit",
+    "controlType": "button",
+    "requiredPermissionCode": "RequestAccountingPeriodReopen",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.period.close.cancel",
+    "label": "Button 4",
+    "module": "audit",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.period.close.confirm",
+    "label": "Button 5",
+    "module": "audit",
+    "controlType": "button",
+    "requiredPermissionCode": "CloseAccountingPeriods",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.period.reopen.reason",
+    "label": "Motivo documentado",
+    "module": "audit",
+    "controlType": "textarea",
+    "requiredPermissionCode": "RequestAccountingPeriodReopen",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.period.reopen.cancel",
+    "label": "Button 6",
+    "module": "audit",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.period.reopen.submit",
+    "label": "Button 7",
+    "module": "audit",
+    "controlType": "button",
+    "requiredPermissionCode": "RequestAccountingPeriodReopen",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.reopen.review.open",
+    "label": "Button 8",
+    "module": "audit",
+    "controlType": "button",
+    "requiredPermissionCode": "ApproveAccountingPeriodReopen",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.reopen.review.decision",
+    "label": "Decisión",
+    "module": "audit",
+    "controlType": "select",
+    "requiredPermissionCode": "ApproveAccountingPeriodReopen",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.reopen.review.comment",
+    "label": "Comentario de revisión",
+    "module": "audit",
+    "controlType": "textarea",
+    "requiredPermissionCode": "ApproveAccountingPeriodReopen",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.reopen.review.cancel",
+    "label": "Button 9",
+    "module": "audit",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.reopen.review.submit",
+    "label": "Button 10",
+    "module": "audit",
+    "controlType": "button",
+    "requiredPermissionCode": "ApproveAccountingPeriodReopen",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.events.search",
+    "label": "Buscar",
+    "module": "audit",
+    "controlType": "input",
+    "requiredPermissionCode": "ViewAccountingAudit",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.events.entity",
+    "label": "Entidad",
+    "module": "audit",
+    "controlType": "select",
+    "requiredPermissionCode": "ViewAccountingAudit",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.events.action",
+    "label": "Acción",
+    "module": "audit",
+    "controlType": "select",
+    "requiredPermissionCode": "ViewAccountingAudit",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.events.from",
+    "label": "Desde",
+    "module": "audit",
+    "controlType": "input",
+    "requiredPermissionCode": "ViewAccountingAudit",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.events.to",
+    "label": "Hasta",
+    "module": "audit",
+    "controlType": "input",
+    "requiredPermissionCode": "ViewAccountingAudit",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.events.clear",
+    "label": "Button 11",
+    "module": "audit",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewAccountingAudit",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.events.detail.open",
+    "label": "Button 12",
+    "module": "audit",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewAccountingAudit",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.events.previous",
+    "label": "Button 13",
+    "module": "audit",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewAccountingAudit",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.events.next",
+    "label": "Button 14",
+    "module": "audit",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewAccountingAudit",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.events.detail.close",
+    "label": "Button 15",
+    "module": "audit",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "audit.state.retry",
+    "label": "Button 16",
+    "module": "audit",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
     "controlKey": "billing.items.actions",
     "label": "Acciones del cargo",
     "module": "billing",
@@ -858,14 +1098,6 @@
   {
     "controlKey": "ledger.major.tabs.trial",
     "label": "Tab 7",
-    "module": "ledger",
-    "controlType": "tab",
-    "requiredPermissionCode": "ViewMajorLedger",
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "ledger.major.tabs.periods",
-    "label": "Tab 8",
     "module": "ledger",
     "controlType": "tab",
     "requiredPermissionCode": "ViewMajorLedger",
@@ -2696,30 +2928,6 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ledger.major.periods.close",
-    "label": "Button 5",
-    "module": "ledger",
-    "controlType": "button",
-    "requiredPermissionCode": "ManageAccountingPeriods",
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "ledger.major.periods.cancel",
-    "label": "Button 6",
-    "module": "ledger",
-    "controlType": "button",
-    "requiredPermissionCode": null,
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "ledger.major.periods.confirm",
-    "label": "Button 7",
-    "module": "ledger",
-    "controlType": "button",
-    "requiredPermissionCode": "ManageAccountingPeriods",
-    "isSystemRequired": false
-  },
-  {
     "controlKey": "ledger.major.reverse.date",
     "label": "Fecha de reversión",
     "module": "ledger",
@@ -2737,7 +2945,7 @@
   },
   {
     "controlKey": "ledger.major.reverse.cancel",
-    "label": "Button 8",
+    "label": "Button 5",
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": null,
@@ -2745,7 +2953,7 @@
   },
   {
     "controlKey": "ledger.major.reverse.confirm",
-    "label": "Button 9",
+    "label": "Button 6",
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": "ReverseJournalEntries",
@@ -4005,6 +4213,14 @@
     "module": "navigation",
     "controlType": "link",
     "requiredPermissionCode": "ViewAccountStatements",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "navigation.audit.open",
+    "label": "Auditoría y cierre",
+    "module": "navigation",
+    "controlType": "link",
+    "requiredPermissionCode": "ViewAccountingGovernance",
     "isSystemRequired": false
   },
   {

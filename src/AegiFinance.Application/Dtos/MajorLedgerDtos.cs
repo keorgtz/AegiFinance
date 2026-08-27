@@ -19,7 +19,9 @@ public record JournalEntryDto(
 
 public record AccountingPeriodDto(
     Guid Id, string Name, DateTime StartDate, DateTime EndDate,
-    string Status, DateTime? ClosedAt);
+    string Status, DateTime? ClosedAt, Guid? ClosedBy,
+    string? CloseVerificationCode, DateTime? ReopenedAt,
+    Guid? ReopenedBy, string? ReopenReason, int GovernanceVersion);
 
 public record TrialBalanceLineDto(
     Guid AccountId, string AccountCode, string AccountName, string AccountType,

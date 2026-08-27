@@ -9,17 +9,16 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Can } from "@/lib/auth/can";
 import { formatAmount, formatDate } from "@/lib/utils/format";
-import { useAccountingPeriods, useCloseAccountingPeriod, useGeneralLedgerAccounts, useJournalEntries, useMigrateLegacyLedger, useReverseJournalEntry, useTrialBalance } from "@/hooks/use-major-ledger";
-import type { AccountingPeriodDto, JournalEntryDto, LegacyMigrationResultDto } from "@/types/api";
+import { useGeneralLedgerAccounts, useJournalEntries, useMigrateLegacyLedger, useReverseJournalEntry, useTrialBalance } from "@/hooks/use-major-ledger";
+import type { JournalEntryDto, LegacyMigrationResultDto } from "@/types/api";
 
-type View = "journal" | "chart" | "trial" | "periods";
+type View = "journal" | "chart" | "trial";
 
 const today = () => new Date().toISOString().slice(0, 10);
 
 export function MajorLedgerPanel({ view }: { view: View }) {
   if (view === "chart") return <ChartView />;
   if (view === "trial") return <TrialBalanceView />;
-  if (view === "periods") return <PeriodsView />;
   return <JournalView />;
 }
 
@@ -100,14 +99,6 @@ function TrialBalanceView() {
   const [asOfDate, setAsOfDate] = useState(today());
   const trial = useTrialBalance(asOfDate);
   return <section className="space-y-5" aria-labelledby="trial-title"><div className="grid gap-4 rounded-card border border-border bg-surface p-5 shadow-dp1 sm:grid-cols-[1fr_220px] sm:items-end"><div><div className="flex items-center gap-2"><Scale className="h-5 w-5 text-action" /><h2 id="trial-title" className="font-display text-lg font-bold text-foreground">Balanza de comprobación</h2></div><p className="mt-2 text-sm text-muted">Saldos derivados exclusivamente de asientos contabilizados hasta la fecha indicada.</p></div><Input controlKey="ledger.major.trial.asOfDate" permission="ViewMajorLedger" type="date" label="Corte histórico" value={asOfDate} onChange={(event) => setAsOfDate(event.target.value)} /></div>{trial.isLoading ? <StateCard kind="loading">Calculando balanza…</StateCard> : trial.isError ? <StateCard kind="error" retry={() => trial.refetch()}>No se pudo calcular la balanza.</StateCard> : trial.data ? <><div className={`rounded-card border p-4 ${trial.data.isBalanced ? "border-success/30 bg-success-soft" : "border-danger/30 bg-danger-soft"}`} role="status"><div className="flex flex-wrap items-center justify-between gap-3"><p className={`font-semibold ${trial.data.isBalanced ? "text-success" : "text-danger"}`}>{trial.data.isBalanced ? "Balanza cuadrada" : "Balanza descuadrada"}</p><p className="text-sm text-muted">Debe {formatAmount(trial.data.totalDebit, trial.data.currency)} · Haber {formatAmount(trial.data.totalCredit, trial.data.currency)}</p></div></div><div className="overflow-hidden rounded-card border border-border bg-surface shadow-dp1"><div className="hidden grid-cols-[100px_1fr_150px_150px_150px] gap-3 border-b border-border bg-surface-subtle px-4 py-3 text-xs font-bold text-muted md:grid"><span>Cuenta</span><span>Nombre</span><span className="text-right">Debe</span><span className="text-right">Haber</span><span className="text-right">Saldo</span></div>{trial.data.lines.map(line => <article key={line.accountId} className="grid gap-3 border-b border-border px-4 py-4 last:border-0 md:grid-cols-[100px_1fr_150px_150px_150px] md:items-center"><div><p className="font-mono text-xs font-bold text-action">{line.accountCode}</p><p className="mt-1 text-xs text-muted md:hidden">{line.accountType}</p></div><p className="font-semibold text-foreground">{line.accountName}</p><Amount label="Debe" value={line.debit} currency={trial.data.currency} /><Amount label="Haber" value={line.credit} currency={trial.data.currency} /><Amount label="Saldo" value={line.balance} currency={trial.data.currency} /></article>)}</div></> : null}</section>;
-}
-
-function PeriodsView() {
-  const periods = useAccountingPeriods();
-  const close = useCloseAccountingPeriod();
-  const [selected, setSelected] = useState<AccountingPeriodDto | null>(null);
-  const confirmClose = async () => { if (!selected) return; await close.mutateAsync(selected.id); setSelected(null); };
-  return <section className="space-y-5" aria-labelledby="periods-title"><div className="rounded-card border border-border bg-surface p-5 shadow-dp1"><h2 id="periods-title" className="font-display text-lg font-bold text-foreground">Periodos contables</h2><p className="mt-2 text-sm text-muted">Los periodos se abren automáticamente al contabilizar el primer movimiento. Cerrar un periodo bloquea nuevas contabilizaciones dentro de sus fechas.</p></div>{periods.isLoading ? <StateCard kind="loading">Cargando periodos…</StateCard> : periods.isError ? <StateCard kind="error" retry={() => periods.refetch()}>No se pudieron cargar los periodos.</StateCard> : !periods.data?.length ? <StateCard kind="empty">Todavía no hay periodos contables.</StateCard> : <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{periods.data.map(period => <article key={period.id} className="rounded-card border border-border bg-surface p-4 shadow-dp1"><div className="flex items-start justify-between gap-3"><div><p className="font-semibold text-foreground">{period.name}</p><p className="mt-1 text-xs text-muted">{formatDate(period.startDate)} — {formatDate(period.endDate)}</p></div><Badge variant={period.status === "Open" ? "jade" : "muted"}>{period.status === "Open" ? "Abierto" : "Cerrado"}</Badge></div>{period.status === "Open" && <Can permission="ManageAccountingPeriods"><Button controlKey="ledger.major.periods.close" permission="ManageAccountingPeriods" variant="secondary" size="sm" className="mt-5 w-full" onClick={() => setSelected(period)}>Cerrar periodo</Button></Can>}</article>)}</div>}<Dialog open={!!selected} onOpenChange={(open) => { if (!open) setSelected(null); }}><DialogContent title="Cerrar periodo contable" description={selected ? `${selected.name} · esta acción bloquea nuevas contabilizaciones en sus fechas.` : undefined} size="sm"><p className="text-sm text-muted">Sólo se cerrará si no existen asientos en borrador. Los movimientos contabilizados conservarán su historial.</p><DialogFooter><DialogClose asChild><Button controlKey="ledger.major.periods.cancel" systemRequired type="button" variant="secondary">Cancelar</Button></DialogClose><Button controlKey="ledger.major.periods.confirm" permission="ManageAccountingPeriods" type="button" variant="danger" loading={close.isPending} onClick={confirmClose}>Confirmar cierre</Button></DialogFooter></DialogContent></Dialog></section>;
 }
 
 function ReverseDialog({ entry, onOpenChange }: { entry: JournalEntryDto | null; onOpenChange: (open: boolean) => void }) {

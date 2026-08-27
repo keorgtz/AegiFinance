@@ -148,7 +148,22 @@ var reorderedCode = AccountStatementRules.VerificationCode(statementClientId, "M
 if (statementCode != reorderedCode || statementCode.Length != 16) throw new InvalidOperationException("Failed: account statement verification is not deterministic.");
 AssertThrows(() => AccountStatementRules.ValidatePeriod(new DateTime(2026, 9, 1), new DateTime(2026, 8, 31)), "inverted statement period");
 
-Console.WriteLine("Major Ledger, bank-account, client-identity, subscription pricing, bank-import, reconciliation, payment-application and account-statement rules passed.");
+var cleanIntegrity = new AccountingIntegritySnapshot(0, 0, 0, 0, 0, 2);
+var closeChecks = AccountingGovernanceRules.BuildCloseChecklist(new DateTime(2026, 7, 31), new DateTime(2026, 8, 27), cleanIntegrity);
+if (!AccountingGovernanceRules.CanClose(closeChecks) || closeChecks.Single(item => item.Key == "reconciliation").State != "Warning")
+    throw new InvalidOperationException("Failed: non-blocking reconciliation evidence prevents an otherwise valid close.");
+var blockedChecks = AccountingGovernanceRules.BuildCloseChecklist(new DateTime(2026, 7, 31), new DateTime(2026, 8, 27), cleanIntegrity with { UnbalancedEntries = 1 });
+if (AccountingGovernanceRules.CanClose(blockedChecks) || blockedChecks.Single(item => item.Key == "balanced").State != "Blocked")
+    throw new InvalidOperationException("Failed: an unbalanced entry does not block period close.");
+var governancePeriodId = Guid.NewGuid();
+var closeCode = AccountingGovernanceRules.VerificationCode(governancePeriodId, cleanIntegrity, closeChecks);
+if (closeCode != AccountingGovernanceRules.VerificationCode(governancePeriodId, cleanIntegrity, closeChecks.Reverse()) || closeCode.Length != 16)
+    throw new InvalidOperationException("Failed: accounting close evidence is not deterministic.");
+var requester = Guid.NewGuid();
+AssertThrows(() => AccountingGovernanceRules.EnsureIndependentApproval(requester, requester), "self-approved accounting-period reopen");
+AccountingGovernanceRules.EnsureIndependentApproval(requester, Guid.NewGuid());
+
+Console.WriteLine("Major Ledger, bank-account, client-identity, subscription pricing, bank-import, reconciliation, payment-application, account-statement and accounting-governance rules passed.");
 
 static JournalEntry Entry(params JournalLine[] lines) => new()
 {

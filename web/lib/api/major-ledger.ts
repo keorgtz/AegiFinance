@@ -18,5 +18,4 @@ export const majorLedgerApi = {
   reverse: (id: string, body: { date: string; reason: string }) =>
     api.post<JournalEntryDto>(`/major-ledger/journal-entries/${id}/reverse`, body),
   migrateLegacy: () => api.post<LegacyMigrationResultDto>("/major-ledger/legacy-migration"),
-  closePeriod: (id: string) => api.post<AccountingPeriodDto>(`/major-ledger/periods/${id}/close`),
 };

@@ -63,6 +63,7 @@ public class AegiFinanceDbContext : DbContext
     public DbSet<LedgerEntry> LedgerEntries => Set<LedgerEntry>();
     public DbSet<GeneralLedgerAccount> GeneralLedgerAccounts => Set<GeneralLedgerAccount>();
     public DbSet<AccountingPeriod> AccountingPeriods => Set<AccountingPeriod>();
+    public DbSet<AccountingPeriodReopenRequest> AccountingPeriodReopenRequests => Set<AccountingPeriodReopenRequest>();
     public DbSet<JournalEntry> JournalEntries => Set<JournalEntry>();
     public DbSet<JournalLine> JournalLines => Set<JournalLine>();
     public DbSet<TransferGroup> TransferGroups => Set<TransferGroup>();
@@ -126,6 +127,7 @@ public class AegiFinanceDbContext : DbContext
         ConfigureLedgerEntry(modelBuilder);
         ConfigureGeneralLedgerAccount(modelBuilder);
         ConfigureAccountingPeriod(modelBuilder);
+        ConfigureAccountingPeriodReopenRequest(modelBuilder);
         ConfigureJournalEntry(modelBuilder);
         ConfigureJournalLine(modelBuilder);
         ConfigureTransferGroup(modelBuilder);
@@ -405,6 +407,7 @@ public class AegiFinanceDbContext : DbContext
             entity.Property(e => e.Changes).IsRequired();
             entity.Property(e => e.IPAddress).HasMaxLength(50);
             entity.Property(e => e.UserAgent).HasMaxLength(500);
+            entity.HasIndex(e => new { e.OrganizationId, e.Timestamp });
         });
     }
 
@@ -978,7 +981,27 @@ public class AegiFinanceDbContext : DbContext
             entity.HasKey(item => item.Id);
             entity.Property(item => item.Name).HasMaxLength(100).IsRequired();
             entity.Property(item => item.Status).HasConversion<string>().HasMaxLength(20);
-            entity.HasIndex(item => new { item.StartDate, item.EndDate }).IsUnique();
+            entity.Property(item => item.CloseChecklistJson).HasMaxLength(8000);
+            entity.Property(item => item.CloseVerificationCode).HasMaxLength(32);
+            entity.Property(item => item.ReopenReason).HasMaxLength(2000);
+            entity.Property(item => item.GovernanceVersion).IsConcurrencyToken();
+            entity.HasIndex(item => new { item.OrganizationId, item.StartDate, item.EndDate }).IsUnique();
+            entity.HasOne(item => item.Organization).WithMany(item => item.AccountingPeriods).HasForeignKey(item => item.OrganizationId).OnDelete(DeleteBehavior.Restrict);
+        });
+    }
+
+    private static void ConfigureAccountingPeriodReopenRequest(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<AccountingPeriodReopenRequest>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.Reason).HasMaxLength(2000).IsRequired();
+            entity.Property(item => item.Status).HasConversion<string>().HasMaxLength(20);
+            entity.Property(item => item.ReviewComment).HasMaxLength(2000);
+            entity.HasIndex(item => new { item.AccountingPeriodId, item.Status }).IsUnique().HasFilter("[Status] = 'Pending' AND [IsDeleted] = 0");
+            entity.HasIndex(item => new { item.OrganizationId, item.RequestedAt });
+            entity.HasOne(item => item.Organization).WithMany(item => item.AccountingPeriodReopenRequests).HasForeignKey(item => item.OrganizationId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.AccountingPeriod).WithMany(item => item.ReopenRequests).HasForeignKey(item => item.AccountingPeriodId).OnDelete(DeleteBehavior.Restrict);
         });
     }
 
@@ -1345,6 +1368,8 @@ public class AegiFinanceDbContext : DbContext
 
     private void ApplyTenantQueryFilters(ModelBuilder modelBuilder)
     {
+        AppendQueryFilter<AuditLog>(modelBuilder, entity =>
+            !IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId);
         AppendQueryFilter<Organization>(modelBuilder, entity =>
             !IsOrganizationScope || entity.Id == CurrentOrganizationId);
         AppendQueryFilter<Client>(modelBuilder, entity =>
@@ -1407,15 +1432,14 @@ public class AegiFinanceDbContext : DbContext
             (!IsOrganizationScope || entity.BankAccount.OrganizationId == CurrentOrganizationId) &&
             (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId)));
         AppendQueryFilter<JournalEntry>(modelBuilder, entity =>
-            (!IsOrganizationScope ||
-                (entity.ClientId.HasValue && entity.Client!.OrganizationId == CurrentOrganizationId) ||
-                entity.Lines.Any(line => line.BankAccountId.HasValue && line.BankAccount!.OrganizationId == CurrentOrganizationId)) &&
+            (!IsOrganizationScope || entity.AccountingPeriod.OrganizationId == CurrentOrganizationId) &&
             (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId)));
+        AppendQueryFilter<AccountingPeriod>(modelBuilder, entity =>
+            !IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId);
+        AppendQueryFilter<AccountingPeriodReopenRequest>(modelBuilder, entity =>
+            !IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId);
         AppendQueryFilter<JournalLine>(modelBuilder, entity =>
-            (!IsOrganizationScope ||
-                (entity.ClientId.HasValue && entity.Client!.OrganizationId == CurrentOrganizationId) ||
-                (entity.BankAccountId.HasValue && entity.BankAccount!.OrganizationId == CurrentOrganizationId) ||
-                (entity.JournalEntry.ClientId.HasValue && entity.JournalEntry.Client!.OrganizationId == CurrentOrganizationId)) &&
+            (!IsOrganizationScope || entity.JournalEntry.AccountingPeriod.OrganizationId == CurrentOrganizationId) &&
             (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId)));
         AppendQueryFilter<SubscriptionAllocation>(modelBuilder, entity =>
             (!IsOrganizationScope || entity.BillingItem.Client.OrganizationId == CurrentOrganizationId) &&

@@ -166,7 +166,7 @@ public static class SeedData
 
     private static (string Module, string Action) DescribePermission(string code)
     {
-        var action = Regex.Match(code, "^(View|Create|Update|Delete|Manage|Generate|Cancel|Close|Reconcile|Reprocess|Allocate|Unallocate|Sync|Apply|Reverse|Reapply|Export|Resolve)").Value;
+        var action = Regex.Match(code, "^(View|Create|Update|Delete|Manage|Generate|Cancel|Close|Reconcile|Reprocess|Allocate|Unallocate|Sync|Apply|Reverse|Reapply|Export|Resolve|Request|Approve)").Value;
         if (string.IsNullOrWhiteSpace(action))
         {
             action = "Execute";

@@ -22,6 +22,27 @@ public sealed class MajorLedgerInvariantInterceptor : SaveChangesInterceptor
 
     private static async Task ValidateAsync(DbContext context, CancellationToken cancellationToken)
     {
+        foreach (var tracked in context.ChangeTracker.Entries<AccountingPeriod>().Where(item => item.State == EntityState.Modified))
+        {
+            var originalStatus = tracked.OriginalValues.GetValue<AccountingPeriodStatus>(nameof(AccountingPeriod.Status));
+            if (originalStatus == tracked.Entity.Status) continue;
+            if (originalStatus == AccountingPeriodStatus.Open && tracked.Entity.Status == AccountingPeriodStatus.Closed)
+            {
+                if (!tracked.Entity.ClosedAt.HasValue || !tracked.Entity.ClosedBy.HasValue || string.IsNullOrWhiteSpace(tracked.Entity.CloseVerificationCode) || string.IsNullOrWhiteSpace(tracked.Entity.CloseChecklistJson))
+                    throw new InvalidOperationException("Closing an accounting period requires verified checklist evidence.");
+                continue;
+            }
+            if (originalStatus == AccountingPeriodStatus.Closed && tracked.Entity.Status == AccountingPeriodStatus.Open)
+            {
+                var approval = context.ChangeTracker.Entries<AccountingPeriodReopenRequest>().Any(item =>
+                    item.Entity.AccountingPeriodId == tracked.Entity.Id && item.Entity.Status == AccountingPeriodReopenStatus.Approved &&
+                    item.Entity.ReviewedAt.HasValue && item.Entity.ReviewedBy.HasValue && item.Entity.RequestedBy != item.Entity.ReviewedBy.Value);
+                if (!approval) throw new InvalidOperationException("Reopening an accounting period requires independent approval evidence.");
+                continue;
+            }
+            throw new InvalidOperationException("The accounting period status transition is not allowed.");
+        }
+
         foreach (var tracked in context.ChangeTracker.Entries<JournalEntry>())
         {
             if (tracked.State == EntityState.Deleted && tracked.Entity.Status != JournalEntryStatus.Draft)
@@ -50,6 +71,14 @@ public sealed class MajorLedgerInvariantInterceptor : SaveChangesInterceptor
             var becomesPosted = tracked.Entity.Status == JournalEntryStatus.Posted &&
                 (tracked.State == EntityState.Added || tracked.OriginalValues.GetValue<JournalEntryStatus>(nameof(JournalEntry.Status)) == JournalEntryStatus.Draft);
             if (becomesPosted) JournalEntryRules.ValidateForPosting(tracked.Entity);
+
+            if (tracked.State == EntityState.Added || becomesPosted)
+            {
+                var trackedPeriod = context.ChangeTracker.Entries<AccountingPeriod>().FirstOrDefault(item => item.Entity.Id == tracked.Entity.AccountingPeriodId)?.Entity;
+                var status = trackedPeriod?.Status ?? await context.Set<AccountingPeriod>().AsNoTracking()
+                    .Where(item => item.Id == tracked.Entity.AccountingPeriodId).Select(item => item.Status).SingleAsync(cancellationToken);
+                if (status != AccountingPeriodStatus.Open) throw new InvalidOperationException("Entries cannot be created or posted in a closed accounting period.");
+            }
         }
 
         foreach (var tracked in context.ChangeTracker.Entries<JournalLine>()

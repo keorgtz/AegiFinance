@@ -24,6 +24,8 @@ public class GetAuditLogsQueryHandler : IRequestHandler<GetAuditLogsQuery, Pagin
             query = query.Where(a => a.EntityType == request.EntityType);
         }
 
+        if (!string.IsNullOrWhiteSpace(request.EntityId)) query = query.Where(a => a.EntityId == request.EntityId.Trim());
+
         if (request.UserId.HasValue)
         {
             query = query.Where(a => a.UserId == request.UserId.Value);
@@ -41,7 +43,13 @@ public class GetAuditLogsQueryHandler : IRequestHandler<GetAuditLogsQuery, Pagin
 
         if (request.ToDate.HasValue)
         {
-            query = query.Where(a => a.Timestamp <= request.ToDate.Value);
+            query = query.Where(a => a.Timestamp < request.ToDate.Value.Date.AddDays(1));
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            var search = request.Search.Trim();
+            query = query.Where(a => a.EntityType.Contains(search) || a.EntityId.Contains(search) || a.Action.Contains(search) || a.Changes.Contains(search));
         }
 
         var projected = query
@@ -61,6 +69,6 @@ public class GetAuditLogsQueryHandler : IRequestHandler<GetAuditLogsQuery, Pagin
                 UserAgent = x.a.UserAgent
             });
 
-        return await projected.ToPaginatedListAsync(request.PageNumber, request.PageSize, cancellationToken);
+        return await projected.ToPaginatedListAsync(Math.Max(1, request.PageNumber), Math.Clamp(request.PageSize, 1, 100), cancellationToken);
     }
 }

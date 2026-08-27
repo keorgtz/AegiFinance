@@ -494,7 +494,6 @@ export default function LedgerPage() {
           <Tab controlKey="ledger.major.tabs.journal" permission="ViewMajorLedger" id="journal">Libro diario</Tab>
           <Tab controlKey="ledger.major.tabs.chart" permission="ViewMajorLedger" id="chart">Catálogo contable</Tab>
           <Tab controlKey="ledger.major.tabs.trial" permission="ViewMajorLedger" id="trial">Balanza</Tab>
-          <Tab controlKey="ledger.major.tabs.periods" permission="ViewMajorLedger" id="periods">Periodos</Tab>
         </TabList>
 
         {/* ── MOVIMIENTOS ── */}
@@ -705,7 +704,6 @@ export default function LedgerPage() {
         <TabPanel id="journal"><MajorLedgerPanel view="journal" /></TabPanel>
         <TabPanel id="chart"><MajorLedgerPanel view="chart" /></TabPanel>
         <TabPanel id="trial"><MajorLedgerPanel view="trial" /></TabPanel>
-        <TabPanel id="periods"><MajorLedgerPanel view="periods" /></TabPanel>
       </Tabs>
 
       {/* Bank Account Form */}

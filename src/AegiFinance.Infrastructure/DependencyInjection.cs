@@ -57,6 +57,7 @@ public static class DependencyInjection
         services.AddScoped<IClientGovernanceService, ClientGovernanceService>();
         services.AddScoped<ILedgerService, LedgerService>();
         services.AddScoped<IMajorLedgerService, MajorLedgerService>();
+        services.AddScoped<IAccountingGovernanceService, AccountingGovernanceService>();
         services.AddScoped<IAllocationService, AllocationService>();
         services.AddSingleton<IAccountStatementExporter, AccountStatementExporter>();
         services.AddScoped<IAccountNumberProtector, AccountNumberProtector>();

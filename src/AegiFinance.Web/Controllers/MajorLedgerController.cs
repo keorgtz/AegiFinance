@@ -29,11 +29,6 @@ public sealed class MajorLedgerController : ControllerBase
     public async Task<ActionResult<AccountingPeriodDto>> CreatePeriod(CreateAccountingPeriodRequest request, CancellationToken cancellationToken)
         => Ok(await _majorLedger.CreatePeriodAsync(request.Name, request.StartDate, request.EndDate, cancellationToken));
 
-    [HttpPost("periods/{id:guid}/close")]
-    [Authorize(Policy = "ManageAccountingPeriods")]
-    public async Task<ActionResult<AccountingPeriodDto>> ClosePeriod(Guid id, CancellationToken cancellationToken)
-        => Ok(await _majorLedger.ClosePeriodAsync(id, cancellationToken));
-
     [HttpGet("journal-entries")]
     [Authorize(Policy = "ViewMajorLedger")]
     public async Task<ActionResult<IReadOnlyList<JournalEntryDto>>> GetEntries(

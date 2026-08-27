@@ -50,7 +50,7 @@ public class AuditInterceptor : SaveChangesInterceptor
                     entry.Entity.UpdatedAt = now;
                     entry.Entity.CreatedBy = currentUserId;
                     entry.Entity.UpdatedBy = currentUserId;
-                    auditLogs.Add(CreateAuditLog(entry, "Created", null, currentUserId));
+                    auditLogs.Add(CreateAuditLog(context, entry, "Created", null, currentUserId));
                     break;
 
                 case EntityState.Modified:
@@ -59,7 +59,7 @@ public class AuditInterceptor : SaveChangesInterceptor
                     var changes = GetChanges(entry);
                     if (changes.Any())
                     {
-                        auditLogs.Add(CreateAuditLog(entry, "Updated", changes, currentUserId));
+                        auditLogs.Add(CreateAuditLog(context, entry, "Updated", changes, currentUserId));
                     }
                     break;
 
@@ -70,7 +70,7 @@ public class AuditInterceptor : SaveChangesInterceptor
                     entry.Entity.DeletedBy = currentUserId;
                     entry.Entity.UpdatedAt = now;
                     entry.Entity.UpdatedBy = currentUserId;
-                    auditLogs.Add(CreateAuditLog(entry, "Deleted", GetChanges(entry), currentUserId));
+                    auditLogs.Add(CreateAuditLog(context, entry, "Deleted", GetChanges(entry), currentUserId));
                     break;
             }
         }
@@ -87,6 +87,7 @@ public class AuditInterceptor : SaveChangesInterceptor
             auditLogs.Add(new AuditLog
             {
                 Id = Guid.NewGuid(),
+                OrganizationId = _currentUserService.OrganizationId,
                 EntityType = nameof(RolePermission),
                 EntityId = $"{entry.Entity.RoleId}:{entry.Entity.PermissionId}",
                 Action = action,
@@ -104,18 +105,34 @@ public class AuditInterceptor : SaveChangesInterceptor
         await Task.CompletedTask;
     }
 
-    private static AuditLog CreateAuditLog(EntityEntry<BaseEntity> entry, string action, Dictionary<string, object?>? changes, Guid? userId)
+    private AuditLog CreateAuditLog(DbContext context, EntityEntry<BaseEntity> entry, string action, Dictionary<string, object?>? changes, Guid? userId)
     {
+        var organizationId = _currentUserService.OrganizationId ?? OrganizationFromEntity(entry.Entity);
+        if (!organizationId.HasValue && entry.Entity is UserSession session)
+            organizationId = context.ChangeTracker.Entries<User>()
+                .FirstOrDefault(item => item.Entity.Id == session.UserId)?.Entity.OrganizationId;
         return new AuditLog
         {
             Id = Guid.NewGuid(),
+            OrganizationId = organizationId,
             EntityType = entry.Entity.GetType().Name,
             EntityId = entry.Entity.Id.ToString(),
             Action = action,
             Changes = changes is not null ? JsonSerializer.Serialize(changes) : "{}",
-            UserId = userId,
-            Timestamp = DateTime.UtcNow
+            UserId = userId ?? (entry.Entity is UserSession userSession ? userSession.UserId : null),
+            Timestamp = DateTime.UtcNow,
+            IPAddress = entry.Entity is UserSession sessionWithAddress ? sessionWithAddress.IpAddress : null,
+            UserAgent = entry.Entity is UserSession sessionWithAgent ? sessionWithAgent.UserAgent : null
         };
+    }
+
+    private static Guid? OrganizationFromEntity(BaseEntity entity)
+    {
+        if (entity is Organization organization) return organization.Id;
+        var property = entity.GetType().GetProperty("OrganizationId");
+        if (property?.PropertyType == typeof(Guid)) return (Guid?)property.GetValue(entity);
+        if (property?.PropertyType == typeof(Guid?)) return (Guid?)property.GetValue(entity);
+        return null;
     }
 
     private static Dictionary<string, object?> GetChanges(EntityEntry<BaseEntity> entry)

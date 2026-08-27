@@ -838,7 +838,19 @@ export interface AccountingPeriodDto {
   endDate: string;
   status: "Open" | "Closed";
   closedAt?: string | null;
+  closedBy?: string | null;
+  closeVerificationCode?: string | null;
+  reopenedAt?: string | null;
+  reopenedBy?: string | null;
+  reopenReason?: string | null;
+  governanceVersion: number;
 }
+
+export interface AccountingCloseCheckDto { key: string; label: string; state: "Passed" | "Warning" | "Blocked"; count: number; detail: string; blocksClose: boolean; }
+export interface AccountingPeriodChecklistDto { periodId: string; periodName: string; canClose: boolean; verificationCode: string; items: AccountingCloseCheckDto[]; }
+export interface AccountingIntegrityAlertDto { key: string; severity: "Critical" | "Warning"; title: string; detail: string; count: number; }
+export interface AccountingEvidenceSummaryDto { auditEvents: number; accessEvents: number; committedImports: number; failedImports: number; rolledBackImports: number; automaticReconciliations: number; journalReversals: number; paymentReversals: number; lastEventAt?: string | null; }
+export interface AccountingPeriodReopenRequestDto { id: string; periodId: string; periodName: string; reason: string; status: "Pending" | "Approved" | "Rejected"; requestedAt: string; requestedBy: string; requestedByName?: string | null; reviewedAt?: string | null; reviewedBy?: string | null; reviewedByName?: string | null; reviewComment?: string | null; }
 
 export interface TrialBalanceLineDto {
   accountId: string;

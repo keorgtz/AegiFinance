@@ -47,6 +47,7 @@ public interface IApplicationDbContext
     DbSet<LedgerEntry> LedgerEntries { get; }
     DbSet<GeneralLedgerAccount> GeneralLedgerAccounts { get; }
     DbSet<AccountingPeriod> AccountingPeriods { get; }
+    DbSet<AccountingPeriodReopenRequest> AccountingPeriodReopenRequests { get; }
     DbSet<JournalEntry> JournalEntries { get; }
     DbSet<JournalLine> JournalLines { get; }
     DbSet<TransferGroup> TransferGroups { get; }

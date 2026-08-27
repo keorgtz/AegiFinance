@@ -111,7 +111,8 @@ public sealed class MajorLedgerService : IMajorLedgerService
 
     public async Task<IReadOnlyList<AccountingPeriodDto>> GetPeriodsAsync(CancellationToken cancellationToken = default)
         => await _context.AccountingPeriods.AsNoTracking().OrderByDescending(item => item.StartDate)
-            .Select(item => new AccountingPeriodDto(item.Id, item.Name, item.StartDate, item.EndDate, item.Status.ToString(), item.ClosedAt))
+            .Select(item => new AccountingPeriodDto(item.Id, item.Name, item.StartDate, item.EndDate, item.Status.ToString(), item.ClosedAt,
+                item.ClosedBy, item.CloseVerificationCode, item.ReopenedAt, item.ReopenedBy, item.ReopenReason, item.GovernanceVersion))
             .ToListAsync(cancellationToken);
 
     public async Task<IReadOnlyList<JournalEntryDto>> GetJournalEntriesAsync(DateTime? from, DateTime? to, string? status, CancellationToken cancellationToken = default)
@@ -231,23 +232,10 @@ public sealed class MajorLedgerService : IMajorLedgerService
         if (endDate.Date < startDate.Date) throw new InvalidOperationException("The period end date must be on or after its start date.");
         var overlaps = await _context.AccountingPeriods.AnyAsync(item => startDate.Date <= item.EndDate && endDate.Date >= item.StartDate, cancellationToken);
         if (overlaps) throw new InvalidOperationException("The accounting period overlaps an existing period.");
-        var period = new AccountingPeriod { Id = Guid.NewGuid(), Name = name.Trim(), StartDate = startDate.Date, EndDate = endDate.Date.AddDays(1).AddTicks(-1) };
+        var period = new AccountingPeriod { Id = Guid.NewGuid(), OrganizationId = RequireOrganizationId(), Name = name.Trim(), StartDate = startDate.Date, EndDate = endDate.Date.AddDays(1).AddTicks(-1) };
         _context.AccountingPeriods.Add(period);
         await _context.SaveChangesAsync(cancellationToken);
-        return new AccountingPeriodDto(period.Id, period.Name, period.StartDate, period.EndDate, period.Status.ToString(), period.ClosedAt);
-    }
-
-    public async Task<AccountingPeriodDto> ClosePeriodAsync(Guid periodId, CancellationToken cancellationToken = default)
-    {
-        var period = await _context.AccountingPeriods.FirstOrDefaultAsync(item => item.Id == periodId, cancellationToken)
-            ?? throw new InvalidOperationException("The accounting period does not exist.");
-        if (await _context.JournalEntries.AnyAsync(item => item.AccountingPeriodId == periodId && item.Status == JournalEntryStatus.Draft, cancellationToken))
-            throw new InvalidOperationException("Post or remove every draft before closing the period.");
-        period.Status = AccountingPeriodStatus.Closed;
-        period.ClosedAt = DateTime.UtcNow;
-        period.ClosedBy = _currentUser.UserId;
-        await _context.SaveChangesAsync(cancellationToken);
-        return new AccountingPeriodDto(period.Id, period.Name, period.StartDate, period.EndDate, period.Status.ToString(), period.ClosedAt);
+        return MapPeriod(period);
     }
 
     public async Task<LegacyMigrationResultDto> MigrateLegacyAsync(CancellationToken cancellationToken = default)
@@ -404,7 +392,7 @@ public sealed class MajorLedgerService : IMajorLedgerService
         if (period is null)
         {
             var start = new DateTime(date.Year, date.Month, 1, 0, 0, 0, date.Kind == DateTimeKind.Unspecified ? DateTimeKind.Utc : date.Kind);
-            period = new AccountingPeriod { Id = Guid.NewGuid(), Name = start.ToString("yyyy-MM"), StartDate = start, EndDate = start.AddMonths(1).AddTicks(-1) };
+            period = new AccountingPeriod { Id = Guid.NewGuid(), OrganizationId = RequireOrganizationId(), Name = start.ToString("yyyy-MM"), StartDate = start, EndDate = start.AddMonths(1).AddTicks(-1) };
             _context.AccountingPeriods.Add(period);
             await _context.SaveChangesAsync(cancellationToken);
         }
@@ -457,6 +445,12 @@ public sealed class MajorLedgerService : IMajorLedgerService
         => type is GeneralLedgerAccountType.Asset or GeneralLedgerAccountType.Expense ? debit - credit : credit - debit;
 
     private static string NewEntryNumber(DateTime date) => $"JE-{date:yyyyMMdd}-{Guid.NewGuid().ToString("N")[..8].ToUpperInvariant()}";
+
+    private Guid RequireOrganizationId() => _currentUser.OrganizationId ?? throw new UnauthorizedAccessException("No active organization is available.");
+
+    private static AccountingPeriodDto MapPeriod(AccountingPeriod period) => new(period.Id, period.Name, period.StartDate, period.EndDate,
+        period.Status.ToString(), period.ClosedAt, period.ClosedBy, period.CloseVerificationCode, period.ReopenedAt,
+        period.ReopenedBy, period.ReopenReason, period.GovernanceVersion);
 
     private static JournalEntryDto MapEntry(JournalEntry entry)
     {

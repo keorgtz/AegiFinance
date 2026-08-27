@@ -9,4 +9,6 @@ public class Organization : AuditableEntity
     public ICollection<BankAccount> BankAccounts { get; set; } = new List<BankAccount>();
     public ICollection<Service> Services { get; set; } = new List<Service>();
     public ICollection<ServiceCategory> ServiceCategories { get; set; } = new List<ServiceCategory>();
+    public ICollection<AccountingPeriod> AccountingPeriods { get; set; } = new List<AccountingPeriod>();
+    public ICollection<AccountingPeriodReopenRequest> AccountingPeriodReopenRequests { get; set; } = new List<AccountingPeriodReopenRequest>();
 }

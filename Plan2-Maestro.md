@@ -341,6 +341,8 @@ Evolucionar el registro actual de caja hacia un libro mayor real sin perder traz
 
 ## Fase 13 — Auditoría, periodos y cierre
 
+**Estado:** implementada el 27 de agosto de 2026. Incorpora un centro AegiPulse de auditoría con evidencia de accesos, cambios, importaciones, reglas automáticas y reversiones; periodos aislados por organización; checklist de cierre firmado y recalculado al confirmar; bloqueo de asientos en periodos cerrados tanto en aplicación como en SQL; solicitudes de reapertura con motivo y aprobación obligatoria por una persona distinta; y alertas de asientos descuadrados, huérfanos, borradores, importaciones y conciliaciones pendientes. La migración divide de forma segura los periodos históricos compartidos por organización y agrega RLS a periodos, solicitudes y bitácora. No requiere nuevas variables, volúmenes, redes ni servicios Docker; conserva el contrato Compose existente y su verificador.
+
 ### Entregables
 
 - bitácora consultable de acceso y cambios;

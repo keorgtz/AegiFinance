@@ -76,6 +76,7 @@ Forbid-Text "src/AegiFinance.Infrastructure/Migrations/20260818183012_Phase1Dyna
 Require-IsolatedSqlFunctions "src/AegiFinance.Infrastructure/Migrations/20260818183012_Phase1DynamicPermissions.cs"
 Require-IsolatedSqlFunctions "src/AegiFinance.Infrastructure/Migrations/20260818220002_Phase6ClientScope.cs"
 Require-IsolatedSqlFunctions "src/AegiFinance.Infrastructure/Migrations/20260818224818_Phase7VersionedPlans.cs"
+Require-IsolatedSqlFunctions "src/AegiFinance.Infrastructure/Migrations/20260827184009_Phase13AccountingGovernance.cs"
 Forbid-Text "src/AegiFinance.Infrastructure/Migrations/20260818224818_Phase7VersionedPlans.cs" "s\.\[CreatedAt\], NULL, NULL, NULL, 1, SYSUTCDATETIME" "The Phase 7 ServiceVersions data migration has more SELECT values than INSERT columns."
 Forbid-Text "src/AegiFinance.Infrastructure/Data/AegiFinanceDbContext.cs" 'CurrentClientId\.Value' "Tenant query filters dereference a nullable client ID during parameter extraction."
 Require-Text "src/AegiFinance.Web/Controllers/ClientCategoriesController.cs" '\[Route\("api/client-categories"\)\]' "Client category routes do not match the frontend API contract."

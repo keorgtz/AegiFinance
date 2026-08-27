@@ -26,15 +26,6 @@ export const useAccountingPeriods = () => useQuery({
   queryFn: majorLedgerApi.periods,
 });
 
-export function useCloseAccountingPeriod() {
-  const client = useQueryClient();
-  return useMutation({
-    mutationFn: majorLedgerApi.closePeriod,
-    onSuccess: () => { client.invalidateQueries({ queryKey: KEY }); toast.success("Periodo contable cerrado"); },
-    onError: () => toast.error("No se pudo cerrar el periodo; revisá que no tenga borradores"),
-  });
-}
-
 export function useReverseJournalEntry() {
   const client = useQueryClient();
   return useMutation({
