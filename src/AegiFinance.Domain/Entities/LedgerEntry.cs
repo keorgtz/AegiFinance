@@ -19,4 +19,5 @@ public class LedgerEntry : AuditableEntity
     public bool IsReconciled { get; set; }
     public DateTime? ReconciledAt { get; set; }
     public int ReconciliationVersion { get; set; }
+    public int PaymentAllocationVersion { get; set; }
 }

@@ -17,4 +17,6 @@ public class LedgerEntryDto
     public string? BillingItemDescription { get; set; }
     public bool IsReconciled { get; set; }
     public DateTime? ReconciledAt { get; set; }
+    public decimal AllocatedAmount { get; set; }
+    public decimal UnappliedAmount { get; set; }
 }

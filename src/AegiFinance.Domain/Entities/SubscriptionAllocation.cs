@@ -10,4 +10,10 @@ public class SubscriptionAllocation : AuditableEntity
     public DateTime AllocatedAt { get; set; }
     public Guid? AllocatedBy { get; set; }
     public bool IsAutomatic { get; set; }
+    public Guid? PaymentApplicationId { get; set; }
+    public PaymentApplication? PaymentApplication { get; set; }
+    public bool IsReversed { get; set; }
+    public DateTime? ReversedAt { get; set; }
+    public Guid? ReversedBy { get; set; }
+    public string? ReversalReason { get; set; }
 }

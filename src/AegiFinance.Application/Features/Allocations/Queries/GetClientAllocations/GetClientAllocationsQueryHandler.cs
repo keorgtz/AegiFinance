@@ -41,6 +41,10 @@ public class GetClientAllocationsQueryHandler : IRequestHandler<GetClientAllocat
                 AllocatedAt = x.AllocatedAt,
                 AllocatedBy = x.AllocatedBy,
                 IsAutomatic = x.IsAutomatic,
+                IsReversed = x.IsReversed,
+                PaymentApplicationId = x.PaymentApplicationId,
+                ReversedAt = x.ReversedAt,
+                ReversalReason = x.ReversalReason,
                 BillingItemDescription = x.BillingItem.Description,
                 LedgerEntryDescription = x.LedgerEntry.Description
             })

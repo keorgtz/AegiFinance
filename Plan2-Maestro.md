@@ -301,6 +301,8 @@ Evolucionar el registro actual de caja hacia un libro mayor real sin perder traz
 
 ## Fase 11 — Aplicación de pagos
 
+**Estado:** implementada el 27 de agosto de 2026. Incluye aplicaciones manuales y automáticas, pagos combinados, prioridades configurables, pagos parciales, anticipos y sobrantes, reversión no destructiva, reaplicación atómica, recibos vinculados al Major Ledger, concurrencia optimista, idempotencia, aislamiento multiempresa en EF y SQL RLS, permisos declarativos y experiencia AegiPulse responsive. Gate automatizado: `scripts/verify-phase11.ps1`.
+
 ### Entregables
 
 - aplicación manual y automática a cargos;

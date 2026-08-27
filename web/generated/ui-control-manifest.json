@@ -40,24 +40,192 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.allocations.page.button.1",
-    "label": "Revertir asignación",
+    "controlKey": "payments.settings.open",
+    "label": "Button 1",
     "module": "allocations",
     "controlType": "button",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ManagePaymentApplicationSettings",
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.allocations.page.button.2",
+    "controlKey": "payments.auto.open",
     "label": "Button 2",
     "module": "allocations",
     "controlType": "button",
+    "requiredPermissionCode": "ApplyPayments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "payments.manual.open",
+    "label": "Button 3",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": "ApplyPayments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "payments.filters.status",
+    "label": "Estado",
+    "module": "allocations",
+    "controlType": "select",
+    "requiredPermissionCode": "ViewPaymentApplications",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "payments.list.retry",
+    "label": "Button 4",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewPaymentApplications",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "payments.reverse.reason",
+    "label": "Motivo *",
+    "module": "allocations",
+    "controlType": "input",
+    "requiredPermissionCode": "ReversePaymentApplications",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "payments.reverse.cancel",
+    "label": "Button 5",
+    "module": "allocations",
+    "controlType": "button",
     "requiredPermissionCode": null,
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.allocations.page.button.3",
-    "label": "Button 3",
+    "controlKey": "payments.reverse.submit",
+    "label": "Button 6",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": "ReversePaymentApplications",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "payments.receipt.open",
+    "label": "Button 7",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewPaymentReceipts",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "payments.application.reverse",
+    "label": "Button 8",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": "ReversePaymentApplications",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "payments.application.reapply",
+    "label": "Button 9",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": "ReapplyPayments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "payments.auto.priority",
+    "label": "Prioridad",
+    "module": "allocations",
+    "controlType": "select",
+    "requiredPermissionCode": "ApplyPayments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "payments.auto.payment.select",
+    "label": "input 2",
+    "module": "allocations",
+    "controlType": "input",
+    "requiredPermissionCode": "ApplyPayments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "payments.auto.cancel",
+    "label": "Button 10",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "payments.auto.submit",
+    "label": "Button 11",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": "ApplyPayments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "payments.manual.amount",
+    "label": "Importe",
+    "module": "allocations",
+    "controlType": "input",
+    "requiredPermissionCode": "ApplyPayments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "payments.manual.line.remove",
+    "label": "Eliminar línea",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": "ApplyPayments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "payments.manual.line.add",
+    "label": "Button 13",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": "ApplyPayments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "payments.manual.cancel",
+    "label": "Button 14",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "payments.manual.submit",
+    "label": "Button 15",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": "ApplyPayments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "payments.settings.priority",
+    "label": "Prioridad predeterminada",
+    "module": "allocations",
+    "controlType": "select",
+    "requiredPermissionCode": "ManagePaymentApplicationSettings",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "payments.settings.cancel",
+    "label": "Button 16",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "payments.settings.save",
+    "label": "Button 17",
+    "module": "allocations",
+    "controlType": "button",
+    "requiredPermissionCode": "ManagePaymentApplicationSettings",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "payments.receipt.close",
+    "label": "Button 18",
     "module": "allocations",
     "controlType": "button",
     "requiredPermissionCode": null,

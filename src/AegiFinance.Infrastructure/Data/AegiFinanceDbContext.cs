@@ -67,6 +67,9 @@ public class AegiFinanceDbContext : DbContext
     public DbSet<JournalLine> JournalLines => Set<JournalLine>();
     public DbSet<TransferGroup> TransferGroups => Set<TransferGroup>();
     public DbSet<SubscriptionAllocation> SubscriptionAllocations => Set<SubscriptionAllocation>();
+    public DbSet<PaymentApplication> PaymentApplications => Set<PaymentApplication>();
+    public DbSet<PaymentApplicationPayment> PaymentApplicationPayments => Set<PaymentApplicationPayment>();
+    public DbSet<PaymentApplicationSettings> PaymentApplicationSettings => Set<PaymentApplicationSettings>();
     public DbSet<BankStatement> BankStatements => Set<BankStatement>();
     public DbSet<BankStatementLine> BankStatementLines => Set<BankStatementLine>();
     public DbSet<BankImportAttempt> BankImportAttempts => Set<BankImportAttempt>();
@@ -126,6 +129,7 @@ public class AegiFinanceDbContext : DbContext
         ConfigureJournalLine(modelBuilder);
         ConfigureTransferGroup(modelBuilder);
         ConfigureSubscriptionAllocation(modelBuilder);
+        ConfigurePaymentApplications(modelBuilder);
         ConfigureBankStatement(modelBuilder);
         ConfigureBankStatementLine(modelBuilder);
         ConfigureBankImportAttempt(modelBuilder);
@@ -781,6 +785,7 @@ public class AegiFinanceDbContext : DbContext
             entity.Property(e => e.TaxAmount).HasPrecision(18, 2);
             entity.Property(e => e.ProrationFactor).HasPrecision(12, 8);
             entity.Property(e => e.PaidAmount).HasPrecision(18, 2);
+            entity.Property(e => e.PaymentAllocationVersion).IsConcurrencyToken();
             entity.Property(e => e.Currency).HasMaxLength(3).IsRequired().HasDefaultValue("MXN");
             entity.Property(e => e.DueDate).IsRequired();
             entity.Property(e => e.Status)
@@ -901,6 +906,7 @@ public class AegiFinanceDbContext : DbContext
             entity.Property(e => e.Description).HasMaxLength(500).IsRequired();
             entity.Property(e => e.Reference).HasMaxLength(200);
             entity.Property(e => e.ReconciliationVersion).IsConcurrencyToken();
+            entity.Property(e => e.PaymentAllocationVersion).IsConcurrencyToken();
 
             entity.HasIndex(e => new { e.BankAccountId, e.Date });
 
@@ -1037,6 +1043,8 @@ public class AegiFinanceDbContext : DbContext
             entity.Property(e => e.Amount).HasPrecision(18, 2);
             entity.Property(e => e.AllocatedAt).IsRequired();
             entity.HasIndex(e => new { e.LedgerEntryId, e.BillingItemId });
+            entity.HasIndex(e => new { e.PaymentApplicationId, e.IsReversed });
+            entity.Property(e => e.ReversalReason).HasMaxLength(1000);
 
             entity.HasOne(e => e.LedgerEntry)
                 .WithMany()
@@ -1047,6 +1055,56 @@ public class AegiFinanceDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(e => e.BillingItemId)
                 .IsRequired();
+
+            entity.HasOne(e => e.PaymentApplication)
+                .WithMany(application => application.Allocations)
+                .HasForeignKey(e => e.PaymentApplicationId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+    }
+
+    private static void ConfigurePaymentApplications(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<PaymentApplication>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.ReceiptNumber).HasMaxLength(50).IsRequired();
+            entity.Property(item => item.IdempotencyKey).HasMaxLength(100).IsRequired();
+            entity.Property(item => item.Priority).HasConversion<string>().HasMaxLength(30);
+            entity.Property(item => item.Origin).HasConversion<string>().HasMaxLength(30);
+            entity.Property(item => item.Status).HasConversion<string>().HasMaxLength(30);
+            entity.Property(item => item.Currency).HasMaxLength(3).IsRequired();
+            entity.Property(item => item.TotalPaymentAmount).HasPrecision(18, 2);
+            entity.Property(item => item.AppliedAmount).HasPrecision(18, 2);
+            entity.Property(item => item.UnappliedAmount).HasPrecision(18, 2);
+            entity.Property(item => item.ReversalReason).HasMaxLength(1000);
+            entity.HasIndex(item => new { item.OrganizationId, item.ReceiptNumber }).IsUnique().HasFilter("[IsDeleted] = 0");
+            entity.HasIndex(item => new { item.OrganizationId, item.IdempotencyKey }).IsUnique().HasFilter("[IsDeleted] = 0");
+            entity.HasIndex(item => new { item.ClientId, item.AppliedAt });
+            entity.HasOne(item => item.Organization).WithMany().HasForeignKey(item => item.OrganizationId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.Client).WithMany().HasForeignKey(item => item.ClientId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.PreferredService).WithMany().HasForeignKey(item => item.PreferredServiceId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.ReappliesPaymentApplication).WithMany().HasForeignKey(item => item.ReappliesPaymentApplicationId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<PaymentApplicationPayment>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.AvailableBefore).HasPrecision(18, 2);
+            entity.Property(item => item.AppliedAmount).HasPrecision(18, 2);
+            entity.Property(item => item.UnappliedAfter).HasPrecision(18, 2);
+            entity.HasIndex(item => new { item.PaymentApplicationId, item.LedgerEntryId }).IsUnique().HasFilter("[IsDeleted] = 0");
+            entity.HasOne(item => item.PaymentApplication).WithMany(application => application.Payments).HasForeignKey(item => item.PaymentApplicationId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.LedgerEntry).WithMany().HasForeignKey(item => item.LedgerEntryId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.JournalEntry).WithMany().HasForeignKey(item => item.JournalEntryId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<PaymentApplicationSettings>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.DefaultPriority).HasConversion<string>().HasMaxLength(30);
+            entity.HasIndex(item => item.OrganizationId).IsUnique().HasFilter("[IsDeleted] = 0");
+            entity.HasOne(item => item.Organization).WithMany().HasForeignKey(item => item.OrganizationId).OnDelete(DeleteBehavior.Restrict);
         });
     }
 
@@ -1340,6 +1398,14 @@ public class AegiFinanceDbContext : DbContext
         AppendQueryFilter<SubscriptionAllocation>(modelBuilder, entity =>
             (!IsOrganizationScope || entity.BillingItem.Client.OrganizationId == CurrentOrganizationId) &&
             (!IsClientScope || (CurrentClientId.HasValue && entity.BillingItem.ClientId == CurrentClientId)));
+        AppendQueryFilter<PaymentApplication>(modelBuilder, entity =>
+            (!IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId) &&
+            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId)));
+        AppendQueryFilter<PaymentApplicationPayment>(modelBuilder, entity =>
+            (!IsOrganizationScope || entity.PaymentApplication.OrganizationId == CurrentOrganizationId) &&
+            (!IsClientScope || (CurrentClientId.HasValue && entity.PaymentApplication.ClientId == CurrentClientId)));
+        AppendQueryFilter<PaymentApplicationSettings>(modelBuilder, entity =>
+            !IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId);
         AppendQueryFilter<SubscriptionPermission>(modelBuilder, entity =>
             (!IsOrganizationScope || entity.Subscription.Client.OrganizationId == CurrentOrganizationId) &&
             (!IsClientScope || (CurrentClientId.HasValue && entity.Subscription.ClientId == CurrentClientId)));

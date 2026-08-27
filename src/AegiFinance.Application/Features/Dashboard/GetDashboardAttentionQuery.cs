@@ -46,7 +46,7 @@ public sealed class GetDashboardAttentionQueryHandler : IRequestHandler<GetDashb
             var unapplied = await income.Select(item => new
             {
                 item.Amount,
-                Allocated = _context.SubscriptionAllocations.Where(allocation => allocation.LedgerEntryId == item.Id)
+                Allocated = _context.SubscriptionAllocations.Where(allocation => allocation.LedgerEntryId == item.Id && !allocation.IsReversed)
                     .Sum(allocation => (decimal?)allocation.Amount) ?? 0
             }).Where(item => item.Allocated < item.Amount).ToListAsync(cancellationToken);
             if (unapplied.Count > 0)

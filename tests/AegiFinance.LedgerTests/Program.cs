@@ -121,7 +121,19 @@ if (ReconciliationRules.SignedAmount(new LedgerEntry { EntryType = LedgerEntryTy
     ReconciliationRules.SignedAmount(new LedgerEntry { EntryType = LedgerEntryType.Income, Amount = 100m }) != 100m)
     throw new InvalidOperationException("Failed: reconciliation directions do not follow cash flow signs.");
 
-Console.WriteLine("Major Ledger, bank-account, client-identity, subscription pricing, bank-import and reconciliation rules passed.");
+var payment = new LedgerEntry { EntryType = LedgerEntryType.Income, Amount = 500m, ClientId = Guid.NewGuid(), Reference = "SUB-001" };
+PaymentApplicationRules.ValidatePayment(payment);
+AssertThrows(() => PaymentApplicationRules.ValidatePayment(new LedgerEntry { EntryType = LedgerEntryType.Expense, Amount = 500m, ClientId = payment.ClientId }), "expense used as payment");
+PaymentApplicationRules.ValidateAllocation(300m, 500m, 300m);
+AssertThrows(() => PaymentApplicationRules.ValidateAllocation(301m, 500m, 300m), "application above charge balance");
+AssertThrows(() => PaymentApplicationRules.ValidateAllocation(501m, 500m, 600m), "application above payment balance");
+var matchingService = new Service { Code = "PLAN", Name = "Plan" };
+var matchingSubscription = new Subscription { Code = "SUB-001", Service = matchingService };
+var matchingCharge = new BillingItem { IdempotencyKey = "charge:1", Description = "Mensualidad", Subscription = matchingSubscription };
+if (PaymentApplicationRules.ReferenceScore(payment, matchingCharge) != 2)
+    throw new InvalidOperationException("Failed: exact subscription reference was not prioritized.");
+
+Console.WriteLine("Major Ledger, bank-account, client-identity, subscription pricing, bank-import, reconciliation and payment-application rules passed.");
 
 static JournalEntry Entry(params JournalLine[] lines) => new()
 {

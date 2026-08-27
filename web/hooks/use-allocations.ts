@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { allocationsApi } from "@/lib/api/allocations";
 import { toast } from "sonner";
-import type { ManualAllocateRequest } from "@/types/api";
+import type { AutomaticPaymentApplicationRequest, ManualAllocateRequest, ManualPaymentApplicationRequest, PaymentApplicationPriority, PaymentApplicationStatus, PaymentApplicationSettingsDto } from "@/types/api";
 
 const ALLOC_KEY = ["allocations"];
 
@@ -74,3 +74,20 @@ export function useUnallocate() {
     onError: () => toast.error("Error al revertir asignación"),
   });
 }
+
+function invalidateApplications(qc: ReturnType<typeof useQueryClient>) {
+  qc.invalidateQueries({ queryKey: ALLOC_KEY });
+  qc.invalidateQueries({ queryKey: ["ledger"] });
+  qc.invalidateQueries({ queryKey: ["billing"] });
+  qc.invalidateQueries({ queryKey: ["dashboard"] });
+}
+
+export function usePaymentApplications(clientId?: string, status?: PaymentApplicationStatus) {
+  return useQuery({ queryKey: [...ALLOC_KEY, "applications", clientId, status], queryFn: () => allocationsApi.applications({ clientId, status }), enabled: !!clientId });
+}
+export function usePaymentApplicationSettings() { return useQuery({ queryKey: [...ALLOC_KEY, "settings"], queryFn: allocationsApi.settings }); }
+export function useApplyPaymentsAutomatically() { const qc = useQueryClient(); return useMutation({ mutationFn: (data: AutomaticPaymentApplicationRequest) => allocationsApi.applyAutomatically(data), onSuccess: (result) => { invalidateApplications(qc); toast.success(`Recibo ${result.receiptNumber ?? "generado"}: ${result.allocatedAmount.toFixed(2)} aplicados`); }, onError: (error: Error) => toast.error(error.message) }); }
+export function useApplyPaymentsManually() { const qc = useQueryClient(); return useMutation({ mutationFn: (data: ManualPaymentApplicationRequest) => allocationsApi.applyManually(data), onSuccess: (result) => { invalidateApplications(qc); toast.success(`Recibo ${result.receiptNumber ?? "generado"} creado`); }, onError: (error: Error) => toast.error(error.message) }); }
+export function useReversePaymentApplication() { const qc = useQueryClient(); return useMutation({ mutationFn: ({ id, reason }: { id: string; reason: string }) => allocationsApi.reverseApplication(id, reason), onSuccess: () => { invalidateApplications(qc); toast.success("Aplicación revertida con evidencia auditable"); }, onError: (error: Error) => toast.error(error.message) }); }
+export function useReapplyPaymentApplication() { const qc = useQueryClient(); return useMutation({ mutationFn: ({ id, priority, preferredServiceId, idempotencyKey }: { id: string; priority?: PaymentApplicationPriority; preferredServiceId?: string | null; idempotencyKey: string }) => allocationsApi.reapply(id, { priority, preferredServiceId, idempotencyKey }), onSuccess: (result) => { invalidateApplications(qc); toast.success(`Reaplicación registrada en ${result.receiptNumber ?? "un nuevo recibo"}`); }, onError: (error: Error) => toast.error(error.message) }); }
+export function useUpdatePaymentApplicationSettings() { const qc = useQueryClient(); return useMutation({ mutationFn: (data: PaymentApplicationSettingsDto) => allocationsApi.updateSettings(data), onSuccess: () => { qc.invalidateQueries({ queryKey: [...ALLOC_KEY, "settings"] }); toast.success("Prioridad automática actualizada"); }, onError: (error: Error) => toast.error(error.message) }); }

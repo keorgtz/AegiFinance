@@ -49,7 +49,7 @@ public class GetLedgerEntriesQueryHandler : IRequestHandler<GetLedgerEntriesQuer
         if (request.HasUnappliedBalance == true)
         {
             query = query.Where(item => item.EntryType == AegiFinance.Domain.Enums.LedgerEntryType.Income &&
-                (_context.SubscriptionAllocations.Where(allocation => allocation.LedgerEntryId == item.Id)
+                (_context.SubscriptionAllocations.Where(allocation => allocation.LedgerEntryId == item.Id && !allocation.IsReversed)
                     .Sum(allocation => (decimal?)allocation.Amount) ?? 0) < item.Amount);
         }
 
@@ -68,7 +68,11 @@ public class GetLedgerEntriesQueryHandler : IRequestHandler<GetLedgerEntriesQuer
             Reference = le.Reference,
             ClientId = le.ClientId,
             ClientName = le.Client != null ? le.Client.Name : null,
-            IsReconciled = le.IsReconciled
+            IsReconciled = le.IsReconciled,
+            AllocatedAmount = _context.SubscriptionAllocations.Where(allocation => allocation.LedgerEntryId == le.Id && !allocation.IsReversed).Sum(allocation => (decimal?)allocation.Amount) ?? 0,
+            UnappliedAmount = le.EntryType == AegiFinance.Domain.Enums.LedgerEntryType.Income
+                ? le.Amount - (_context.SubscriptionAllocations.Where(allocation => allocation.LedgerEntryId == le.Id && !allocation.IsReversed).Sum(allocation => (decimal?)allocation.Amount) ?? 0)
+                : 0
         });
 
         return await projected.ToPaginatedListAsync(request.PageNumber, request.PageSize, cancellationToken);

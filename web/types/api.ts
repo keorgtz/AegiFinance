@@ -746,6 +746,8 @@ export interface LedgerEntryListDto {
   clientId?: string | null;
   clientName?: string | null;
   isReconciled: boolean;
+  allocatedAmount: number;
+  unappliedAmount: number;
 }
 
 export interface LedgerEntryDto extends LedgerEntryListDto {
@@ -1197,6 +1199,10 @@ export interface SubscriptionAllocationDto {
   allocatedAt: string;
   allocatedBy?: string | null;
   isAutomatic: boolean;
+  isReversed: boolean;
+  paymentApplicationId?: string | null;
+  reversedAt?: string | null;
+  reversalReason?: string | null;
   billingItemDescription?: string | null;
   ledgerEntryDescription?: string | null;
 }
@@ -1205,6 +1211,8 @@ export interface AllocationResult {
   success: boolean;
   allocatedAmount: number;
   remainingAmount: number;
+  paymentApplicationId?: string | null;
+  receiptNumber?: string | null;
   errors: string[];
 }
 
@@ -1217,3 +1225,54 @@ export interface ManualAllocateRequest {
   ledgerEntryId: string;
   allocations: ManualAllocationItem[];
 }
+
+export type PaymentApplicationPriority = "DueDate" | "Plan" | "Reference" | "Selection";
+export type PaymentApplicationOrigin = "Manual" | "Automatic" | "Reapplication" | "Legacy";
+export type PaymentApplicationStatus = "Active" | "Reversed";
+
+export interface PaymentApplicationPaymentDto {
+  ledgerEntryId: string;
+  description: string;
+  reference?: string | null;
+  date: string;
+  journalEntryId: string;
+  journalEntryNumber: string;
+  availableBefore: number;
+  appliedAmount: number;
+  unappliedAfter: number;
+}
+
+export interface PaymentApplicationLineDto {
+  id: string;
+  ledgerEntryId: string;
+  billingItemId: string;
+  billingItemDescription: string;
+  amount: number;
+  isReversed: boolean;
+}
+
+export interface PaymentApplicationDto {
+  id: string;
+  clientId: string;
+  clientName: string;
+  receiptNumber: string;
+  priority: PaymentApplicationPriority;
+  origin: PaymentApplicationOrigin;
+  status: PaymentApplicationStatus;
+  totalPaymentAmount: number;
+  appliedAmount: number;
+  unappliedAmount: number;
+  currency: string;
+  appliedAt: string;
+  appliedBy?: string | null;
+  reversedAt?: string | null;
+  reversalReason?: string | null;
+  reappliesPaymentApplicationId?: string | null;
+  payments: PaymentApplicationPaymentDto[];
+  allocations: PaymentApplicationLineDto[];
+}
+
+export interface PaymentApplicationSettingsDto { defaultPriority: PaymentApplicationPriority; }
+export interface AutomaticPaymentApplicationRequest { ledgerEntryIds: string[]; priority?: PaymentApplicationPriority; preferredServiceId?: string | null; idempotencyKey: string; }
+export interface PaymentAllocationLineRequest { ledgerEntryId: string; billingItemId: string; amount: number; }
+export interface ManualPaymentApplicationRequest { allocations: PaymentAllocationLineRequest[]; idempotencyKey: string; }

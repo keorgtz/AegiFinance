@@ -9,6 +9,10 @@ public class SubscriptionAllocationDto
     public DateTime AllocatedAt { get; set; }
     public Guid? AllocatedBy { get; set; }
     public bool IsAutomatic { get; set; }
+    public bool IsReversed { get; set; }
+    public Guid? PaymentApplicationId { get; set; }
+    public DateTime? ReversedAt { get; set; }
+    public string? ReversalReason { get; set; }
     public string? BillingItemDescription { get; set; }
     public string? LedgerEntryDescription { get; set; }
 }

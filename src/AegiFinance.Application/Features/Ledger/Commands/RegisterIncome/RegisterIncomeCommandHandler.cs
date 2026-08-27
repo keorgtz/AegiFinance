@@ -90,7 +90,9 @@ public class RegisterIncomeCommandHandler : IRequestHandler<RegisterIncomeComman
             BillingItemId = entry.BillingItemId,
             BillingItemDescription = entry.BillingItem?.Description,
             IsReconciled = entry.IsReconciled,
-            ReconciledAt = entry.ReconciledAt
+            ReconciledAt = entry.ReconciledAt,
+            AllocatedAmount = 0,
+            UnappliedAmount = entry.Amount
         };
     }
 }

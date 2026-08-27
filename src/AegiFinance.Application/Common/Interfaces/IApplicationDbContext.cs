@@ -51,6 +51,9 @@ public interface IApplicationDbContext
     DbSet<JournalLine> JournalLines { get; }
     DbSet<TransferGroup> TransferGroups { get; }
     DbSet<SubscriptionAllocation> SubscriptionAllocations { get; }
+    DbSet<PaymentApplication> PaymentApplications { get; }
+    DbSet<PaymentApplicationPayment> PaymentApplicationPayments { get; }
+    DbSet<PaymentApplicationSettings> PaymentApplicationSettings { get; }
     DbSet<BankStatement> BankStatements { get; }
     DbSet<BankStatementLine> BankStatementLines { get; }
     DbSet<BankImportAttempt> BankImportAttempts { get; }

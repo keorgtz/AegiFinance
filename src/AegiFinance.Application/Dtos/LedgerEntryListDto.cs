@@ -14,4 +14,6 @@ public class LedgerEntryListDto
     public Guid? ClientId { get; set; }
     public string? ClientName { get; set; }
     public bool IsReconciled { get; set; }
+    public decimal AllocatedAmount { get; set; }
+    public decimal UnappliedAmount { get; set; }
 }

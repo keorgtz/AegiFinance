@@ -10,13 +10,14 @@ export const DialogTrigger = RadixDialog.Trigger;
 interface DialogContentProps extends RadixDialog.DialogContentProps {
   title: string;
   description?: string;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
 }
 
 const sizeClasses = {
   sm: "max-w-sm",
   md: "max-w-lg",
   lg: "max-w-2xl",
+  xl: "max-w-5xl",
 };
 
 export function DialogContent({
