@@ -321,6 +321,8 @@ Evolucionar el registro actual de caja hacia un libro mayor real sin perder traz
 
 ## Fase 12 — Estados de cuenta y portal cliente
 
+**Estado:** implementada el 27 de agosto de 2026. El estado de cuenta se deriva del Mayor de cuentas por cobrar en la moneda seleccionada, reconcilia saldo inicial más cargos, pagos y ajustes contra el saldo final, calcula vencidos a la fecha de corte y permite filtrar por periodo, moneda y plan. La misma aplicación adapta el alcance para usuarios internos y clientes, aplica restricciones por suscripciones autorizadas y ofrece PDF/CSV con código de verificación, contacto y aclaraciones auditables por movimiento. La interfaz AegiPulse incluye temas claro/oscuro, tabla para escritorio, tarjetas para móvil, estados operativos y permisos declarativos. La imagen Docker incorpora las fuentes necesarias para generar PDF de forma reproducible.
+
 ### Entregables
 
 - saldo inicial, cargos, pagos, ajustes, saldo final y vencidos;

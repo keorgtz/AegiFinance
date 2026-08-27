@@ -4,6 +4,10 @@ import type {
   AccountStatementItemDto,
   FinancialSummaryDto,
   GetClientStatementParams,
+  AccountStatementInquiryDto,
+  CreateAccountStatementInquiryRequest,
+  AccountStatementClientOptionDto,
+  AccountStatementSubscriptionOptionDto,
 } from "@/types/api";
 
 function qs(params: object): string {
@@ -16,6 +20,11 @@ function qs(params: object): string {
 }
 
 export const accountStatementsApi = {
+  clients: () => api.get<AccountStatementClientOptionDto[]>("/accountstatements/clients"),
+
+  subscriptions: (clientId: string) =>
+    api.get<AccountStatementSubscriptionOptionDto[]>(`/accountstatements/client/${clientId}/subscriptions`),
+
   getStatement: (clientId: string, params: GetClientStatementParams = {}) =>
     api.get<AccountStatementDto>(`/accountstatements/client/${clientId}${qs(params)}`),
 
@@ -24,4 +33,19 @@ export const accountStatementsApi = {
 
   getMovements: (clientId: string, params: GetClientStatementParams = {}) =>
     api.get<AccountStatementItemDto[]>(`/accountstatements/client/${clientId}/movements${qs(params)}`),
+
+  exportPdf: (clientId: string, params: GetClientStatementParams = {}) =>
+    api.blob(`/accountstatements/client/${clientId}/export.pdf${qs(params)}`),
+
+  exportCsv: (clientId: string, params: GetClientStatementParams = {}) =>
+    api.blob(`/accountstatements/client/${clientId}/export.csv${qs(params)}`),
+
+  inquiries: (clientId: string) =>
+    api.get<AccountStatementInquiryDto[]>(`/accountstatements/client/${clientId}/inquiries`),
+
+  createInquiry: (clientId: string, data: CreateAccountStatementInquiryRequest) =>
+    api.post<AccountStatementInquiryDto>(`/accountstatements/client/${clientId}/inquiries`, data),
+
+  resolveInquiry: (id: string, resolution: string) =>
+    api.put<AccountStatementInquiryDto>(`/accountstatements/inquiries/${id}/resolve`, { resolution }),
 };

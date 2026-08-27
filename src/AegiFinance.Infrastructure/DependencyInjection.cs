@@ -58,6 +58,7 @@ public static class DependencyInjection
         services.AddScoped<ILedgerService, LedgerService>();
         services.AddScoped<IMajorLedgerService, MajorLedgerService>();
         services.AddScoped<IAllocationService, AllocationService>();
+        services.AddSingleton<IAccountStatementExporter, AccountStatementExporter>();
         services.AddScoped<IAccountNumberProtector, AccountNumberProtector>();
 
         var dataProtectionKeysPath = configuration["DataProtection:KeysPath"];

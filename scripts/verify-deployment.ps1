@@ -61,6 +61,8 @@ Require-Text "docker-compose.yml" 'ADMIN_SEED_PASSWORD:\?' "Initial administrato
 Require-Text "docker-compose.yml" 'aegifinance-dataprotection-keys:/app/keys' "Data-protection keys are not persistent."
 Require-Text "docker-compose.yml" 'aegifinance-client-documents:/app/data/client-documents' "Client documents are not persistent."
 Require-Text "src/AegiFinance.Web/Dockerfile" 'dotnet restore "src/AegiFinance.Web/AegiFinance.Web.csproj"' "API Docker restore incorrectly depends on the full solution."
+Require-Text "src/AegiFinance.Web/Dockerfile" 'fonts-dejavu-core' "The API image is missing the cross-platform fonts required for statement PDF generation."
+Require-Text "src/AegiFinance.Infrastructure/AegiFinance.Infrastructure.csproj" 'PDFsharp-MigraDoc' "The statement PDF dependency is missing from the reproducible restore contract."
 Require-Text "src/AegiFinance.Worker/Dockerfile" 'dotnet restore "src/AegiFinance.Worker/AegiFinance.Worker.csproj"' "Worker Docker restore incorrectly depends on the full solution."
 Require-Text "web/Dockerfile" 'npm ci --no-audit --no-fund' "Frontend image is not using a reproducible lockfile install."
 Require-Text "web/.dockerignore" 'node_modules/' "Frontend Docker context includes local dependencies."

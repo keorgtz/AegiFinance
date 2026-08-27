@@ -133,7 +133,22 @@ var matchingCharge = new BillingItem { IdempotencyKey = "charge:1", Description 
 if (PaymentApplicationRules.ReferenceScore(payment, matchingCharge) != 2)
     throw new InvalidOperationException("Failed: exact subscription reference was not prioritized.");
 
-Console.WriteLine("Major Ledger, bank-account, client-identity, subscription pricing, bank-import, reconciliation and payment-application rules passed.");
+var statementClientId = Guid.NewGuid();
+var statementLines = new[]
+{
+    new AccountStatementValueLine(new DateTime(2026, 8, 1, 0, 0, 0, DateTimeKind.Utc), Guid.NewGuid(), 100m, 0m),
+    new AccountStatementValueLine(new DateTime(2026, 8, 2, 0, 0, 0, DateTimeKind.Utc), Guid.NewGuid(), 0m, 40m),
+    new AccountStatementValueLine(new DateTime(2026, 8, 3, 0, 0, 0, DateTimeKind.Utc), Guid.NewGuid(), 5m, 10m)
+};
+var statementClosing = AccountStatementRules.ClosingBalance(20m, statementLines);
+if (statementClosing != 75m) throw new InvalidOperationException("Failed: account statement opening plus movements does not equal closing balance.");
+AccountStatementRules.EnsureBalanced(20m, statementClosing, statementLines);
+var statementCode = AccountStatementRules.VerificationCode(statementClientId, "mxn", new DateTime(2026, 8, 1), new DateTime(2026, 8, 31), 20m, statementClosing, statementLines);
+var reorderedCode = AccountStatementRules.VerificationCode(statementClientId, "MXN", new DateTime(2026, 8, 1), new DateTime(2026, 8, 31), 20m, statementClosing, statementLines.Reverse());
+if (statementCode != reorderedCode || statementCode.Length != 16) throw new InvalidOperationException("Failed: account statement verification is not deterministic.");
+AssertThrows(() => AccountStatementRules.ValidatePeriod(new DateTime(2026, 9, 1), new DateTime(2026, 8, 31)), "inverted statement period");
+
+Console.WriteLine("Major Ledger, bank-account, client-identity, subscription pricing, bank-import, reconciliation, payment-application and account-statement rules passed.");
 
 static JournalEntry Entry(params JournalLine[] lines) => new()
 {

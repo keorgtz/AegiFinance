@@ -9,4 +9,5 @@ public class GetClientMovementsQuery : IRequest<List<AccountStatementItemDto>>
     public DateTime? From { get; set; }
     public DateTime? To { get; set; }
     public string Currency { get; set; } = "MXN";
+    public Guid? SubscriptionId { get; set; }
 }

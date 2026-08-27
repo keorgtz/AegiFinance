@@ -1,42 +1,154 @@
 [
   {
-    "controlKey": "ui.app.app.account.statement.page.button.1",
+    "controlKey": "statements.export.csv",
     "label": "Button 1",
     "module": "account",
     "controlType": "button",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ExportAccountStatements",
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.account.statement.page.input.1",
-    "label": "input 1",
+    "controlKey": "statements.export.pdf",
+    "label": "Button 2",
+    "module": "account",
+    "controlType": "button",
+    "requiredPermissionCode": "ExportAccountStatements",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "statements.filters.from",
+    "label": "Desde",
     "module": "account",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ViewAccountStatements",
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.account.statement.page.input.2",
-    "label": "input 2",
+    "controlKey": "statements.filters.to",
+    "label": "Hasta",
     "module": "account",
     "controlType": "input",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ViewAccountStatements",
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.account.statement.page.select.1",
+    "controlKey": "statements.filters.currency",
     "label": "Moneda",
     "module": "account",
     "controlType": "select",
+    "requiredPermissionCode": "ViewAccountStatements",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "statements.filters.subscription",
+    "label": "Plan",
+    "module": "account",
+    "controlType": "select",
+    "requiredPermissionCode": "ViewAccountStatements",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "statements.filters.clear",
+    "label": "Button 3",
+    "module": "account",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewAccountStatements",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "statements.error.retry",
+    "label": "Button 4",
+    "module": "account",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewAccountStatements",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "statements.contact.manager",
+    "label": "Button 5",
+    "module": "account",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewAccountStatements",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "statements.movement.inquiry",
+    "label": "Button 6",
+    "module": "account",
+    "controlType": "button",
+    "requiredPermissionCode": "CreateAccountStatementInquiries",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "statements.movement.inquiry.mobile",
+    "label": "Button 7",
+    "module": "account",
+    "controlType": "button",
+    "requiredPermissionCode": "CreateAccountStatementInquiries",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "statements.inquiry.subject",
+    "label": "Asunto",
+    "module": "account",
+    "controlType": "input",
+    "requiredPermissionCode": "CreateAccountStatementInquiries",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "statements.inquiry.message",
+    "label": "¿Qué necesitás aclarar?",
+    "module": "account",
+    "controlType": "textarea",
+    "requiredPermissionCode": "CreateAccountStatementInquiries",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "statements.inquiry.cancel",
+    "label": "Button 8",
+    "module": "account",
+    "controlType": "button",
     "requiredPermissionCode": null,
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.account.statement.page.button.2",
-    "label": "button 2",
+    "controlKey": "statements.inquiry.submit",
+    "label": "Button 9",
+    "module": "account",
+    "controlType": "button",
+    "requiredPermissionCode": "CreateAccountStatementInquiries",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "statements.inquiry.resolve.open",
+    "label": "Button 10",
+    "module": "account",
+    "controlType": "button",
+    "requiredPermissionCode": "ResolveAccountStatementInquiries",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "statements.inquiry.resolve.message",
+    "label": "Respuesta para el cliente",
+    "module": "account",
+    "controlType": "textarea",
+    "requiredPermissionCode": "ResolveAccountStatementInquiries",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "statements.inquiry.resolve.cancel",
+    "label": "Button 11",
     "module": "account",
     "controlType": "button",
     "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "statements.inquiry.resolve.submit",
+    "label": "Button 12",
+    "module": "account",
+    "controlType": "button",
+    "requiredPermissionCode": "ResolveAccountStatementInquiries",
     "isSystemRequired": false
   },
   {
@@ -3892,7 +4004,7 @@
     "label": "Estados de cuenta",
     "module": "navigation",
     "controlType": "link",
-    "requiredPermissionCode": "ViewPayments",
+    "requiredPermissionCode": "ViewAccountStatements",
     "isSystemRequired": false
   },
   {

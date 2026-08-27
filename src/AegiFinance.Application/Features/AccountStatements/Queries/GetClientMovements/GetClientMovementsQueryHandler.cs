@@ -1,5 +1,3 @@
-using AegiFinance.Application.Common.Extensions;
-using AegiFinance.Application.Common.Interfaces;
 using AegiFinance.Application.Dtos;
 using AegiFinance.Application.Features.AccountStatements.Queries.GetClientStatement;
 using MediatR;
@@ -9,27 +7,17 @@ namespace AegiFinance.Application.Features.AccountStatements.Queries.GetClientMo
 public class GetClientMovementsQueryHandler : IRequestHandler<GetClientMovementsQuery, List<AccountStatementItemDto>>
 {
     private readonly IMediator _mediator;
-    private readonly ICurrentUserService _currentUserService;
-
-    public GetClientMovementsQueryHandler(IMediator mediator, ICurrentUserService currentUserService)
-    {
-        _mediator = mediator;
-        _currentUserService = currentUserService;
-    }
+    public GetClientMovementsQueryHandler(IMediator mediator) => _mediator = mediator;
 
     public async Task<List<AccountStatementItemDto>> Handle(GetClientMovementsQuery request, CancellationToken cancellationToken)
     {
-        if (_currentUserService.IsClientUser())
-        {
-            throw new UnauthorizedAccessException("No tiene permiso para consultar los movimientos del cliente.");
-        }
-
         var statement = await _mediator.Send(new GetClientStatementQuery
         {
             ClientId = request.ClientId,
             From = request.From,
             To = request.To,
-            Currency = request.Currency
+            Currency = request.Currency,
+            SubscriptionId = request.SubscriptionId
         }, cancellationToken);
 
         return statement.Items;

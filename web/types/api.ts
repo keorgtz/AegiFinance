@@ -1145,30 +1145,49 @@ export interface ReconciliationPeriodDto {
 // ── ACCOUNT STATEMENTS ────────────────────────────────────────────────────────
 
 export interface AccountStatementItemDto {
+  id: string;
+  journalEntryId: string;
+  journalEntryNumber: string;
   date: string;
   type: string;
+  sourceType: string;
   description: string;
+  reference?: string | null;
   referenceId: string;
+  subscriptionId?: string | null;
+  subscriptionCode?: string | null;
+  serviceName?: string | null;
+  dueDate?: string | null;
+  isOverdue: boolean;
   debit: number;
   credit: number;
   balance: number;
-  originalAmountMXN: number;
-  exchangeRateUsed?: number | null;
+  currency: string;
 }
 
 export interface AccountStatementDto {
   clientId: string;
   clientName: string;
+  organizationName: string;
   statementDate: string;
   startDate?: string | null;
   endDate?: string | null;
   displayCurrency: string;
-  exchangeRateUsed?: number | null;
+  subscriptionId?: string | null;
+  subscriptionCode?: string | null;
+  serviceName?: string | null;
   initialBalance: number;
   totalCharges: number;
   totalPayments: number;
   totalAdjustments: number;
   finalBalance: number;
+  overdueBalance: number;
+  isSubledgerView: boolean;
+  scopeDescription: string;
+  contactName?: string | null;
+  contactEmail?: string | null;
+  verificationCode: string;
+  formulaValid: boolean;
   items: AccountStatementItemDto[];
 }
 
@@ -1187,6 +1206,22 @@ export interface GetClientStatementParams {
   from?: string;
   to?: string;
   currency?: string;
+  subscriptionId?: string;
+}
+
+export interface AccountStatementInquiryDto {
+  id: string; clientId: string; subscriptionId?: string | null; subscriptionCode?: string | null;
+  journalEntryId?: string | null; journalEntryNumber?: string | null; statementVerificationCode?: string | null;
+  subject: string; message: string; status: "Open" | "InReview" | "Resolved" | "Closed";
+  requestedAt: string; resolvedAt?: string | null; resolution?: string | null;
+}
+
+export interface AccountStatementClientOptionDto { id: string; code: string; name: string; }
+export interface AccountStatementSubscriptionOptionDto { id: string; code: string; serviceName: string; }
+
+export interface CreateAccountStatementInquiryRequest {
+  subscriptionId?: string | null; journalEntryId?: string | null; statementVerificationCode?: string | null;
+  subject: string; message: string; idempotencyKey: string;
 }
 
 // ── ALLOCATIONS ───────────────────────────────────────────────────────────────

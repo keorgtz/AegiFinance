@@ -20,7 +20,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
 
 # curl necesario para el healthcheck del compose
-RUN apt-get update && apt-get install -y --no-install-recommends curl \
+RUN apt-get update && apt-get install -y --no-install-recommends curl fonts-dejavu-core \
  && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 8080

@@ -9,4 +9,5 @@ public class GetClientFinancialSummaryQuery : IRequest<FinancialSummaryDto>
     public DateTime? From { get; set; }
     public DateTime? To { get; set; }
     public string Currency { get; set; } = "MXN";
+    public Guid? SubscriptionId { get; set; }
 }

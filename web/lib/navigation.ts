@@ -29,7 +29,7 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
   { href: "/billing", label: "Cargos", icon: Receipt, permission: "ViewPayments", group: "operations" },
   { href: "/ledger", label: "Major Ledger", shortLabel: "Ledger", icon: Wallet, permission: "ViewPayments", group: "operations" },
   { href: "/allocations", label: "Aplicación de pagos", shortLabel: "Pagos", icon: CreditCard, permission: "ViewPayments", group: "operations" },
-  { href: "/account-statement", label: "Estados de cuenta", icon: FileText, permission: "ViewPayments", group: "operations" },
+  { href: "/account-statement", label: "Estados de cuenta", icon: FileText, permission: "ViewAccountStatements", group: "operations" },
   { href: "/users", label: "Usuarios", icon: Users, permission: "ManageUsers", group: "administration" },
   { href: "/roles", label: "Roles y permisos", icon: Shield, permission: "ManageRoles", group: "administration" },
   { href: "/settings", label: "Configuración", icon: Settings, permission: "ViewSettings", group: "administration" },

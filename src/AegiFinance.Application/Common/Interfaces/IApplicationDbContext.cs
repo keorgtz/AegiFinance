@@ -54,6 +54,7 @@ public interface IApplicationDbContext
     DbSet<PaymentApplication> PaymentApplications { get; }
     DbSet<PaymentApplicationPayment> PaymentApplicationPayments { get; }
     DbSet<PaymentApplicationSettings> PaymentApplicationSettings { get; }
+    DbSet<AccountStatementInquiry> AccountStatementInquiries { get; }
     DbSet<BankStatement> BankStatements { get; }
     DbSet<BankStatementLine> BankStatementLines { get; }
     DbSet<BankImportAttempt> BankImportAttempts { get; }
