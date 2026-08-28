@@ -31,10 +31,18 @@ public class CreateSubscriptionCommandValidator : AbstractValidator<CreateSubscr
 
         RuleFor(x => x.BillingType)
             .IsInEnum().WithMessage("El tipo de facturación no es válido.");
-        RuleFor(x => x.DiscountPercent).InclusiveBetween(0, 100);
-        RuleFor(x => x.TaxPercent).InclusiveBetween(0, 100);
+        RuleFor(x => x.DiscountPercent)
+            .InclusiveBetween(0, 100).WithMessage("El descuento debe estar entre 0 y 100 por ciento.");
+        RuleFor(x => x.TaxPercent)
+            .InclusiveBetween(0, 100).WithMessage("El impuesto debe estar entre 0 y 100 por ciento.");
         RuleFor(x => x.CustomIntervalDays).NotNull().InclusiveBetween(1, 3660)
-            .When(x => x.BillingType == Domain.Enums.BillingType.Custom);
-        RuleFor(x => x.ContractTerms).MaximumLength(4000);
+            .When(x => x.BillingType == Domain.Enums.BillingType.Custom)
+            .WithMessage("Indica un intervalo personalizado de 1 a 3660 días.");
+        RuleFor(x => x.AutoRenew)
+            .Equal(false)
+            .When(x => x.BillingType is Domain.Enums.BillingType.OneTime or Domain.Enums.BillingType.Hourly)
+            .WithMessage("La renovación automática solo está disponible para facturación recurrente.");
+        RuleFor(x => x.ContractTerms)
+            .MaximumLength(4000).WithMessage("Las condiciones contractuales no pueden superar 4000 caracteres.");
     }
 }

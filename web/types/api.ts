@@ -183,6 +183,7 @@ export interface ApiError {
   detail?: string;
   errors?: Record<string, string[]>;
   message?: string;
+  traceId?: string;
 }
 
 export interface GetUsersParams {

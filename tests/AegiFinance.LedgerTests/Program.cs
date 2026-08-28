@@ -77,6 +77,16 @@ var futureVersion = new ServiceVersion
 if (ServiceVersionRules.ResolveApplicable([futureVersion], new DateTime(2026, 8, 19)) is not null)
     throw new InvalidOperationException("Failed: a future plan version was accepted early.");
 
+var expiredVersion = new ServiceVersion
+{
+    Id = Guid.NewGuid(),
+    IsPublished = true,
+    EffectiveFrom = new DateTime(2026, 7, 1),
+    EffectiveTo = new DateTime(2026, 8, 18, 23, 59, 59)
+};
+if (ServiceVersionRules.ResolveApplicable([expiredVersion], new DateTime(2026, 8, 19)) is not null)
+    throw new InvalidOperationException("Failed: an expired plan version was accepted for a new subscription.");
+
 var subscriptionId = Guid.NewGuid();
 var currentTerms = new SubscriptionTermsVersion { Id = Guid.NewGuid(), SubscriptionId = subscriptionId, VersionNumber = 1, EffectiveFrom = new DateTime(2026, 1, 1), EffectiveTo = new DateTime(2026, 7, 1), BasePrice = 100m };
 var futureTerms = new SubscriptionTermsVersion { Id = Guid.NewGuid(), SubscriptionId = subscriptionId, VersionNumber = 2, EffectiveFrom = new DateTime(2026, 7, 1), BasePrice = 200m };

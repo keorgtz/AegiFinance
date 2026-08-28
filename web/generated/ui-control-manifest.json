@@ -1800,11 +1800,11 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.subscriptions.page.button.2",
+    "controlKey": "subscriptions.header.create",
     "label": "Button 2",
     "module": "subscriptions",
     "controlType": "button",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "CreateSubscriptions",
     "isSystemRequired": false
   },
   {
@@ -2632,6 +2632,14 @@
     "isSystemRequired": false
   },
   {
+    "controlKey": "clients.contacts.primary",
+    "label": "Switch 1",
+    "module": "clients",
+    "controlType": "switch",
+    "requiredPermissionCode": "UpdateClients",
+    "isSystemRequired": false
+  },
+  {
     "controlKey": "ui.components.modules.clients.contact.form.button.1",
     "label": "Button 1",
     "module": "clients",
@@ -2653,6 +2661,14 @@
     "module": "clients",
     "controlType": "textarea",
     "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "clients.notes.pinned",
+    "label": "Switch 1",
+    "module": "clients",
+    "controlType": "switch",
+    "requiredPermissionCode": "UpdateClients",
     "isSystemRequired": false
   },
   {
@@ -4040,110 +4056,6 @@
     "isSystemRequired": true
   },
   {
-    "controlKey": "ui.components.modules.subscriptions.subscription.form.button.2",
-    "label": "Button 2",
-    "module": "subscriptions",
-    "controlType": "button",
-    "requiredPermissionCode": "ManageSubscriptions",
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "ui.components.modules.subscriptions.subscription.form.select.1",
-    "label": "Tipo *",
-    "module": "subscriptions",
-    "controlType": "select",
-    "requiredPermissionCode": "ManageSubscriptions",
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "ui.components.modules.subscriptions.subscription.form.input.1",
-    "label": "Día de facturación *",
-    "module": "subscriptions",
-    "controlType": "input",
-    "requiredPermissionCode": "ManageSubscriptions",
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "subscriptions.form.custom-interval",
-    "label": "Intervalo (días) *",
-    "module": "subscriptions",
-    "controlType": "input",
-    "requiredPermissionCode": "ManageSubscriptions",
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "ui.components.modules.subscriptions.subscription.form.input.3",
-    "label": "Precio *",
-    "module": "subscriptions",
-    "controlType": "input",
-    "requiredPermissionCode": "ManageSubscriptions",
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "ui.components.modules.subscriptions.subscription.form.input.4",
-    "label": "Moneda *",
-    "module": "subscriptions",
-    "controlType": "input",
-    "requiredPermissionCode": "ManageSubscriptions",
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "subscriptions.form.discount",
-    "label": "Descuento (%)",
-    "module": "subscriptions",
-    "controlType": "input",
-    "requiredPermissionCode": "ManageSubscriptions",
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "subscriptions.form.tax",
-    "label": "Impuesto (%)",
-    "module": "subscriptions",
-    "controlType": "input",
-    "requiredPermissionCode": "ManageSubscriptions",
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "subscriptions.form.proration",
-    "label": "Prorrateo",
-    "module": "subscriptions",
-    "controlType": "select",
-    "requiredPermissionCode": "ManageSubscriptions",
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "ui.components.modules.subscriptions.subscription.form.input.7",
-    "label": "Inicio *",
-    "module": "subscriptions",
-    "controlType": "input",
-    "requiredPermissionCode": "ManageSubscriptions",
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "ui.components.modules.subscriptions.subscription.form.input.8",
-    "label": "Fin (opcional)",
-    "module": "subscriptions",
-    "controlType": "input",
-    "requiredPermissionCode": "ManageSubscriptions",
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "ui.components.modules.subscriptions.subscription.form.textarea.1",
-    "label": "Notas internas",
-    "module": "subscriptions",
-    "controlType": "textarea",
-    "requiredPermissionCode": "ManageSubscriptions",
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "subscriptions.form.contract-terms",
-    "label": "Condiciones contractuales",
-    "module": "subscriptions",
-    "controlType": "textarea",
-    "requiredPermissionCode": "ManageSubscriptions",
-    "isSystemRequired": false
-  },
-  {
     "controlKey": "ui.components.modules.users.assign.roles.dialog.button.1",
     "label": "button 1",
     "module": "users",
@@ -4757,6 +4669,294 @@
     "module": "settings",
     "controlType": "input",
     "requiredPermissionCode": "ManageCurrencies",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.create.client",
+    "label": "client",
+    "module": "subscriptions",
+    "controlType": "combobox",
+    "requiredPermissionCode": "CreateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.create.service",
+    "label": "service",
+    "module": "subscriptions",
+    "controlType": "combobox",
+    "requiredPermissionCode": "CreateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.create.billing-type",
+    "label": "billing-type",
+    "module": "subscriptions",
+    "controlType": "select",
+    "requiredPermissionCode": "CreateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.create.billing-day",
+    "label": "billing-day",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": "CreateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.create.custom-interval",
+    "label": "custom-interval",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": "CreateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.create.price",
+    "label": "price",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": "CreateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.create.currency",
+    "label": "currency",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": "CreateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.create.discount",
+    "label": "discount",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": "CreateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.create.tax",
+    "label": "tax",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": "CreateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.create.proration",
+    "label": "proration",
+    "module": "subscriptions",
+    "controlType": "select",
+    "requiredPermissionCode": "CreateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.create.start-date",
+    "label": "start-date",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": "CreateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.create.end-date",
+    "label": "end-date",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": "CreateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.create.auto-renew",
+    "label": "auto-renew",
+    "module": "subscriptions",
+    "controlType": "switch",
+    "requiredPermissionCode": "CreateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.create.notes",
+    "label": "notes",
+    "module": "subscriptions",
+    "controlType": "textarea",
+    "requiredPermissionCode": "CreateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.create.contract-terms",
+    "label": "contract-terms",
+    "module": "subscriptions",
+    "controlType": "textarea",
+    "requiredPermissionCode": "CreateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.create.submit",
+    "label": "submit",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": "CreateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.update.client",
+    "label": "client",
+    "module": "subscriptions",
+    "controlType": "combobox",
+    "requiredPermissionCode": "UpdateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.update.service",
+    "label": "service",
+    "module": "subscriptions",
+    "controlType": "combobox",
+    "requiredPermissionCode": "UpdateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.update.billing-type",
+    "label": "billing-type",
+    "module": "subscriptions",
+    "controlType": "select",
+    "requiredPermissionCode": "UpdateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.update.billing-day",
+    "label": "billing-day",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": "UpdateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.update.custom-interval",
+    "label": "custom-interval",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": "UpdateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.update.price",
+    "label": "price",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": "UpdateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.update.currency",
+    "label": "currency",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": "UpdateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.update.discount",
+    "label": "discount",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": "UpdateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.update.tax",
+    "label": "tax",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": "UpdateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.update.proration",
+    "label": "proration",
+    "module": "subscriptions",
+    "controlType": "select",
+    "requiredPermissionCode": "UpdateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.update.start-date",
+    "label": "start-date",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": "UpdateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.update.end-date",
+    "label": "end-date",
+    "module": "subscriptions",
+    "controlType": "input",
+    "requiredPermissionCode": "UpdateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.update.auto-renew",
+    "label": "auto-renew",
+    "module": "subscriptions",
+    "controlType": "switch",
+    "requiredPermissionCode": "UpdateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.update.notes",
+    "label": "notes",
+    "module": "subscriptions",
+    "controlType": "textarea",
+    "requiredPermissionCode": "UpdateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.update.contract-terms",
+    "label": "contract-terms",
+    "module": "subscriptions",
+    "controlType": "textarea",
+    "requiredPermissionCode": "UpdateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.update.submit",
+    "label": "submit",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": "UpdateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "services.create.active",
+    "label": "active",
+    "module": "services",
+    "controlType": "switch",
+    "requiredPermissionCode": "CreateServices",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "services.create.portal-visible",
+    "label": "portal-visible",
+    "module": "services",
+    "controlType": "switch",
+    "requiredPermissionCode": "CreateServices",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "services.update.active",
+    "label": "active",
+    "module": "services",
+    "controlType": "switch",
+    "requiredPermissionCode": "UpdateServices",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "services.update.portal-visible",
+    "label": "portal-visible",
+    "module": "services",
+    "controlType": "switch",
+    "requiredPermissionCode": "UpdateServices",
     "isSystemRequired": false
   }
 ]

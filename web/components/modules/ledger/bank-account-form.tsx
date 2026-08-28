@@ -8,10 +8,9 @@ import { Drawer, DrawerContent, DrawerClose } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectItem } from "@/components/ui/select";
-import * as RadixSwitch from "@radix-ui/react-switch";
+import { Switch } from "@/components/ui/switch";
 import { useCreateBankAccount, useUpdateBankAccount } from "@/hooks/use-bank-accounts";
 import { useCurrencies } from "@/hooks/use-currencies";
-import { useUiControl } from "@/lib/auth/ui-control";
 import type { BankAccountDto } from "@/types/api";
 
 const schema = z.object({
@@ -47,22 +46,19 @@ function PermissionSwitch({
   controlKey: string;
   permission: string;
 }) {
-  const access = useUiControl({ controlKey, permission });
-  if (access.hidden) return null;
   return (
-    <div className="flex min-h-11 items-center justify-between gap-4" {...access.dataAttributes}>
+    <div className="flex min-h-11 items-center justify-between gap-4">
       <label htmlFor={id} className="text-[13px] font-medium text-foreground-secondary cursor-pointer">
         {label}
       </label>
-      <RadixSwitch.Root
+      <Switch
+        controlKey={controlKey}
+        permission={permission}
         id={id}
         checked={checked}
         onCheckedChange={onCheckedChange}
-        disabled={access.disabled || access.readOnly}
-        className="relative h-7 w-12 cursor-pointer rounded-full transition-colors data-[state=checked]:bg-action data-[state=unchecked]:bg-border focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-action/30 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        <RadixSwitch.Thumb className="block h-5 w-5 rounded-full bg-surface shadow transition-transform data-[state=checked]:translate-x-[25px] data-[state=unchecked]:translate-x-[3px]" />
-      </RadixSwitch.Root>
+        ariaLabel={label}
+      />
     </div>
   );
 }

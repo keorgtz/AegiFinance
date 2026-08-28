@@ -105,7 +105,7 @@ export default function SubscriptionsPage() {
     const handler = (e: KeyboardEvent) => {
       const tag = (document.activeElement as HTMLElement)?.tagName ?? "";
       if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
-      if ((e.key === "n" || e.key === "N") && can("ManageSubscriptions")) { e.preventDefault(); setFormOpen(true); }
+      if ((e.key === "n" || e.key === "N") && can("CreateSubscriptions")) { e.preventDefault(); setFormOpen(true); }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
@@ -267,8 +267,8 @@ export default function SubscriptionsPage() {
             {data ? `${data.totalCount} suscripción${data.totalCount !== 1 ? "es" : ""}` : "Cargando…"}
           </p>
         </div>
-        <Can permission="ViewSubscriptions">
-          <Button controlKey="ui.app.app.subscriptions.page.button.2" onClick={() => setFormOpen(true)} size="md">
+        <Can permission="CreateSubscriptions">
+          <Button controlKey="subscriptions.header.create" permission="CreateSubscriptions" onClick={() => setFormOpen(true)} size="md">
             <Plus className="h-4 w-4" />
             Nueva
             <kbd className="ml-1 rounded bg-surface/20 px-1 text-[10px]">N</kbd>

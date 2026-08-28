@@ -60,10 +60,33 @@ export class ApiRequestError extends Error {
     public readonly error: ApiError
   ) {
     const validationMessage = error.errors
-      ? Object.values(error.errors).flat().filter(Boolean).join(" ")
+      ? Object.entries(error.errors)
+          .flatMap(([field, messages]) => messages.filter(Boolean).map((message) => `${friendlyFieldName(field)}: ${message}`))
+          .join(" ")
       : undefined;
-    super(validationMessage ?? error.detail ?? error.title ?? error.message ?? "Error desconocido");
+    const detail = validationMessage ?? error.detail ?? error.title ?? error.message ?? "Error desconocido";
+    super(error.traceId ? `${detail} Referencia: ${error.traceId}` : detail);
   }
+}
+
+const FIELD_NAMES: Record<string, string> = {
+  ClientId: "Cliente",
+  ServiceId: "Plan",
+  BillingType: "Tipo de facturación",
+  Price: "Precio",
+  Currency: "Moneda",
+  StartDate: "Fecha de inicio",
+  EndDate: "Fecha final",
+  BillingDay: "Día de facturación",
+  CustomIntervalDays: "Intervalo personalizado",
+  DiscountPercent: "Descuento",
+  TaxPercent: "Impuesto",
+  AutoRenew: "Renovación automática",
+  ContractTerms: "Condiciones contractuales",
+};
+
+function friendlyFieldName(field: string) {
+  return FIELD_NAMES[field.split(".").at(-1) ?? field] ?? field;
 }
 
 interface FetchOptions extends Omit<RequestInit, "body"> {

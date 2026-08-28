@@ -4,7 +4,7 @@ import path from "node:path";
 const root = process.cwd();
 const writeMode = process.argv.includes("--write");
 const sourceRoots = ["app", "components"];
-const tags = new Set(["Button", "Input", "Select", "Textarea", "Tab", "Link", "PermissionMenuItem", "PermissionSwitch", "RuleToggle", "button", "input", "select", "textarea"]);
+const tags = new Set(["Button", "Input", "Select", "Textarea", "Switch", "Tab", "Link", "PermissionMenuItem", "PermissionSwitch", "RuleToggle", "button", "input", "select", "textarea"]);
 
 async function filesIn(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -144,6 +144,40 @@ for (const section of ["client-categories", "client-tags", "service-categories",
 }
 for (const field of ["active", "default"]) {
   manifest.push({ controlKey: `settings.currencies.field.${field}`, label: field, module: "settings", controlType: "input", requiredPermissionCode: "ManageCurrencies", isSystemRequired: false });
+}
+
+const subscriptionFields = [
+  ["client", "combobox"], ["service", "combobox"], ["billing-type", "select"],
+  ["billing-day", "input"], ["custom-interval", "input"], ["price", "input"],
+  ["currency", "input"], ["discount", "input"], ["tax", "input"],
+  ["proration", "select"], ["start-date", "input"], ["end-date", "input"],
+  ["auto-renew", "switch"], ["notes", "textarea"], ["contract-terms", "textarea"],
+  ["submit", "button"],
+];
+for (const [scope, permission] of [["create", "CreateSubscriptions"], ["update", "UpdateSubscriptions"]]) {
+  for (const [field, type] of subscriptionFields) {
+    manifest.push({
+      controlKey: `subscriptions.${scope}.${field}`,
+      label: field,
+      module: "subscriptions",
+      controlType: type,
+      requiredPermissionCode: permission,
+      isSystemRequired: false,
+    });
+  }
+}
+
+for (const [scope, permission] of [["create", "CreateServices"], ["update", "UpdateServices"]]) {
+  for (const field of ["active", "portal-visible"]) {
+    manifest.push({
+      controlKey: `services.${scope}.${field}`,
+      label: field,
+      module: "services",
+      controlType: "switch",
+      requiredPermissionCode: permission,
+      isSystemRequired: false,
+    });
+  }
 }
 
 if (missing.length) {

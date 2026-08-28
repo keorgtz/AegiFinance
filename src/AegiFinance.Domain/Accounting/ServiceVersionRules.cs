@@ -9,7 +9,9 @@ public static class ServiceVersionRules
         var businessDate = startDate.Date;
 
         return versions
-            .Where(version => version.IsPublished && version.EffectiveFrom.Date <= businessDate)
+            .Where(version => version.IsPublished
+                && version.EffectiveFrom.Date <= businessDate
+                && (!version.EffectiveTo.HasValue || version.EffectiveTo.Value.Date >= businessDate))
             .OrderByDescending(version => version.EffectiveFrom)
             .FirstOrDefault();
     }

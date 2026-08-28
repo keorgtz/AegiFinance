@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectItem } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import * as RadixSwitch from "@radix-ui/react-switch";
+import { Switch } from "@/components/ui/switch";
 import { useServiceCategories } from "@/hooks/use-service-categories";
 import { useCreateService, useUpdateService } from "@/hooks/use-services";
 import type { BillingType, ServiceDetailDto } from "@/types/api";
@@ -43,6 +43,8 @@ interface ServiceFormProps {
 
 export function ServiceForm({ open, onOpenChange, editingService }: ServiceFormProps) {
   const isEdit = !!editingService;
+  const formPermission = isEdit ? "UpdateServices" : "CreateServices";
+  const formScope = isEdit ? "update" : "create";
   const createService = useCreateService();
   const updateService = useUpdateService();
   const { data: categories = [] } = useServiceCategories();
@@ -200,7 +202,8 @@ export function ServiceForm({ open, onOpenChange, editingService }: ServiceFormP
 
           <div className="space-y-3">
             <SwitchRow
-              controlKey="services.form.active"
+              controlKey={`services.${formScope}.active`}
+              permission={formPermission}
               id="is-active"
               label="Servicio activo"
               description="Disponible para asociar a suscripciones"
@@ -208,7 +211,8 @@ export function ServiceForm({ open, onOpenChange, editingService }: ServiceFormP
               onCheckedChange={(v) => setValue("isActive", v)}
             />
             <SwitchRow
-              controlKey="services.form.portal-visible"
+              controlKey={`services.${formScope}.portal-visible`}
+              permission={formPermission}
               id="is-public"
               label="Visible en el portal"
               description="El cliente puede verlo en su portal"
@@ -224,6 +228,7 @@ export function ServiceForm({ open, onOpenChange, editingService }: ServiceFormP
 
 function SwitchRow({
   controlKey,
+  permission,
   id,
   label,
   description,
@@ -231,6 +236,7 @@ function SwitchRow({
   onCheckedChange,
 }: {
   controlKey: string;
+  permission: string;
   id: string;
   label: string;
   description: string;
@@ -243,15 +249,14 @@ function SwitchRow({
         <p className="text-[13px] font-medium text-foreground-secondary">{label}</p>
         <p className="text-[11px] text-muted">{description}</p>
       </label>
-      <RadixSwitch.Root
-        data-ui-control={controlKey}
+      <Switch
+        controlKey={controlKey}
+        permission={permission}
         id={id}
         checked={checked}
         onCheckedChange={onCheckedChange}
-        className="relative inline-flex min-h-11 min-w-11 shrink-0 items-center rounded-full px-1 transition-colors data-[state=checked]:bg-action data-[state=unchecked]:bg-border"
-      >
-        <RadixSwitch.Thumb className="block h-4 w-4 rounded-full bg-surface shadow-dp1 transition-transform data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0.5" />
-      </RadixSwitch.Root>
+        ariaLabel={label}
+      />
     </div>
   );
 }

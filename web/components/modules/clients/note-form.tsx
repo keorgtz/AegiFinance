@@ -7,7 +7,7 @@ import { z } from "zod";
 import { Dialog, DialogContent, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import * as RadixSwitch from "@radix-ui/react-switch";
+import { Switch } from "@/components/ui/switch";
 import { useAddNote } from "@/hooks/use-clients";
 
 const schema = z.object({
@@ -85,14 +85,14 @@ export function NoteForm({ open, onOpenChange, clientId }: NoteFormProps) {
             <label htmlFor="is-pinned" className="text-[13px] font-medium text-foreground-secondary">
               Fijar nota
             </label>
-            <RadixSwitch.Root
+            <Switch
+              controlKey="clients.notes.pinned"
+              permission="UpdateClients"
               id="is-pinned"
               checked={isPinned ?? false}
-              onCheckedChange={(v) => setValue("isPinned", v)}
-              className="relative inline-flex h-5 w-9 items-center rounded-full transition-colors data-[state=checked]:bg-action data-[state=unchecked]:bg-border"
-            >
-              <RadixSwitch.Thumb className="block h-4 w-4 rounded-full bg-surface shadow-dp1 transition-transform data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0.5" />
-            </RadixSwitch.Root>
+              onCheckedChange={(v) => setValue("isPinned", v, { shouldDirty: true })}
+              ariaLabel="Fijar nota"
+            />
           </div>
 
           <p className="text-[11px] text-muted">Tip: Ctrl+Enter para guardar rápido</p>

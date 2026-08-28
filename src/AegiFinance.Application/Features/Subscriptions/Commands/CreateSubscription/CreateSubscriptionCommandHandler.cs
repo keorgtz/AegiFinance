@@ -53,6 +53,11 @@ public class CreateSubscriptionCommandHandler : IRequestHandler<CreateSubscripti
             throw new InvalidOperationException("El servicio seleccionado no existe.");
         }
 
+        if (!service.IsActive)
+        {
+            throw new InvalidOperationException("El plan seleccionado está inactivo. Actívalo o selecciona otro plan.");
+        }
+
         var code = await _codeGenerator.GenerateAsync(cancellationToken);
         var currency = string.IsNullOrWhiteSpace(request.Currency) ? "MXN" : request.Currency.Trim().ToUpper();
         var startDate = request.StartDate.Date;
@@ -62,10 +67,13 @@ public class CreateSubscriptionCommandHandler : IRequestHandler<CreateSubscripti
             EnsureApplicableVersion(service, startDate);
         }
         var serviceVersion = request.ServiceVersionId.HasValue
-            ? service.Versions.FirstOrDefault(v => v.Id == request.ServiceVersionId && v.IsPublished && v.EffectiveFrom.Date <= startDate)
+            ? service.Versions.FirstOrDefault(v => v.Id == request.ServiceVersionId
+                && v.IsPublished
+                && v.EffectiveFrom.Date <= startDate
+                && (!v.EffectiveTo.HasValue || v.EffectiveTo.Value.Date >= startDate))
             : ServiceVersionRules.ResolveApplicable(service.Versions, startDate);
         if (serviceVersion is null)
-            throw new InvalidOperationException("El plan no tiene una versión publicada aplicable.");
+            throw new InvalidOperationException($"El plan '{service.Name}' no tiene una versión publicada vigente para el {startDate:dd/MM/yyyy}. Publica una versión con fecha efectiva igual o anterior al inicio de la suscripción.");
         var pricing = SubscriptionPricingRules.Calculate(request.Price, request.DiscountPercent, request.TaxPercent);
 
         var subscription = new Subscription
@@ -94,9 +102,12 @@ public class CreateSubscriptionCommandHandler : IRequestHandler<CreateSubscripti
             Notes = request.Notes
         };
 
-        subscription.NextBillingDate = subscription.BillingType == BillingType.OneTime
-            ? subscription.StartDate
-            : SubscriptionDateCalculator.CalculateNextBillingDate(subscription.StartDate, subscription.BillingType, subscription.BillingDay, subscription.CustomIntervalDays);
+        subscription.NextBillingDate = subscription.BillingType switch
+        {
+            BillingType.OneTime => subscription.StartDate,
+            BillingType.Hourly => null,
+            _ => SubscriptionDateCalculator.CalculateNextBillingDate(subscription.StartDate, subscription.BillingType, subscription.BillingDay, subscription.CustomIntervalDays)
+        };
 
         subscription.TermsVersions.Add(new SubscriptionTermsVersion
         {

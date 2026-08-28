@@ -7,7 +7,7 @@ import { z } from "zod";
 import { Dialog, DialogContent, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import * as RadixSwitch from "@radix-ui/react-switch";
+import { Switch } from "@/components/ui/switch";
 import { useAddContact, useUpdateContact } from "@/hooks/use-clients";
 import type { ClientContactDto } from "@/types/api";
 
@@ -114,14 +114,14 @@ export function ContactForm({ open, onOpenChange, clientId, editingContact }: Co
             <label htmlFor="is-primary" className="text-[13px] font-medium text-foreground-secondary">
               Contacto principal
             </label>
-            <RadixSwitch.Root
+            <Switch
+              controlKey="clients.contacts.primary"
+              permission="UpdateClients"
               id="is-primary"
               checked={isPrimary ?? false}
-              onCheckedChange={(v) => setValue("isPrimary", v)}
-              className="relative inline-flex h-5 w-9 items-center rounded-full transition-colors data-[state=checked]:bg-action data-[state=unchecked]:bg-border"
-            >
-              <RadixSwitch.Thumb className="block h-4 w-4 rounded-full bg-surface shadow-dp1 transition-transform data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0.5" />
-            </RadixSwitch.Root>
+              onCheckedChange={(v) => setValue("isPrimary", v, { shouldDirty: true })}
+              ariaLabel="Contacto principal"
+            />
           </div>
 
           <DialogFooter>

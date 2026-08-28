@@ -19,9 +19,12 @@ Require-Text "src/AegiFinance.Infrastructure/Services/BillingGenerationService.c
 Require-Text "src/AegiFinance.Application/Features/Subscriptions/Commands/RenewSubscription/RenewSubscriptionCommandHandler.cs" 'SubscriptionRenewals\.AnyAsync' "Renewal does not enforce idempotency."
 Require-Text "src/AegiFinance.Infrastructure/Data/AegiFinanceDbContext.cs" '(?s)IdempotencyKey.*IsUnique' "Renewal idempotency is not protected by a unique database index."
 Require-Text "src/AegiFinance.Application/Features/Subscriptions/Commands/ChangeSubscriptionPlan/ChangeSubscriptionPlanCommandHandler.cs" 'LastBillingDate' "Plan changes can overwrite already billed periods."
+Require-Text "src/AegiFinance.Application/Features/Subscriptions/Commands/CreateSubscription/CreateSubscriptionCommandHandler.cs" 'BillingType\.Hourly => null' "Hourly subscriptions still attempt to calculate a recurring billing date."
+Require-Text "src/AegiFinance.Application/Features/Subscriptions/Commands/CreateSubscription/CreateSubscriptionCommandValidator.cs" 'renovación automática solo está disponible' "Non-recurring subscriptions do not explain their automatic-renewal restriction."
 Require-Text "src/AegiFinance.Web/Controllers/SubscriptionsController.cs" 'ManageSubscriptionAccess' "Subscription access management lacks its own API policy."
 Require-Text "web/components/modules/services/service-version-form.tsx" 'services\.version\.publish' "Version publishing lacks a semantic UI permission key."
-Require-Text "web/components/modules/subscriptions/subscription-form.tsx" 'subscriptions\.form\.proration' "Subscription pricing controls lack declarative permissions."
+Require-Text "web/generated/ui-control-manifest.json" 'subscriptions\.create\.proration' "Subscription creation pricing controls lack declarative permissions."
+Require-Text "web/generated/ui-control-manifest.json" 'subscriptions\.update\.proration' "Subscription update pricing controls lack declarative permissions."
 Require-Text "web/app/(app)/subscriptions/[id]/page.tsx" 'subscriptions\.detail\.tab\.terms' "Versioned subscription terms are not visible in the UI."
 Require-Text "src/AegiFinance.Infrastructure/Migrations/20260818224818_Phase7VersionedPlans.cs" '(?s)INSERT INTO \[SubscriptionTermsVersions\].*\[SubscriptionId\]' "Phase 7 migration does not backfill immutable legacy terms."
 
