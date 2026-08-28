@@ -82,6 +82,8 @@ public class AegiFinanceDbContext : DbContext
     public DbSet<ReconciliationCaseBankLine> ReconciliationCaseBankLines => Set<ReconciliationCaseBankLine>();
     public DbSet<ReconciliationCaseLedgerEntry> ReconciliationCaseLedgerEntries => Set<ReconciliationCaseLedgerEntry>();
     public DbSet<ReconciliationPeriod> ReconciliationPeriods => Set<ReconciliationPeriod>();
+    public DbSet<ReportSchedule> ReportSchedules => Set<ReportSchedule>();
+    public DbSet<ReportRun> ReportRuns => Set<ReportRun>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -140,9 +142,41 @@ public class AegiFinanceDbContext : DbContext
         ConfigureBankImportProfile(modelBuilder);
         ConfigureBankImportRow(modelBuilder);
         ConfigureReconciliation(modelBuilder);
+        ConfigureReporting(modelBuilder);
 
         ApplySoftDeleteQueryFilters(modelBuilder);
         ApplyTenantQueryFilters(modelBuilder);
+    }
+
+    private static void ConfigureReporting(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<ReportSchedule>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.Name).HasMaxLength(120).IsRequired();
+            entity.Property(item => item.ReportKind).HasConversion<string>().HasMaxLength(40);
+            entity.Property(item => item.Frequency).HasConversion<string>().HasMaxLength(20);
+            entity.Property(item => item.Currency).HasMaxLength(10).IsRequired();
+            entity.HasIndex(item => new { item.OrganizationId, item.IsActive, item.NextRunAt });
+            entity.HasOne(item => item.Organization).WithMany(item => item.ReportSchedules).HasForeignKey(item => item.OrganizationId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.Account).WithMany().HasForeignKey(item => item.AccountId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.Client).WithMany().HasForeignKey(item => item.ClientId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.BankAccount).WithMany().HasForeignKey(item => item.BankAccountId).OnDelete(DeleteBehavior.Restrict);
+        });
+        modelBuilder.Entity<ReportRun>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.Status).HasConversion<string>().HasMaxLength(20);
+            entity.Property(item => item.FilterJson).HasMaxLength(4000).IsRequired();
+            entity.Property(item => item.FileName).HasMaxLength(240);
+            entity.Property(item => item.ContentType).HasMaxLength(100);
+            entity.Property(item => item.ResultHash).HasMaxLength(64);
+            entity.Property(item => item.Error).HasMaxLength(2000);
+            entity.HasIndex(item => new { item.OrganizationId, item.StartedAt });
+            entity.HasOne(item => item.Organization).WithMany(item => item.ReportRuns).HasForeignKey(item => item.OrganizationId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.ReportSchedule).WithMany(item => item.Runs).HasForeignKey(item => item.ReportScheduleId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.Client).WithMany().HasForeignKey(item => item.ClientId).OnDelete(DeleteBehavior.Restrict);
+        });
     }
 
     private static void ConfigureUser(ModelBuilder modelBuilder)
@@ -1438,6 +1472,12 @@ public class AegiFinanceDbContext : DbContext
             !IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId);
         AppendQueryFilter<AccountingPeriodReopenRequest>(modelBuilder, entity =>
             !IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId);
+        AppendQueryFilter<ReportSchedule>(modelBuilder, entity =>
+            (!IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId) &&
+            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId)));
+        AppendQueryFilter<ReportRun>(modelBuilder, entity =>
+            (!IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId) &&
+            (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId)));
         AppendQueryFilter<JournalLine>(modelBuilder, entity =>
             (!IsOrganizationScope || entity.JournalEntry.AccountingPeriod.OrganizationId == CurrentOrganizationId) &&
             (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId)));

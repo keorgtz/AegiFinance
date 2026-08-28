@@ -66,6 +66,8 @@ public interface IApplicationDbContext
     DbSet<ReconciliationCaseBankLine> ReconciliationCaseBankLines { get; }
     DbSet<ReconciliationCaseLedgerEntry> ReconciliationCaseLedgerEntries { get; }
     DbSet<ReconciliationPeriod> ReconciliationPeriods { get; }
+    DbSet<ReportSchedule> ReportSchedules { get; }
+    DbSet<ReportRun> ReportRuns { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);

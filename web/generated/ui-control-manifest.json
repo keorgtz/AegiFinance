@@ -1200,6 +1200,254 @@
     "isSystemRequired": false
   },
   {
+    "controlKey": "reports.tabs.analysis",
+    "label": "Tab 1",
+    "module": "reports",
+    "controlType": "tab",
+    "requiredPermissionCode": "ViewReports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.tabs.schedules",
+    "label": "Tab 2",
+    "module": "reports",
+    "controlType": "tab",
+    "requiredPermissionCode": "ManageReportSchedules",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.tabs.runs",
+    "label": "Tab 3",
+    "module": "reports",
+    "controlType": "tab",
+    "requiredPermissionCode": "ViewScheduledReportRuns",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.filters.from",
+    "label": "Desde",
+    "module": "reports",
+    "controlType": "input",
+    "requiredPermissionCode": "ViewReports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.filters.to",
+    "label": "Hasta",
+    "module": "reports",
+    "controlType": "input",
+    "requiredPermissionCode": "ViewReports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.filters.currency",
+    "label": "Moneda",
+    "module": "reports",
+    "controlType": "input",
+    "requiredPermissionCode": "ViewReports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.filters.account",
+    "label": "Cuenta contable",
+    "module": "reports",
+    "controlType": "select",
+    "requiredPermissionCode": "ViewAccountingReports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.export.csv",
+    "label": "Button 1",
+    "module": "reports",
+    "controlType": "button",
+    "requiredPermissionCode": "ExportReports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.kind.portfolio",
+    "label": "Button 2",
+    "module": "reports",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewReceivablesReports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.kind.collections",
+    "label": "Button 3",
+    "module": "reports",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewCollectionsReports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.kind.revenue",
+    "label": "Button 4",
+    "module": "reports",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewFinancialReports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.kind.expenses",
+    "label": "Button 5",
+    "module": "reports",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewFinancialReports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.kind.aging",
+    "label": "Button 6",
+    "module": "reports",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewReceivablesReports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.kind.reconciliation",
+    "label": "Button 7",
+    "module": "reports",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewReconciliationReports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.kind.cashflow",
+    "label": "Button 8",
+    "module": "reports",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewFinancialReports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.kind.trialbalance",
+    "label": "Button 9",
+    "module": "reports",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewAccountingReports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.kind.accountledger",
+    "label": "Button 10",
+    "module": "reports",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewAccountingReports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.schedules.create.open",
+    "label": "Button 11",
+    "module": "reports",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageReportSchedules",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.schedules.delete",
+    "label": "Button 12",
+    "module": "reports",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageReportSchedules",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.schedule.name",
+    "label": "Nombre",
+    "module": "reports",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageReportSchedules",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.schedule.kind",
+    "label": "Reporte",
+    "module": "reports",
+    "controlType": "select",
+    "requiredPermissionCode": "ManageReportSchedules",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.schedule.frequency",
+    "label": "Frecuencia",
+    "module": "reports",
+    "controlType": "select",
+    "requiredPermissionCode": "ManageReportSchedules",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.schedule.time",
+    "label": "Hora UTC",
+    "module": "reports",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageReportSchedules",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.schedule.rollingDays",
+    "label": "Días incluidos",
+    "module": "reports",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageReportSchedules",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.schedule.currency",
+    "label": "Moneda",
+    "module": "reports",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageReportSchedules",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.schedule.day",
+    "label": "Input 8",
+    "module": "reports",
+    "controlType": "input",
+    "requiredPermissionCode": "ManageReportSchedules",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.schedule.account",
+    "label": "Cuenta contable",
+    "module": "reports",
+    "controlType": "select",
+    "requiredPermissionCode": "ManageReportSchedules",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.schedule.cancel",
+    "label": "Button 13",
+    "module": "reports",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.schedule.submit",
+    "label": "Button 14",
+    "module": "reports",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageReportSchedules",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.runs.download",
+    "label": "Button 15",
+    "module": "reports",
+    "controlType": "button",
+    "requiredPermissionCode": "DownloadScheduledReports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "reports.state.retry",
+    "label": "Button 16",
+    "module": "reports",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewReports",
+    "isSystemRequired": false
+  },
+  {
     "controlKey": "ui.app.app.roles.page.button.1",
     "label": "Más acciones",
     "module": "roles",
@@ -4221,6 +4469,14 @@
     "module": "navigation",
     "controlType": "link",
     "requiredPermissionCode": "ViewAccountingGovernance",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "navigation.reports.open",
+    "label": "Reportes y analítica",
+    "module": "navigation",
+    "controlType": "link",
+    "requiredPermissionCode": "ViewReports",
     "isSystemRequired": false
   },
   {

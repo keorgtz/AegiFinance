@@ -58,6 +58,7 @@ Require-Text "docker-compose.yml" 'MSSQL_SA_PASSWORD:\s*\$\{MSSQL_SA_PASSWORD:\?
 Require-Text "docker-compose.yml" 'MSSQL_PID:\s*\$\{MSSQL_PID:-Express\}' "Production Compose does not default to a licensed SQL edition."
 Require-Text "docker-compose.yml" 'Encrypt=True;TrustServerCertificate=True' "Container SQL connections are not encrypted consistently."
 Require-Text "docker-compose.yml" 'ADMIN_SEED_PASSWORD:\?' "Initial administrator password is not required."
+Require-Text "docker-compose.yml" 'Reporting__PollIntervalSeconds:\s*\$\{REPORTING_POLL_INTERVAL_SECONDS:-60\}' "Scheduled-report worker polling is not reproducibly configured."
 Require-Text "docker-compose.yml" 'aegifinance-dataprotection-keys:/app/keys' "Data-protection keys are not persistent."
 Require-Text "docker-compose.yml" 'aegifinance-client-documents:/app/data/client-documents' "Client documents are not persistent."
 Require-Text "src/AegiFinance.Web/Dockerfile" 'dotnet restore "src/AegiFinance.Web/AegiFinance.Web.csproj"' "API Docker restore incorrectly depends on the full solution."

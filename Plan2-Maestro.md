@@ -361,6 +361,8 @@ Evolucionar el registro actual de caja hacia un libro mayor real sin perder traz
 
 ## Fase 14 — Reportes y analítica
 
+**Estado:** implementada el 27 de agosto de 2026. Incorpora un centro AegiPulse de reportes con cartera, cobranza, ingresos, gastos, antigüedad, conciliación, flujo de efectivo, balanza y auxiliares derivados del Major Ledger; filtros compartidos por periodo, moneda y cuenta; definiciones visibles, resumen textual y unidad en cada visualización; CSV generado desde el mismo modelo que la pantalla; y reportes programados persistentes que vuelven a validar los permisos de su creador antes de ejecutarse. Las ejecuciones conservan filtros, filas, estado y hash SHA-256 descargable. Programaciones y resultados están aislados por organización y cliente en EF y SQL RLS. El worker existente procesa las programaciones y Docker Compose expone un intervalo configurable sin agregar servicios, redes ni volúmenes.
+
 ### Entregables
 
 - cartera, cobranza, ingresos, gastos, antigüedad, conciliación y flujo;

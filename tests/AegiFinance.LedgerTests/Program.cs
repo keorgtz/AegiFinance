@@ -1,6 +1,7 @@
 using AegiFinance.Domain.Accounting;
 using AegiFinance.Domain.Entities;
 using AegiFinance.Domain.Enums;
+using AegiFinance.Domain.Reporting;
 
 var debitAccount = Guid.NewGuid();
 var creditAccount = Guid.NewGuid();
@@ -163,7 +164,17 @@ var requester = Guid.NewGuid();
 AssertThrows(() => AccountingGovernanceRules.EnsureIndependentApproval(requester, requester), "self-approved accounting-period reopen");
 AccountingGovernanceRules.EnsureIndependentApproval(requester, Guid.NewGuid());
 
-Console.WriteLine("Major Ledger, bank-account, client-identity, subscription pricing, bank-import, reconciliation, payment-application, account-statement and accounting-governance rules passed.");
+if (FinancialReportRules.RequiredPermission(FinancialReportKind.TrialBalance) != "ViewAccountingReports" ||
+    FinancialReportRules.RequiredPermission(FinancialReportKind.Aging) != "ViewReceivablesReports")
+    throw new InvalidOperationException("Failed: report families do not resolve stable business permissions.");
+var dailyRun = FinancialReportRules.NextRun(new DateTime(2026, 8, 27, 9, 0, 0, DateTimeKind.Utc), ReportScheduleFrequency.Daily, 8 * 60, null, null);
+if (dailyRun != new DateTime(2026, 8, 28, 8, 0, 0, DateTimeKind.Utc))
+    throw new InvalidOperationException("Failed: daily report schedule did not advance to the next valid run.");
+var monthlyRun = FinancialReportRules.NextRun(new DateTime(2026, 8, 27, 9, 0, 0, DateTimeKind.Utc), ReportScheduleFrequency.Monthly, 8 * 60, null, 15);
+if (monthlyRun != new DateTime(2026, 9, 15, 8, 0, 0, DateTimeKind.Utc))
+    throw new InvalidOperationException("Failed: monthly report schedule did not preserve its configured day.");
+
+Console.WriteLine("Major Ledger, bank-account, client-identity, subscription pricing, bank-import, reconciliation, payment-application, account-statement, accounting-governance and reporting rules passed.");
 
 static JournalEntry Entry(params JournalLine[] lines) => new()
 {

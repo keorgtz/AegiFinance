@@ -1323,3 +1323,15 @@ export interface PaymentApplicationSettingsDto { defaultPriority: PaymentApplica
 export interface AutomaticPaymentApplicationRequest { ledgerEntryIds: string[]; priority?: PaymentApplicationPriority; preferredServiceId?: string | null; idempotencyKey: string; }
 export interface PaymentAllocationLineRequest { ledgerEntryId: string; billingItemId: string; amount: number; }
 export interface ManualPaymentApplicationRequest { allocations: PaymentAllocationLineRequest[]; idempotencyKey: string; }
+
+export type FinancialReportKind = "Portfolio" | "Collections" | "Revenue" | "Expenses" | "Aging" | "Reconciliation" | "CashFlow" | "TrialBalance" | "AccountLedger";
+export interface FinancialReportQuery { kind: FinancialReportKind; from: string; to: string; currency: string; clientId?: string; bankAccountId?: string; accountId?: string; }
+export interface ReportMetricDto { key: string; label: string; value: number; unit: string; definition: string; }
+export interface ReportSeriesPointDto { key: string; label: string; value: number; secondaryValue?: number | null; }
+export interface ReportTableRowDto { key: string; values: Record<string, string>; }
+export interface FinancialReportDto { kind: FinancialReportKind; title: string; definition: string; from: string; to: string; currency: string; unit: string; summaryText: string; isReconciled: boolean; reconciliationDifference: number; metrics: ReportMetricDto[]; series: ReportSeriesPointDto[]; columns: string[]; rows: ReportTableRowDto[]; }
+export type ReportScheduleFrequency = "Daily" | "Weekly" | "Monthly";
+export interface ReportScheduleDto { id: string; name: string; reportKind: FinancialReportKind; frequency: ReportScheduleFrequency; currency: string; rollingDays: number; accountId?: string | null; clientId?: string | null; bankAccountId?: string | null; runAtMinuteUtc: number; dayOfWeek?: number | null; dayOfMonth?: number | null; isActive: boolean; nextRunAt: string; lastRunAt?: string | null; createdByUserId: string; }
+export interface SaveReportScheduleRequest { name: string; reportKind: FinancialReportKind; frequency: ReportScheduleFrequency; currency: string; rollingDays: number; accountId?: string | null; clientId?: string | null; bankAccountId?: string | null; runAtMinuteUtc: number; dayOfWeek?: number | null; dayOfMonth?: number | null; isActive: boolean; }
+export interface ReportRunDto { id: string; reportScheduleId: string; scheduleName: string; reportKind: FinancialReportKind; status: "Pending" | "Completed" | "Failed"; startedAt: string; completedAt?: string | null; fileName?: string | null; resultHash?: string | null; rowCount: number; error?: string | null; }
+export interface ReportAccountDto { id: string; code: string; name: string; currency: string; }
