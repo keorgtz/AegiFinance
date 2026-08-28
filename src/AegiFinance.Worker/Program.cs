@@ -7,6 +7,7 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddHostedService<BillingGenerationHostedService>();
 builder.Services.AddHostedService<ReportScheduleHostedService>();
+builder.Services.AddHostedService<AutomationHostedService>();
 
 var host = builder.Build();
 host.Run();

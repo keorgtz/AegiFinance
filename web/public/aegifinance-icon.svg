@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="AegiFinance">
+  <rect width="512" height="512" rx="112" fill="#6656d9"/>
+  <path d="M256 92 404 174v164L256 420 108 338V174zm0 54-98 54v112l98 54 98-54V200z" fill="#fff"/>
+  <path d="M256 190 326 230v80l-70 40-70-40v-80z" fill="#9ee3c1"/>
+</svg>

@@ -2,6 +2,7 @@ using AegiFinance.Domain.Accounting;
 using AegiFinance.Domain.Entities;
 using AegiFinance.Domain.Enums;
 using AegiFinance.Domain.Reporting;
+using AegiFinance.Domain.Automation;
 
 var debitAccount = Guid.NewGuid();
 var creditAccount = Guid.NewGuid();
@@ -174,7 +175,14 @@ var monthlyRun = FinancialReportRules.NextRun(new DateTime(2026, 8, 27, 9, 0, 0,
 if (monthlyRun != new DateTime(2026, 9, 15, 8, 0, 0, DateTimeKind.Utc))
     throw new InvalidOperationException("Failed: monthly report schedule did not preserve its configured day.");
 
-Console.WriteLine("Major Ledger, bank-account, client-identity, subscription pricing, bank-import, reconciliation, payment-application, account-statement, accounting-governance and reporting rules passed.");
+if (!AutomationRules.IsReminderDay(7) || AutomationRules.IsReminderDay(2))
+    throw new InvalidOperationException("Failed: automation reminder cadence changed.");
+if (AutomationRules.RenewalEnd(new DateTime(2026, 1, 31), BillingType.Monthly, null) != new DateTime(2026, 2, 28))
+    throw new InvalidOperationException("Failed: automatic monthly renewal did not preserve calendar semantics.");
+if (AutomationRules.RetryDelay(10) > TimeSpan.FromMinutes(15))
+    throw new InvalidOperationException("Failed: outbox retry delay is not bounded.");
+
+Console.WriteLine("Major Ledger, bank-account, client-identity, subscription pricing, bank-import, reconciliation, payment-application, account-statement, accounting-governance, reporting and automation rules passed.");
 
 static JournalEntry Entry(params JournalLine[] lines) => new()
 {

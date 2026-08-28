@@ -77,6 +77,10 @@ async function apiFetch<T>(
 ): Promise<T> {
   const { body, ...rest } = options;
 
+  if (typeof navigator !== "undefined" && !navigator.onLine && rest.method && rest.method !== "GET") {
+    throw new ApiRequestError(503, { message: "Sin conexión. La operación no se envió ni se reintentará automáticamente; guardala como borrador explícito." });
+  }
+
   const isForm = typeof FormData !== "undefined" && body instanceof FormData;
   const headers: Record<string, string> = isForm ? {} : { "Content-Type": "application/json" };
 

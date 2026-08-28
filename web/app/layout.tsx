@@ -5,6 +5,8 @@ import { Providers } from "./providers";
 export const metadata: Metadata = {
   title: "AegiFinance",
   description: "Plataforma de gestión financiera Keorsoft",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: { capable: true, title: "AegiFinance", statusBarStyle: "default" },
 };
 
 export default function RootLayout({

@@ -109,7 +109,7 @@
     "module": "account",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "statements.inquiry.submit",
@@ -141,7 +141,7 @@
     "module": "account",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "statements.inquiry.resolve.submit",
@@ -205,7 +205,7 @@
     "module": "allocations",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "payments.reverse.submit",
@@ -261,7 +261,7 @@
     "module": "allocations",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "payments.auto.submit",
@@ -301,7 +301,7 @@
     "module": "allocations",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "payments.manual.submit",
@@ -325,7 +325,7 @@
     "module": "allocations",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "payments.settings.save",
@@ -341,7 +341,7 @@
     "module": "allocations",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "audit.tabs.overview",
@@ -421,7 +421,7 @@
     "module": "audit",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "audit.period.close.confirm",
@@ -445,7 +445,7 @@
     "module": "audit",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "audit.period.reopen.submit",
@@ -485,7 +485,7 @@
     "module": "audit",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "audit.reopen.review.submit",
@@ -573,7 +573,7 @@
     "module": "audit",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "audit.state.retry",
@@ -1421,7 +1421,7 @@
     "module": "reports",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "reports.schedule.submit",
@@ -2165,7 +2165,7 @@
     "module": "billing",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "ui.components.modules.billing.cancel.item.dialog.button.2",
@@ -2197,7 +2197,7 @@
     "module": "billing",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "ui.components.modules.billing.generate.billing.dialog.button.2",
@@ -2277,7 +2277,7 @@
     "module": "billing",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "billing.manual.save",
@@ -2317,7 +2317,7 @@
     "module": "billing",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "billing.adjustment.save",
@@ -2357,7 +2357,7 @@
     "module": "billing",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "billing.promise.save",
@@ -2445,7 +2445,7 @@
     "module": "clients",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "clients.duplicate-rules.save",
@@ -2461,7 +2461,7 @@
     "module": "clients",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "clients.form.submit",
@@ -2725,7 +2725,7 @@
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "ui.components.modules.ledger.adjustment.form.button.2",
@@ -2797,7 +2797,7 @@
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "ledger.bankAccounts.form.submit",
@@ -2829,7 +2829,7 @@
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "ledger.bankBalances.form.submit",
@@ -2925,7 +2925,7 @@
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "ledger.bankImports.form.preview",
@@ -2941,7 +2941,7 @@
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "ledger.bankImports.preview.confirm",
@@ -2957,7 +2957,7 @@
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "ledger.bankImports.list.retry",
@@ -2989,7 +2989,7 @@
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "ledger.bankImports.rollback.confirm",
@@ -3053,7 +3053,7 @@
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "ui.components.modules.ledger.expense.form.button.2",
@@ -3117,7 +3117,7 @@
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "ui.components.modules.ledger.income.form.button.2",
@@ -3197,7 +3197,7 @@
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "ledger.major.reverse.confirm",
@@ -3301,7 +3301,7 @@
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "ledger.reconciliation.confirm.submit",
@@ -3325,7 +3325,7 @@
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "ledger.reconciliation.reverse.submit",
@@ -3397,7 +3397,7 @@
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "ledger.reconciliation.settings.save",
@@ -3445,7 +3445,7 @@
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "ledger.reconciliation.period.close",
@@ -3509,7 +3509,7 @@
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "ledger.transfers.form.submit",
@@ -4037,7 +4037,7 @@
     "module": "subscriptions",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "ui.components.modules.subscriptions.subscription.form.button.2",
@@ -4173,7 +4173,7 @@
     "module": "users",
     "controlType": "input",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "security.required-password.new",
@@ -4181,7 +4181,7 @@
     "module": "users",
     "controlType": "input",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "security.required-password.logout",
@@ -4197,7 +4197,7 @@
     "module": "users",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "users.reset-password.value",
@@ -4213,7 +4213,7 @@
     "module": "users",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "users.reset-password.save",
@@ -4389,7 +4389,7 @@
     "module": "users",
     "controlType": "button",
     "requiredPermissionCode": null,
-    "isSystemRequired": false
+    "isSystemRequired": true
   },
   {
     "controlKey": "ui.components.modules.users.user.form.button.2",
@@ -4398,6 +4398,14 @@
     "controlType": "button",
     "requiredPermissionCode": "ManageUsers",
     "isSystemRequired": false
+  },
+  {
+    "controlKey": "system.pwa.update",
+    "label": "Button 1",
+    "module": "system",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": true
   },
   {
     "controlKey": "navigation.dashboard.open",
@@ -4514,6 +4522,14 @@
   {
     "controlKey": "ui.drawer.close",
     "label": "Cerrar panel",
+    "module": "system",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": true
+  },
+  {
+    "controlKey": "system.pwa.offline.retry",
+    "label": "Reintentar conexión",
     "module": "system",
     "controlType": "button",
     "requiredPermissionCode": null,

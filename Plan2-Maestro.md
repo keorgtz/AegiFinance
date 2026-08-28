@@ -381,6 +381,8 @@ Evolucionar el registro actual de caja hacia un libro mayor real sin perder traz
 
 ## Fase 15 — Automatización, confiabilidad y operación
 
+**Estado:** implementada el 27 de agosto de 2026. Incorpora automatizaciones idempotentes para renovaciones, expiraciones, recordatorios, vencimientos y revisión de conciliación; outbox durable por organización con reintentos exponenciales, lease, trazas y dead-letter; liveness/readiness, métricas protegidas y correlación `X-Trace-Id`; backups SQL con `CHECKSUM` cada 6 horas, retención y ensayo de restauración reproducible; contrato E2E para Chrome desktop y mobile; y PWA AegiPulse que sólo conserva shell público, nunca cachea API ni reenvía escrituras. Los borradores requieren guardado explícito y scope de usuario/organización. El gate estático queda automatizado; la evidencia real de restauración y los E2E autenticados deben ejecutarse y archivarse en el host Ubuntu antes de aprobar producción.
+
 ### Entregables
 
 - recordatorios, renovaciones, vencimientos y reglas de conciliación;

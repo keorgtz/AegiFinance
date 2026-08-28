@@ -10,7 +10,8 @@
     "type-check": "tsc --noEmit",
     "permissions:manifest": "node scripts/generate-ui-control-manifest.mjs",
     "permissions:write": "node scripts/generate-ui-control-manifest.mjs --write",
-    "permissions:check": "node scripts/generate-ui-control-manifest.mjs"
+    "permissions:check": "node scripts/generate-ui-control-manifest.mjs",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -40,6 +41,7 @@
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@playwright/test": "^1.55.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.0.1",

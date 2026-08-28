@@ -101,7 +101,7 @@ for (const file of files) {
     }
     const label = attribute(opening, "label") ?? attribute(opening, "aria-label") ?? attribute(opening, "name") ?? `${original.tag} ${count}`;
     const permission = attribute(opening, "permission") ?? attribute(opening, "data-ui-permission");
-    const systemRequired = /logout|cerrar sesi[oó]n|close dialog|cerrar di[aá]logo/i.test(`${key} ${label}`);
+    const systemRequired = /\bsystemRequired\b/.test(opening) || /logout|cerrar sesi[oó]n|close dialog|cerrar di[aá]logo/i.test(`${key} ${label}`);
     manifest.push({
       controlKey: key,
       label,
@@ -130,6 +130,7 @@ for (const match of navigationSource.matchAll(/href:\s*"([^"]+)"[\s\S]*?label:\s
 manifest.push(
   { controlKey: "ui.dialog.close", label: "Cerrar diálogo", module: "system", controlType: "button", requiredPermissionCode: null, isSystemRequired: true },
   { controlKey: "ui.drawer.close", label: "Cerrar panel", module: "system", controlType: "button", requiredPermissionCode: null, isSystemRequired: true },
+  { controlKey: "system.pwa.offline.retry", label: "Reintentar conexión", module: "system", controlType: "button", requiredPermissionCode: null, isSystemRequired: true },
 );
 
 for (const section of ["client-categories", "client-tags", "service-categories"]) {

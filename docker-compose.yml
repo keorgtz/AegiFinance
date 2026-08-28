@@ -12,6 +12,7 @@ services:
       TZ: ${TZ:-America/Mexico_City}
     volumes:
       - aegifinance-sql-data:/var/opt/mssql
+      - aegifinance-sql-backups:/var/opt/mssql/backup
     healthcheck:
       test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q 'SELECT 1' || exit 1"]
       interval: 20s
@@ -60,7 +61,7 @@ services:
     expose:
       - "8080"
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:8080/health || exit 1"]
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/health/ready || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -97,6 +98,12 @@ services:
       ExchangeRateApi__Enabled: ${EXCHANGE_RATE_ENABLED:-false}
       Billing__DailyRunTime: ${BILLING_DAILY_RUN_TIME:-02:00}
       Reporting__PollIntervalSeconds: ${REPORTING_POLL_INTERVAL_SECONDS:-60}
+      Automation__PollIntervalSeconds: ${AUTOMATION_POLL_INTERVAL_SECONDS:-30}
+      Automation__ProductionIntervalMinutes: ${AUTOMATION_PRODUCTION_INTERVAL_MINUTES:-15}
+      Automation__BatchSize: ${AUTOMATION_BATCH_SIZE:-50}
+      Automation__MaxAttempts: ${AUTOMATION_MAX_ATTEMPTS:-5}
+      Automation__WebhookUrl: ${AUTOMATION_WEBHOOK_URL:-}
+      Automation__WebhookSecret: ${AUTOMATION_WEBHOOK_SECRET:-}
       DataProtection__KeysPath: /app/keys
       TZ: ${TZ:-America/Mexico_City}
     volumes:
@@ -105,6 +112,45 @@ services:
       - aegifinance
     init: true
     stop_grace_period: 60s
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /tmp/aegifinance-worker-heartbeat && find /tmp/aegifinance-worker-heartbeat -mmin -2 | grep -q ."]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  # ── Backups SQL con CHECKSUM y retención ────────────────────────────────────
+  backup:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: aegifinance-backup
+    restart: unless-stopped
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:?Define MSSQL_SA_PASSWORD in .env}
+      BACKUP_INTERVAL_HOURS: ${BACKUP_INTERVAL_HOURS:-6}
+      BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-14}
+      TZ: ${TZ:-America/Mexico_City}
+    volumes:
+      - aegifinance-sql-backups:/var/opt/mssql/backup
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -e
+        while true; do
+          stamp=$$(date -u +%Y%m%dT%H%M%SZ)
+          file=/var/opt/mssql/backup/AegiFinanceDb-$${stamp}.bak
+          /opt/mssql-tools18/bin/sqlcmd -S sqlserver -U sa -P "$$MSSQL_SA_PASSWORD" -C -b -Q "BACKUP DATABASE [AegiFinanceDb] TO DISK = N'$${file}' WITH COPY_ONLY, CHECKSUM, INIT"
+          /opt/mssql-tools18/bin/sqlcmd -S sqlserver -U sa -P "$$MSSQL_SA_PASSWORD" -C -b -Q "RESTORE VERIFYONLY FROM DISK = N'$${file}' WITH CHECKSUM"
+          find /var/opt/mssql/backup -type f -name 'AegiFinanceDb-*.bak' -mtime +$$BACKUP_RETENTION_DAYS -delete
+          sleep "$$(($$BACKUP_INTERVAL_HOURS * 3600))"
+        done
+    networks:
+      - aegifinance
+    init: true
+    stop_grace_period: 30s
 
   # ── Frontend Next.js ──────────────────────────────────────────────────────────
   frontend:
@@ -143,6 +189,7 @@ volumes:
   aegifinance-sql-data:
   aegifinance-dataprotection-keys:
   aegifinance-client-documents:
+  aegifinance-sql-backups:
 
 networks:
   aegifinance:

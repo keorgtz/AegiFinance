@@ -1,0 +1,12 @@
+{
+  "name": "AegiFinance",
+  "short_name": "AegiFinance",
+  "description": "Conciliación y operación financiera confiable",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f7f6fb",
+  "theme_color": "#6656d9",
+  "icons": [
+    { "src": "/aegifinance-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

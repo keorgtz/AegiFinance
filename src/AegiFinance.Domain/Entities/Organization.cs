@@ -13,4 +13,5 @@ public class Organization : AuditableEntity
     public ICollection<AccountingPeriodReopenRequest> AccountingPeriodReopenRequests { get; set; } = new List<AccountingPeriodReopenRequest>();
     public ICollection<ReportSchedule> ReportSchedules { get; set; } = new List<ReportSchedule>();
     public ICollection<ReportRun> ReportRuns { get; set; } = new List<ReportRun>();
+    public ICollection<OutboxMessage> OutboxMessages { get; set; } = new List<OutboxMessage>();
 }

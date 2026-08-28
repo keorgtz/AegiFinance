@@ -84,6 +84,7 @@ public class AegiFinanceDbContext : DbContext
     public DbSet<ReconciliationPeriod> ReconciliationPeriods => Set<ReconciliationPeriod>();
     public DbSet<ReportSchedule> ReportSchedules => Set<ReportSchedule>();
     public DbSet<ReportRun> ReportRuns => Set<ReportRun>();
+    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -143,9 +144,29 @@ public class AegiFinanceDbContext : DbContext
         ConfigureBankImportRow(modelBuilder);
         ConfigureReconciliation(modelBuilder);
         ConfigureReporting(modelBuilder);
+        ConfigureOutbox(modelBuilder);
 
         ApplySoftDeleteQueryFilters(modelBuilder);
         ApplyTenantQueryFilters(modelBuilder);
+    }
+
+    private static void ConfigureOutbox(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<OutboxMessage>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.EventType).HasMaxLength(120).IsRequired();
+            entity.Property(item => item.IdempotencyKey).HasMaxLength(220).IsRequired();
+            entity.Property(item => item.PayloadJson).HasMaxLength(8000).IsRequired();
+            entity.Property(item => item.Status).HasConversion<string>().HasMaxLength(20);
+            entity.Property(item => item.LockOwner).HasMaxLength(120);
+            entity.Property(item => item.LastError).HasMaxLength(2000);
+            entity.Property(item => item.TraceId).HasMaxLength(64);
+            entity.HasIndex(item => new { item.OrganizationId, item.IdempotencyKey }).IsUnique();
+            entity.HasIndex(item => new { item.Status, item.AvailableAt, item.LockedUntil });
+            entity.HasOne(item => item.Organization).WithMany(item => item.OutboxMessages)
+                .HasForeignKey(item => item.OrganizationId).OnDelete(DeleteBehavior.Restrict);
+        });
     }
 
     private static void ConfigureReporting(ModelBuilder modelBuilder)
@@ -1478,6 +1499,8 @@ public class AegiFinanceDbContext : DbContext
         AppendQueryFilter<ReportRun>(modelBuilder, entity =>
             (!IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId) &&
             (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId)));
+        AppendQueryFilter<OutboxMessage>(modelBuilder, entity =>
+            !IsOrganizationScope || entity.OrganizationId == CurrentOrganizationId);
         AppendQueryFilter<JournalLine>(modelBuilder, entity =>
             (!IsOrganizationScope || entity.JournalEntry.AccountingPeriod.OrganizationId == CurrentOrganizationId) &&
             (!IsClientScope || (CurrentClientId.HasValue && entity.ClientId == CurrentClientId)));

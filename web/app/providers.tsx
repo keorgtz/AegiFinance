@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import { useState } from "react";
 import { ThemeProvider } from "@/lib/theme/context";
 import { UiPermissionProvider } from "@/lib/auth/ui-permission-provider";
+import { PwaStatus } from "@/components/system/pwa-status";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -24,7 +25,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <UiPermissionProvider>{children}</UiPermissionProvider>
+          <UiPermissionProvider><PwaStatus />{children}</UiPermissionProvider>
           <Toaster
             position="bottom-right"
             toastOptions={{

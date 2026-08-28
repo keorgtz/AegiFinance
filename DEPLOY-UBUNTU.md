@@ -29,6 +29,8 @@ docker compose ps
 docker compose logs --tail=100 web worker frontend
 ```
 
+El servicio `backup` genera respaldos nativos verificados cada 6 horas. Después del primer arranque ejecutá el ensayo real de restauración documentado en `docs/PHASE15-OPERATIONS.md`; no consideres el despliegue productivo aprobado sin su evidencia.
+
 La API espera a que SQL Server esté saludable, aplica las migraciones pendientes una sola vez y después crea los catálogos iniciales. El primer usuario es `Admin` y utiliza `ADMIN_SEED_PASSWORD`; la aplicación obliga a cambiar esa contraseña.
 
 ## Proxy y dominio
@@ -65,6 +67,8 @@ docker compose logs --tail=100 web worker frontend
 No uses `docker compose down -v`: la opción `-v` elimina la base de datos, documentos y claves persistentes.
 
 ## Respaldo
+
+Los objetivos operativos son RPO de 6 horas y RTO de 2 horas. Compose conserva los `.bak` con `CHECKSUM` en `aegifinance-sql-backups`; el procedimiento manual siguiente queda disponible para una copia extraordinaria.
 
 Creá primero un backup nativo de SQL Server:
 

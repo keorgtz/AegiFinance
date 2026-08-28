@@ -68,16 +68,21 @@ app.MapGet("/", () => Results.Ok(new { service = "AegiFinance.Web", status = "ru
 app.UseExceptionHandler();
 
 app.UseForwardedHeaders();
+app.UseMiddleware<RequestTelemetryMiddleware>();
 app.UseHttpsRedirection();
 app.UseCors(NextJsCorsPolicy);
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/health", async (AegiFinance.Infrastructure.Data.ApplicationDbContext context, CancellationToken cancellationToken) =>
+app.MapGet("/health/live", () => Results.Ok(new { status = "ok", service = "AegiFinance.Web", utc = DateTime.UtcNow })).AllowAnonymous();
+
+app.MapGet("/health/ready", async (AegiFinance.Infrastructure.Data.ApplicationDbContext context, CancellationToken cancellationToken) =>
     await context.Database.CanConnectAsync(cancellationToken)
         ? Results.Ok(new { status = "ok", service = "AegiFinance.Web", database = "connected", utc = DateTime.UtcNow })
         : Results.Problem(statusCode: StatusCodes.Status503ServiceUnavailable, title: "Database unavailable"))
     .AllowAnonymous();
+
+app.MapGet("/health", () => Results.Redirect("/health/ready", permanent: false)).AllowAnonymous();
 
 app.MapControllers();
 
