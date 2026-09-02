@@ -31,7 +31,7 @@ public class CreateSubscriptionCommandHandler : IRequestHandler<CreateSubscripti
         }
 
         var client = await _context.Clients
-            .AsNoTracking()
+            .AsTracking()
             .FirstOrDefaultAsync(c => c.Id == request.ClientId, cancellationToken);
 
         if (client is null)

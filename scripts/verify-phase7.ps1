@@ -20,6 +20,7 @@ Require-Text "src/AegiFinance.Application/Features/Subscriptions/Commands/RenewS
 Require-Text "src/AegiFinance.Infrastructure/Data/AegiFinanceDbContext.cs" '(?s)IdempotencyKey.*IsUnique' "Renewal idempotency is not protected by a unique database index."
 Require-Text "src/AegiFinance.Application/Features/Subscriptions/Commands/ChangeSubscriptionPlan/ChangeSubscriptionPlanCommandHandler.cs" 'LastBillingDate' "Plan changes can overwrite already billed periods."
 Require-Text "src/AegiFinance.Application/Features/Subscriptions/Commands/CreateSubscription/CreateSubscriptionCommandHandler.cs" 'BillingType\.Hourly => null' "Hourly subscriptions still attempt to calculate a recurring billing date."
+Require-Text "src/AegiFinance.Application/Features/Subscriptions/Commands/CreateSubscription/CreateSubscriptionCommandHandler.cs" '(?s)_context\.Clients\s*\.AsTracking\(\)' "Subscription creation can reinsert a detached existing client."
 Require-Text "src/AegiFinance.Application/Features/Subscriptions/Commands/CreateSubscription/CreateSubscriptionCommandValidator.cs" 'renovación automática solo está disponible' "Non-recurring subscriptions do not explain their automatic-renewal restriction."
 Require-Text "src/AegiFinance.Web/Controllers/SubscriptionsController.cs" 'ManageSubscriptionAccess' "Subscription access management lacks its own API policy."
 Require-Text "web/components/modules/services/service-version-form.tsx" 'services\.version\.publish' "Version publishing lacks a semantic UI permission key."

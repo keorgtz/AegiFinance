@@ -1,4 +1,5 @@
 using FluentValidation;
+using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -35,7 +36,7 @@ public class GlobalExceptionHandler : IExceptionHandler
             Title = title,
             Detail = exception switch
             {
-                DbUpdateException => "No se pudo guardar porque los datos relacionados cambiaron o ya existe un registro equivalente. Actualiza la pantalla, verifica los datos e inténtalo de nuevo.",
+                DbUpdateException dbUpdateException => PersistenceDetail(dbUpdateException),
                 _ when statusCode == StatusCodes.Status500InternalServerError => "Ocurrió un error inesperado. Comunica la referencia mostrada para localizar el fallo en los registros del servidor.",
                 _ => exception.Message
             },
@@ -43,6 +44,10 @@ public class GlobalExceptionHandler : IExceptionHandler
         };
 
         problemDetails.Extensions["traceId"] = traceId;
+        if (exception is DbUpdateException persistenceException)
+        {
+            problemDetails.Extensions["errorCode"] = PersistenceErrorCode(persistenceException);
+        }
 
         if (errors is not null)
         {
@@ -55,6 +60,31 @@ public class GlobalExceptionHandler : IExceptionHandler
 
         return true;
     }
+
+    private static string PersistenceDetail(DbUpdateException exception)
+    {
+        return SqlErrorNumber(exception) switch
+        {
+            2601 or 2627 => "Ya existe un registro con el mismo identificador único. Actualiza la pantalla y vuelve a intentarlo; si persiste, comunica la referencia mostrada.",
+            547 => "Uno de los datos relacionados ya no existe o no puede utilizarse. Actualiza la pantalla y vuelve a seleccionar cliente y plan.",
+            515 => "Falta un dato obligatorio para guardar el registro. Revisa los campos requeridos y comunica la referencia si todos están completos.",
+            _ => "No se pudo guardar por un conflicto de datos. Actualiza la pantalla, verifica los datos e inténtalo de nuevo."
+        };
+    }
+
+    private static string PersistenceErrorCode(DbUpdateException exception)
+    {
+        return SqlErrorNumber(exception) switch
+        {
+            2601 or 2627 => "duplicate_record",
+            547 => "related_record_conflict",
+            515 => "required_data_missing",
+            _ => "persistence_conflict"
+        };
+    }
+
+    private static int? SqlErrorNumber(DbUpdateException exception) =>
+        exception.GetBaseException() is SqlException sqlException ? sqlException.Number : null;
 
     private static (int StatusCode, string Title, IDictionary<string, string[]>? Errors) MapException(Exception exception)
     {

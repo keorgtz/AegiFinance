@@ -184,6 +184,7 @@ export interface ApiError {
   errors?: Record<string, string[]>;
   message?: string;
   traceId?: string;
+  errorCode?: string;
 }
 
 export interface GetUsersParams {
