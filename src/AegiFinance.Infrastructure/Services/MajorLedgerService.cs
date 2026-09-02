@@ -217,8 +217,7 @@ public sealed class MajorLedgerService : IMajorLedgerService
         if (existing is not null) return MapEntry(existing);
         var period = await GetOpenPeriodAsync(reversalDate, cancellationToken);
         var reversal = JournalEntryRules.CreateReversal(original, period.Id, NewEntryNumber(reversalDate),
-            $"reversal:{journalEntryId}", reversalDate, _currentUser.UserId);
-        reversal.Description = $"{reversal.Description}. Reason: {reason.Trim()}";
+            $"reversal:{journalEntryId}", reversalDate, _currentUser.UserId, reason);
         original.Status = JournalEntryStatus.Reversed;
         original.ReversedAt = DateTime.UtcNow;
         original.ReversedBy = _currentUser.UserId;

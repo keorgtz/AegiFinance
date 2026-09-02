@@ -11,7 +11,10 @@ import { useCancelBillingItem } from "@/hooks/use-billing";
 import { formatAmount } from "@/lib/utils/format";
 
 const schema = z.object({
-  reason: z.string().min(1, "El motivo es obligatorio"),
+  reason: z.string()
+    .trim()
+    .min(1, "El motivo es obligatorio")
+    .max(500, "El motivo no puede superar 500 caracteres"),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -34,6 +37,7 @@ export function CancelItemDialog({
   currency,
 }: CancelItemDialogProps) {
   const cancelItem = useCancelBillingItem();
+  const resetCancelItem = cancelItem.reset;
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -41,8 +45,11 @@ export function CancelItemDialog({
   });
 
   useEffect(() => {
-    if (open) reset({ reason: "" });
-  }, [open, reset]);
+    if (open) {
+      resetCancelItem();
+      reset({ reason: "" });
+    }
+  }, [open, reset, resetCancelItem]);
 
   const onSubmit = async (values: FormValues) => {
     try {
@@ -69,6 +76,8 @@ export function CancelItemDialog({
             label="Motivo *"
             placeholder="Ej. Error de generación, duplicado, solicitud del cliente…"
             rows={3}
+            maxLength={500}
+            hint="Describe el motivo en un máximo de 500 caracteres; quedará registrado en la auditoría."
             autoFocus
             error={errors.reason?.message}
           />

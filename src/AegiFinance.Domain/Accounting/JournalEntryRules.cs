@@ -5,6 +5,8 @@ namespace AegiFinance.Domain.Accounting;
 
 public static class JournalEntryRules
 {
+    public const int MaxDescriptionLength = 500;
+
     public static void ValidateForPosting(JournalEntry entry)
     {
         if (entry.Lines.Count < 2)
@@ -36,7 +38,8 @@ public static class JournalEntryRules
         string entryNumber,
         string idempotencyKey,
         DateTime reversalDate,
-        Guid? userId)
+        Guid? userId,
+        string? reason = null)
     {
         if (original.Status != JournalEntryStatus.Posted)
         {
@@ -48,7 +51,7 @@ public static class JournalEntryRules
             Id = Guid.NewGuid(),
             EntryNumber = entryNumber,
             Date = reversalDate,
-            Description = $"Reversal of {original.EntryNumber}: {original.Description}",
+            Description = BuildReversalDescription(original, reason),
             Reference = original.Reference,
             Currency = original.Currency,
             Status = JournalEntryStatus.Posted,
@@ -75,5 +78,19 @@ public static class JournalEntryRules
 
         ValidateForPosting(reversal);
         return reversal;
+    }
+
+    private static string BuildReversalDescription(JournalEntry original, string? reason)
+    {
+        var description = $"Reversal of {original.EntryNumber}";
+        if (!string.IsNullOrWhiteSpace(reason))
+        {
+            description += $". Reason: {reason.Trim()}";
+        }
+
+        description += $". Original: {original.Description}";
+        return description.Length <= MaxDescriptionLength
+            ? description
+            : description[..MaxDescriptionLength];
     }
 }

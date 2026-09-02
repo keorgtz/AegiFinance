@@ -30,6 +30,13 @@ if (reversal.ReversesJournalEntryId != entry.Id || reversal.SourceType != Journa
 if (reversal.Lines.Any(line => line.LegacyLedgerEntryId.HasValue))
     throw new InvalidOperationException("Failed: reversal duplicates a unique legacy migration link.");
 
+entry.Status = JournalEntryStatus.Posted;
+entry.Description = new string('D', JournalEntryRules.MaxDescriptionLength);
+var longReversal = JournalEntryRules.CreateReversal(
+    entry, Guid.NewGuid(), "JE-LONG-REVERSAL", "reversal:long", DateTime.UtcNow, Guid.NewGuid(), new string('R', 500));
+if (longReversal.Description.Length != JournalEntryRules.MaxDescriptionLength || !longReversal.Description.Contains("Reason:"))
+    throw new InvalidOperationException("Failed: reversal descriptions can exceed the SQL column or lose their reason.");
+
 var sourceBank = new BankAccount { Id = Guid.NewGuid(), Name = "Source", Currency = "MXN", IsActive = true };
 var destinationBank = new BankAccount { Id = Guid.NewGuid(), Name = "Destination", Currency = "MXN", IsActive = true };
 BankAccountRules.ValidateTransfer(sourceBank, destinationBank, 500m, "MXN");
