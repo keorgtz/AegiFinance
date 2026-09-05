@@ -81,17 +81,18 @@ export function Tab({ id, children, controlKey, permission, systemRequired }: Ta
 }
 
 interface TabPanelProps {
+  keepMounted?: boolean;
   id: string;
   children: React.ReactNode;
   className?: string;
 }
 
-export function TabPanel({ id, children, className }: TabPanelProps) {
+export function TabPanel({ id, children, className, keepMounted }: TabPanelProps) {
   const ctx = useContext(TabsContext);
   if (!ctx) throw new Error("TabPanel must be inside Tabs");
-  if (ctx.active !== id) return null;
+  if (ctx.active !== id && !keepMounted) return null;
   return (
-    <div id={`panel-${id}`} role="tabpanel" aria-labelledby={`tab-${id}`} className={cn("pt-5", className)}>
+    <div hidden={ctx.active !== id} id={`panel-${id}`} role="tabpanel" aria-labelledby={`tab-${id}`} className={cn("pt-5", className)}>
       {children}
     </div>
   );

@@ -101,7 +101,7 @@ export function AutoAllocateDialog({ open, onOpenChange, clientId }: AutoAllocat
               Selecciona un ingreso del cliente. El sistema lo aplicará automáticamente a los
               cargos pendientes más antiguos.
             </p>
-            <Combobox
+            <Combobox controlKey="allocations.auto.selection.1" permission="AllocatePayments"
               label="Ingreso (entrada ledger) *"
               value={selectedEntryId}
               onValueChange={setSelectedEntryId}

@@ -4,7 +4,7 @@ import path from "node:path";
 const root = process.cwd();
 const writeMode = process.argv.includes("--write");
 const sourceRoots = ["app", "components"];
-const tags = new Set(["Button", "Input", "Select", "Textarea", "Switch", "Tab", "Link", "PermissionMenuItem", "PermissionSwitch", "RuleToggle", "button", "input", "select", "textarea"]);
+const tags = new Set(["Button", "Input", "Select", "Textarea", "Switch", "Tab", "Link", "PermissionMenuItem", "PermissionSwitch", "RuleToggle", "Combobox", "button", "input", "select", "textarea"]);
 
 async function filesIn(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -125,6 +125,10 @@ for (const match of navigationSource.matchAll(/href:\s*"([^"]+)"[\s\S]*?label:\s
     requiredPermissionCode: permission,
     isSystemRequired: false,
   });
+}
+
+for (const field of ["date", "description", "debit", "credit", "balance"]) {
+  manifest.push({ controlKey: `ledger.sheet.field.${field}`, label: field, module: "ledger", controlType: "input", requiredPermissionCode: "CreateBankStatementImports", isSystemRequired: false });
 }
 
 manifest.push(

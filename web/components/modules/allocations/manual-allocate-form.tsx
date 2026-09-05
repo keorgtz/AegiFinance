@@ -143,7 +143,7 @@ export function ManualAllocateForm({ open, onOpenChange, clientId }: ManualAlloc
           </div>
         ) : (
           <div className="flex flex-col gap-5">
-            <Combobox
+            <Combobox controlKey="allocations.manual.selection.1" permission="AllocatePayments"
               label="Ingreso (entrada ledger) *"
               value={ledgerEntryId}
               onValueChange={setLedgerEntryId}
@@ -160,7 +160,7 @@ export function ManualAllocateForm({ open, onOpenChange, clientId }: ManualAlloc
                 {rows.map((row, idx) => (
                   <div key={idx} className="flex items-end gap-2">
                     <div className="flex-1">
-                      <Combobox
+                      <Combobox controlKey="allocations.manual.selection.2" permission="AllocatePayments"
                         label={idx === 0 ? "Cargo (billing item)" : ""}
                         value={row.billingItemId}
                         onValueChange={(v) => updateRow(idx, "billingItemId", v)}

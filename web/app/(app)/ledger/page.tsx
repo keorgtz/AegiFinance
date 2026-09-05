@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { useQuery } from "@tanstack/react-query";
@@ -22,6 +23,7 @@ import { TransferForm } from "@/components/modules/ledger/transfer-form";
 import { AdjustmentForm } from "@/components/modules/ledger/adjustment-form";
 import { MajorLedgerPanel } from "@/components/modules/ledger/major-ledger-panel";
 import { BankImportDialog } from "@/components/modules/ledger/bank-import-dialog";
+import { StatementSheet } from "@/components/modules/ledger/statement-sheet";
 import { BankImportsPanel } from "@/components/modules/ledger/bank-imports-panel";
 import { ReconciliationPanel } from "@/components/modules/ledger/reconciliation-panel";
 import { PermissionMenuItem } from "@/components/ui/permission-dropdown-item";
@@ -66,6 +68,7 @@ const ENTRY_TYPES: { value: LedgerEntryType; label: string }[] = [
 type EntryAction = "income" | "expense" | "transfer" | "adjustment";
 
 export default function LedgerPage() {
+  const router = useRouter();
   // ── Ledger (movimientos) state ─────────────────────────────────────────────
   const [entriesPage, setEntriesPage] = useState(1);
   const [entryTypeFilter, setEntryTypeFilter] = useState<LedgerEntryType | "">("");
@@ -77,7 +80,7 @@ export default function LedgerPage() {
   const [reconciledFilter, setReconciledFilter] = useState<"" | "true" | "false">("");
   const [hasUnappliedBalance, setHasUnappliedBalance] = useState(false);
   const [showImportAttempts, setShowImportAttempts] = useState(false);
-  const [defaultTab, setDefaultTab] = useState("entries");
+  const [defaultTab, setDefaultTab] = useState("capture");
 
   // ── Bank accounts state ────────────────────────────────────────────────────
   const [accountsPage, setAccountsPage] = useState(1);
@@ -118,7 +121,7 @@ export default function LedgerPage() {
     setHasUnappliedBalance(params.get("hasUnappliedBalance") === "true");
     const view = params.get("view");
     setShowImportAttempts(view === "imports");
-    setDefaultTab(view === "reconciliation" ? "reconciliation" : view === "imports" ? "bank-imports" : "entries");
+    setDefaultTab(view === "reconciliation" ? "reconciliation" : view === "imports" ? "bank-imports" : view === "entries" || params.size > 0 && !view ? "entries" : "capture");
   }, []);
 
   // ── Data ───────────────────────────────────────────────────────────────────
@@ -371,18 +374,18 @@ export default function LedgerPage() {
   return (
     <div>
       {/* Header */}
-      <div className="mb-5 flex items-center justify-between gap-4">
+      <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-display text-[22px] font-bold text-foreground">Ledger</h1>
+          <h1 className="font-display text-[22px] font-bold text-foreground">Conciliación bancaria</h1>
           <p className="mt-0.5 text-[13px] text-muted">
-            Movimientos y cuentas bancarias
+            Captura el banco, asigna pagos y revisa coincidencias
           </p>
         </div>
         <Can permission="ManageBilling">
           <div className="flex items-center gap-2">
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
-                <Button controlKey="ui.app.app.ledger.page.button.2" size="md">
+                <Button controlKey="ui.app.app.ledger.page.button.2" permission="ManageBilling" variant="secondary" size="md">
                   <Plus className="h-4 w-4" />
                   Registrar movimiento
                 </Button>
@@ -471,8 +474,10 @@ export default function LedgerPage() {
         </Can>
       )}
 
+      <div className="mb-4 rounded-card border border-border bg-surface p-4"><p className="text-sm text-muted">Captura o importa el banco. Registra los ingresos indicando el cliente y después selecciona las mensualidades que cubre cada pago.</p><Button controlKey="ledger.payments.open" permission="ViewPaymentApplications" variant="secondary" className="mt-3" onClick={() => router.push("/allocations")}>Asignar pagos a mensualidades</Button></div>
       <Tabs defaultTab={defaultTab}>
         <TabList>
+          <Tab controlKey="ledger.sheet.tab" permission="CreateBankStatementImports" id="capture">1. Estado bancario</Tab>
           <Tab controlKey="ui.app.app.ledger.page.tab.1" id="entries">
             Movimientos
             {entriesData && entriesData.totalCount > 0 && (
@@ -490,12 +495,13 @@ export default function LedgerPage() {
             )}
           </Tab>
           <Tab controlKey="ledger.bankImports.tabs.imports" permission="ViewBankStatementImports" id="bank-imports">Importaciones</Tab>
-          <Tab controlKey="ledger.reconciliation.tabs.workspace" permission="ViewReconciliation" id="reconciliation">Conciliación</Tab>
+          <Tab controlKey="ledger.reconciliation.tabs.workspace" permission="ViewReconciliation" id="reconciliation">2. Conciliar</Tab>
           <Tab controlKey="ledger.major.tabs.journal" permission="ViewMajorLedger" id="journal">Libro diario</Tab>
           <Tab controlKey="ledger.major.tabs.chart" permission="ViewMajorLedger" id="chart">Catálogo contable</Tab>
           <Tab controlKey="ledger.major.tabs.trial" permission="ViewMajorLedger" id="trial">Balanza</Tab>
         </TabList>
 
+        <TabPanel id="capture" keepMounted><StatementSheet accounts={allAccounts} onImport={() => { setBankImportOpen(true); }} onContinue={() => setDefaultTab("reconciliation")} /></TabPanel>
         {/* ── MOVIMIENTOS ── */}
         <TabPanel id="entries">
           <div className="mb-4 flex flex-wrap items-center gap-3">

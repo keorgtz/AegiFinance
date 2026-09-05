@@ -25,13 +25,13 @@ export interface NavigationItem {
 
 export const NAVIGATION_ITEMS: NavigationItem[] = [
   { href: "/dashboard", label: "Resumen", shortLabel: "Inicio", icon: LayoutDashboard, permission: "ViewDashboard", group: "overview" },
+  { href: "/ledger", label: "Conciliación bancaria", shortLabel: "Conciliar", icon: Wallet, permission: "ViewPayments", group: "operations" },
   { href: "/clients", label: "Clientes", icon: Building2, permission: "ViewClients", group: "operations" },
   { href: "/services", label: "Planes y servicios", shortLabel: "Planes", icon: Package, permission: "ViewServices", group: "operations" },
   { href: "/subscriptions", label: "Suscripciones", shortLabel: "Suscrip.", icon: Layers, permission: "ViewSubscriptions", group: "operations" },
   { href: "/billing", label: "Cargos", icon: Receipt, permission: "ViewPayments", group: "operations" },
-  { href: "/ledger", label: "Major Ledger", shortLabel: "Ledger", icon: Wallet, permission: "ViewPayments", group: "operations" },
   { href: "/allocations", label: "Aplicación de pagos", shortLabel: "Pagos", icon: CreditCard, permission: "ViewPayments", group: "operations" },
-  { href: "/account-statement", label: "Estados de cuenta", icon: FileText, permission: "ViewAccountStatements", group: "operations" },
+  { href: "/account-statement", label: "Estado de cuenta del cliente", icon: FileText, permission: "ViewAccountStatements", group: "operations" },
   { href: "/audit", label: "Auditoría y cierre", shortLabel: "Auditoría", icon: ClipboardCheck, permission: "ViewAccountingGovernance", group: "operations" },
   { href: "/reports", label: "Reportes y analítica", shortLabel: "Reportes", icon: ChartNoAxesCombined, permission: "ViewReports", group: "operations" },
   { href: "/users", label: "Usuarios", icon: Users, permission: "ManageUsers", group: "administration" },

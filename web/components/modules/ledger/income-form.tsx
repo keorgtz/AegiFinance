@@ -1,5 +1,7 @@
 "use client";
 
+import { useClients } from "@/hooks/use-clients";
+import { Combobox } from "@/components/ui/combobox";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,6 +20,7 @@ const schema = z.object({
   date: z.string().min(1, "Requerido"),
   description: z.string().min(1, "Requerido"),
   reference: z.string().optional(),
+  clientId: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -31,6 +34,7 @@ interface IncomeFormProps {
 
 export function IncomeForm({ open, onOpenChange, accounts, defaultAccountId }: IncomeFormProps) {
   const register_ = useRegisterIncome();
+  const clients = useClients({ pageSize: 200 });
   const today = new Date().toISOString().split("T")[0];
   const defaultCurrency = accounts.find((account) => account.id === defaultAccountId)?.currency ?? "MXN";
 
@@ -44,6 +48,7 @@ export function IncomeForm({ open, onOpenChange, accounts, defaultAccountId }: I
         date: today,
         description: "",
         reference: "",
+        clientId: "",
       },
     });
 
@@ -56,13 +61,14 @@ export function IncomeForm({ open, onOpenChange, accounts, defaultAccountId }: I
         date: today,
         description: "",
         reference: "",
+        clientId: "",
       });
     }
   }, [open, defaultAccountId, defaultCurrency, reset, today]);
 
   const onSubmit = async (values: FormValues) => {
     try {
-      await register_.mutateAsync({ ...values, reference: values.reference || null });
+      await register_.mutateAsync({ ...values, clientId: values.clientId || null, reference: values.reference || null });
       onOpenChange(false);
     } catch { /* Keep the API error visible. */ }
   };
@@ -86,6 +92,7 @@ export function IncomeForm({ open, onOpenChange, accounts, defaultAccountId }: I
               </SelectItem>
             ))}
           </Select>
+          <Combobox controlKey="ledger.income.client" permission="CreateLedgerIncome" label="Cliente que realizó el pago (opcional)" value={watch("clientId") ?? ""} onValueChange={value => setValue("clientId", value)} options={clients.data?.items.map(client => ({ value: client.id, label: client.name, description: client.code })) ?? []} placeholder="Buscar cliente…" />
           <div className="grid grid-cols-2 gap-3">
             <Input controlKey="ui.components.modules.ledger.income.form.input.1"
               permission="CreateLedgerIncome"

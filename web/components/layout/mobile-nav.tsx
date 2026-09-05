@@ -13,7 +13,7 @@ export function MobileNav() {
   const { can } = usePermissions();
   const [moreOpen, setMoreOpen] = useState(false);
   const visible = NAVIGATION_ITEMS.filter((item) => can(item.permission));
-  const preferredPrimaryRoutes = ["/dashboard", "/clients", "/ledger", "/billing"];
+  const preferredPrimaryRoutes = ["/dashboard", "/ledger", "/clients", "/allocations"];
   const primary = preferredPrimaryRoutes
     .map((href) => visible.find((item) => item.href === href))
     .filter((item): item is (typeof visible)[number] => Boolean(item));

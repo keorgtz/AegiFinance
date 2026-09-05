@@ -16,6 +16,14 @@
     "isSystemRequired": false
   },
   {
+    "controlKey": "statements.filters.client",
+    "label": "Cliente",
+    "module": "account",
+    "controlType": "combobox",
+    "requiredPermissionCode": "ViewAccountStatements",
+    "isSystemRequired": false
+  },
+  {
     "controlKey": "statements.filters.from",
     "label": "Desde",
     "module": "account",
@@ -176,6 +184,14 @@
     "isSystemRequired": false
   },
   {
+    "controlKey": "payments.filters.client",
+    "label": "Cliente",
+    "module": "allocations",
+    "controlType": "combobox",
+    "requiredPermissionCode": "ViewPaymentApplications",
+    "isSystemRequired": false
+  },
+  {
     "controlKey": "payments.filters.status",
     "label": "Estado",
     "module": "allocations",
@@ -248,6 +264,14 @@
     "isSystemRequired": false
   },
   {
+    "controlKey": "payments.auto.plan",
+    "label": "Plan preferido",
+    "module": "allocations",
+    "controlType": "combobox",
+    "requiredPermissionCode": "ApplyPayments",
+    "isSystemRequired": false
+  },
+  {
     "controlKey": "payments.auto.payment.select",
     "label": "input 2",
     "module": "allocations",
@@ -268,6 +292,38 @@
     "label": "Button 11",
     "module": "allocations",
     "controlType": "button",
+    "requiredPermissionCode": "ApplyPayments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "payments.manual.period",
+    "label": "Mes y año de la mensualidad",
+    "module": "allocations",
+    "controlType": "input",
+    "requiredPermissionCode": "ApplyPayments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "payments.manual.subscription",
+    "label": "Suscripción del plan",
+    "module": "allocations",
+    "controlType": "select",
+    "requiredPermissionCode": "ApplyPayments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "payments.manual.payment",
+    "label": "Pago",
+    "module": "allocations",
+    "controlType": "combobox",
+    "requiredPermissionCode": "ApplyPayments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "payments.manual.charge",
+    "label": "Mensualidad / suscripción",
+    "module": "allocations",
+    "controlType": "combobox",
     "requiredPermissionCode": "ApplyPayments",
     "isSystemRequired": false
   },
@@ -768,46 +824,6 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.clients.page.button.1",
-    "label": "Más acciones",
-    "module": "clients",
-    "controlType": "button",
-    "requiredPermissionCode": null,
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "clients.duplicate-rules.open",
-    "label": "Configurar detección de duplicados",
-    "module": "clients",
-    "controlType": "button",
-    "requiredPermissionCode": "ManageClientDuplicateRules",
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "clients.create.open",
-    "label": "Button 3",
-    "module": "clients",
-    "controlType": "button",
-    "requiredPermissionCode": "CreateClients",
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "ui.app.app.clients.page.input.1",
-    "label": "Input 1",
-    "module": "clients",
-    "controlType": "input",
-    "requiredPermissionCode": null,
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "ui.app.app.clients.page.button.4",
-    "label": "button 4",
-    "module": "clients",
-    "controlType": "button",
-    "requiredPermissionCode": null,
-    "isSystemRequired": false
-  },
-  {
     "controlKey": "ui.app.app.clients.id.page.button.1",
     "label": "Button 1",
     "module": "clients",
@@ -906,6 +922,46 @@
   {
     "controlKey": "ui.app.app.clients.id.page.button.8",
     "label": "Button 8",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.clients.page.button.1",
+    "label": "Más acciones",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "clients.duplicate-rules.open",
+    "label": "Configurar detección de duplicados",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": "ManageClientDuplicateRules",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "clients.create.open",
+    "label": "Button 3",
+    "module": "clients",
+    "controlType": "button",
+    "requiredPermissionCode": "CreateClients",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.clients.page.input.1",
+    "label": "Input 1",
+    "module": "clients",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.clients.page.button.4",
+    "label": "button 4",
     "module": "clients",
     "controlType": "button",
     "requiredPermissionCode": null,
@@ -1028,7 +1084,7 @@
     "label": "Button 2",
     "module": "ledger",
     "controlType": "button",
-    "requiredPermissionCode": null,
+    "requiredPermissionCode": "ManageBilling",
     "isSystemRequired": false
   },
   {
@@ -1048,8 +1104,24 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.ledger.page.tab.1",
+    "controlKey": "ledger.payments.open",
+    "label": "Button 5",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewPaymentApplications",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.sheet.tab",
     "label": "Tab 1",
+    "module": "ledger",
+    "controlType": "tab",
+    "requiredPermissionCode": "CreateBankStatementImports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.ledger.page.tab.1",
+    "label": "Tab 2",
     "module": "ledger",
     "controlType": "tab",
     "requiredPermissionCode": null,
@@ -1057,7 +1129,7 @@
   },
   {
     "controlKey": "ledger.bankAccounts.tabs.accounts",
-    "label": "Tab 2",
+    "label": "Tab 3",
     "module": "ledger",
     "controlType": "tab",
     "requiredPermissionCode": "ViewBankAccounts",
@@ -1065,7 +1137,7 @@
   },
   {
     "controlKey": "ledger.bankImports.tabs.imports",
-    "label": "Tab 3",
+    "label": "Tab 4",
     "module": "ledger",
     "controlType": "tab",
     "requiredPermissionCode": "ViewBankStatementImports",
@@ -1073,7 +1145,7 @@
   },
   {
     "controlKey": "ledger.reconciliation.tabs.workspace",
-    "label": "Tab 4",
+    "label": "Tab 5",
     "module": "ledger",
     "controlType": "tab",
     "requiredPermissionCode": "ViewReconciliation",
@@ -1081,14 +1153,6 @@
   },
   {
     "controlKey": "ledger.major.tabs.journal",
-    "label": "Tab 5",
-    "module": "ledger",
-    "controlType": "tab",
-    "requiredPermissionCode": "ViewMajorLedger",
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "ledger.major.tabs.chart",
     "label": "Tab 6",
     "module": "ledger",
     "controlType": "tab",
@@ -1096,8 +1160,16 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ledger.major.tabs.trial",
+    "controlKey": "ledger.major.tabs.chart",
     "label": "Tab 7",
+    "module": "ledger",
+    "controlType": "tab",
+    "requiredPermissionCode": "ViewMajorLedger",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.major.tabs.trial",
+    "label": "Tab 8",
     "module": "ledger",
     "controlType": "tab",
     "requiredPermissionCode": "ViewMajorLedger",
@@ -1145,7 +1217,7 @@
   },
   {
     "controlKey": "ui.app.app.ledger.page.button.5",
-    "label": "button 5",
+    "label": "button 6",
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": null,
@@ -1161,7 +1233,7 @@
   },
   {
     "controlKey": "ledger.bankAccounts.create",
-    "label": "Button 6",
+    "label": "Button 7",
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": "CreateBankAccounts",
@@ -1169,7 +1241,7 @@
   },
   {
     "controlKey": "ledger.bankAccounts.retry",
-    "label": "Button 7",
+    "label": "Button 8",
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": "ViewBankAccounts",
@@ -1177,7 +1249,7 @@
   },
   {
     "controlKey": "ledger.bankAccounts.card.transfer",
-    "label": "Button 8",
+    "label": "Button 9",
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": "CreateLedgerTransfers",
@@ -1185,7 +1257,7 @@
   },
   {
     "controlKey": "ledger.bankAccounts.card.edit",
-    "label": "Button 9",
+    "label": "Button 10",
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": "UpdateBankAccounts",
@@ -1193,7 +1265,7 @@
   },
   {
     "controlKey": "ledger.bankAccounts.card.bankBalance",
-    "label": "Button 10",
+    "label": "Button 11",
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": "UpdateBankAccountBalances",
@@ -1528,38 +1600,6 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.services.page.button.1",
-    "label": "Más acciones",
-    "module": "services",
-    "controlType": "button",
-    "requiredPermissionCode": null,
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "ui.app.app.services.page.button.2",
-    "label": "Button 2",
-    "module": "services",
-    "controlType": "button",
-    "requiredPermissionCode": null,
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "ui.app.app.services.page.input.1",
-    "label": "Input 1",
-    "module": "services",
-    "controlType": "input",
-    "requiredPermissionCode": null,
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "ui.app.app.services.page.button.3",
-    "label": "button 3",
-    "module": "services",
-    "controlType": "button",
-    "requiredPermissionCode": null,
-    "isSystemRequired": false
-  },
-  {
     "controlKey": "ui.app.app.services.id.page.button.1",
     "label": "Button 1",
     "module": "services",
@@ -1626,6 +1666,38 @@
   {
     "controlKey": "ui.app.app.services.id.page.button.6",
     "label": "Button 6",
+    "module": "services",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.services.page.button.1",
+    "label": "Más acciones",
+    "module": "services",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.services.page.button.2",
+    "label": "Button 2",
+    "module": "services",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.services.page.input.1",
+    "label": "Input 1",
+    "module": "services",
+    "controlType": "input",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.services.page.button.3",
+    "label": "button 3",
     "module": "services",
     "controlType": "button",
     "requiredPermissionCode": null,
@@ -1792,30 +1864,6 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "ui.app.app.subscriptions.page.button.1",
-    "label": "Más acciones",
-    "module": "subscriptions",
-    "controlType": "button",
-    "requiredPermissionCode": null,
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "subscriptions.header.create",
-    "label": "Button 2",
-    "module": "subscriptions",
-    "controlType": "button",
-    "requiredPermissionCode": "CreateSubscriptions",
-    "isSystemRequired": false
-  },
-  {
-    "controlKey": "ui.app.app.subscriptions.page.button.3",
-    "label": "button 3",
-    "module": "subscriptions",
-    "controlType": "button",
-    "requiredPermissionCode": null,
-    "isSystemRequired": false
-  },
-  {
     "controlKey": "ui.app.app.subscriptions.id.page.button.1",
     "label": "Button 1",
     "module": "subscriptions",
@@ -1938,6 +1986,30 @@
   {
     "controlKey": "ui.app.app.subscriptions.id.page.button.11",
     "label": "Button 11",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.subscriptions.page.button.1",
+    "label": "Más acciones",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "subscriptions.header.create",
+    "label": "Button 2",
+    "module": "subscriptions",
+    "controlType": "button",
+    "requiredPermissionCode": "CreateSubscriptions",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ui.app.app.subscriptions.page.button.3",
+    "label": "button 3",
     "module": "subscriptions",
     "controlType": "button",
     "requiredPermissionCode": null,
@@ -2080,6 +2152,14 @@
     "isSystemRequired": false
   },
   {
+    "controlKey": "allocations.auto.selection.1",
+    "label": "Ingreso (entrada ledger) *",
+    "module": "allocations",
+    "controlType": "combobox",
+    "requiredPermissionCode": "AllocatePayments",
+    "isSystemRequired": false
+  },
+  {
     "controlKey": "ui.components.modules.allocations.auto.allocate.dialog.button.3",
     "label": "Button 3",
     "module": "allocations",
@@ -2109,6 +2189,22 @@
     "module": "allocations",
     "controlType": "button",
     "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "allocations.manual.selection.1",
+    "label": "Ingreso (entrada ledger) *",
+    "module": "allocations",
+    "controlType": "combobox",
+    "requiredPermissionCode": "AllocatePayments",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "allocations.manual.selection.2",
+    "label": "Combobox 2",
+    "module": "allocations",
+    "controlType": "combobox",
+    "requiredPermissionCode": "AllocatePayments",
     "isSystemRequired": false
   },
   {
@@ -3088,6 +3184,14 @@
     "isSystemRequired": false
   },
   {
+    "controlKey": "ledger.income.client",
+    "label": "Cliente que realizó el pago (opcional)",
+    "module": "ledger",
+    "controlType": "combobox",
+    "requiredPermissionCode": "CreateLedgerIncome",
+    "isSystemRequired": false
+  },
+  {
     "controlKey": "ui.components.modules.ledger.income.form.input.1",
     "label": "Importe *",
     "module": "ledger",
@@ -3469,6 +3573,78 @@
     "module": "ledger",
     "controlType": "button",
     "requiredPermissionCode": "CloseReconciliationPeriods",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.sheet.import",
+    "label": "Button 1",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "CreateBankStatementImports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.sheet.account",
+    "label": "Cuenta bancaria existente",
+    "module": "ledger",
+    "controlType": "select",
+    "requiredPermissionCode": "CreateBankStatementImports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.sheet.remove",
+    "label": "Button 2",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "CreateBankStatementImports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.sheet.add",
+    "label": "Button 3",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "CreateBankStatementImports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.sheet.preview",
+    "label": "Button 4",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "CreateBankStatementImports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.sheet.next",
+    "label": "Button 5",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "ViewReconciliation",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.sheet.new",
+    "label": "Button 6",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "CreateBankStatementImports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.sheet.edit",
+    "label": "Button 7",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": null,
+    "isSystemRequired": true
+  },
+  {
+    "controlKey": "ledger.sheet.confirm",
+    "label": "Button 8",
+    "module": "ledger",
+    "controlType": "button",
+    "requiredPermissionCode": "ConfirmBankStatementImports",
     "isSystemRequired": false
   },
   {
@@ -3944,6 +4120,14 @@
     "isSystemRequired": false
   },
   {
+    "controlKey": "subscriptions.plan-change.service",
+    "label": "Plan",
+    "module": "subscriptions",
+    "controlType": "combobox",
+    "requiredPermissionCode": null,
+    "isSystemRequired": false
+  },
+  {
     "controlKey": "subscriptions.plan-change.version",
     "label": "Versión publicada",
     "module": "subscriptions",
@@ -4328,6 +4512,14 @@
     "isSystemRequired": false
   },
   {
+    "controlKey": "navigation.ledger.open",
+    "label": "Conciliación bancaria",
+    "module": "navigation",
+    "controlType": "link",
+    "requiredPermissionCode": "ViewPayments",
+    "isSystemRequired": false
+  },
+  {
     "controlKey": "navigation.clients.open",
     "label": "Clientes",
     "module": "navigation",
@@ -4360,14 +4552,6 @@
     "isSystemRequired": false
   },
   {
-    "controlKey": "navigation.ledger.open",
-    "label": "Major Ledger",
-    "module": "navigation",
-    "controlType": "link",
-    "requiredPermissionCode": "ViewPayments",
-    "isSystemRequired": false
-  },
-  {
     "controlKey": "navigation.allocations.open",
     "label": "Aplicación de pagos",
     "module": "navigation",
@@ -4377,7 +4561,7 @@
   },
   {
     "controlKey": "navigation.account-statement.open",
-    "label": "Estados de cuenta",
+    "label": "Estado de cuenta del cliente",
     "module": "navigation",
     "controlType": "link",
     "requiredPermissionCode": "ViewAccountStatements",
@@ -4421,6 +4605,46 @@
     "module": "navigation",
     "controlType": "link",
     "requiredPermissionCode": "ViewSettings",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.sheet.field.date",
+    "label": "date",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": "CreateBankStatementImports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.sheet.field.description",
+    "label": "description",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": "CreateBankStatementImports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.sheet.field.debit",
+    "label": "debit",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": "CreateBankStatementImports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.sheet.field.credit",
+    "label": "credit",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": "CreateBankStatementImports",
+    "isSystemRequired": false
+  },
+  {
+    "controlKey": "ledger.sheet.field.balance",
+    "label": "balance",
+    "module": "ledger",
+    "controlType": "input",
+    "requiredPermissionCode": "CreateBankStatementImports",
     "isSystemRequired": false
   },
   {
